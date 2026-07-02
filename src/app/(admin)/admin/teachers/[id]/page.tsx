@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: PageProps) {
   const admin = createSupabaseAdminClient();
   if (!admin) return { title: "المحفظ" };
   const { data } = await admin.from("users").select("name").eq("id", id).maybeSingle();
-  return { title: `${data?.name ?? "المحفظ"} | أقرأ` };
+  return { title: `${data?.name ?? "المحفظ"} | اقرأ` };
 }
 
 export default async function TeacherProfilePage({ params }: PageProps) {

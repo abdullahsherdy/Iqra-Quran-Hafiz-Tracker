@@ -2,7 +2,7 @@ import { requireRole } from "@/lib/auth/session";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { AssignmentsClient } from "./assignments-client";
 
-export const metadata = { title: "إسناد الطلاب | أقرأ" };
+export const metadata = { title: "إسناد الطلاب | اقرأ" };
 
 export default async function AdminAssignmentsPage() {
   await requireRole("admin");

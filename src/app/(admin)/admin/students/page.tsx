@@ -4,7 +4,7 @@ import { PlusCircle } from "lucide-react";
 import { StudentsListClient } from "./students-list-client";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
-export const metadata = { title: "الطلاب | أقرأ" };
+export const metadata = { title: "الطلاب | اقرأ" };
 
 export default async function AdminStudentsPage() {
   await requireRole("admin");
@@ -13,13 +13,13 @@ export default async function AdminStudentsPage() {
   const admin = createSupabaseAdminClient();
   const teachers = admin
     ? (
-        await admin
-          .from("users")
-          .select("id, name, gender")
-          .eq("role", "teacher")
-          .eq("is_active", true)
-          .order("name")
-      ).data ?? []
+      await admin
+        .from("users")
+        .select("id, name, gender")
+        .eq("role", "teacher")
+        .eq("is_active", true)
+        .order("name")
+    ).data ?? []
     : [];
 
   return (

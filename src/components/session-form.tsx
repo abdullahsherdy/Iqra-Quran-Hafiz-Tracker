@@ -4,6 +4,7 @@ import { useState, useTransition, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { Rating, SessionType } from "@/components/badges";
 import { Loader2, BookOpen, RotateCcw, CheckCircle2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   formatAyahPreview,
   formatSurahLabel,
@@ -27,15 +28,15 @@ interface SessionFormProps {
   defaultStudentId?: string;
 }
 
-const SESSION_TYPES: { value: SessionType; label: string; icon: typeof BookOpen; colors: string }[] = [
-  { value: "new_memorization", label: "تسميع جديد", icon: BookOpen, colors: "border-[#2563eb] bg-[#dbeafe] text-[#1e40af]" },
-  { value: "review", label: "مراجعة", icon: RotateCcw, colors: "border-[#7c3aed] bg-[#ede9fe] text-[#5b21b6]" },
+const SESSION_TYPES: { value: SessionType; label: string; icon: typeof BookOpen }[] = [
+  { value: "new_memorization", label: "تسميع جديد", icon: BookOpen },
+  { value: "review", label: "مراجعة", icon: RotateCcw },
 ];
 
-const RATINGS: { value: Rating; label: string; colors: string }[] = [
-  { value: "excellent", label: "ممتاز", colors: "border-[#16a34a] bg-[#dcfce7] text-[#166534]" },
-  { value: "good", label: "جيد", colors: "border-[#ca8a04] bg-[#fef9c3] text-[#854d0e]" },
-  { value: "weak", label: "ضعيف", colors: "border-[#dc2626] bg-[#fee2e2] text-[#991b1b]" },
+const RATINGS: { value: Rating; label: string }[] = [
+  { value: "excellent", label: "ممتاز" },
+  { value: "good", label: "جيد" },
+  { value: "weak", label: "ضعيف" },
 ];
 
 function lastSurahKey(studentId: string) {
@@ -189,167 +190,225 @@ export function SessionForm({ students, surahs, defaultStudentId }: SessionFormP
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto max-w-lg space-y-5">
+    <form onSubmit={handleSubmit} className="mx-auto max-w-4xl space-y-6">
       {success && (
-        <div className="rounded-lg bg-[#dcfce7] p-3 text-sm font-medium text-[#166534] flex items-center gap-2">
-          <CheckCircle2 className="size-4" />
-          تم الحفظ ✓
+        <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4 text-sm font-medium text-emerald-800 flex items-center gap-2 shadow-xs">
+          <CheckCircle2 className="size-5 text-emerald-600" />
+          <span>تم تسجيل الجلسة بنجاح ✓</span>
         </div>
       )}
 
-      <div className="card space-y-5">
-        <div>
-          <label className="form-label">الطالب <span className="required-star">*</span></label>
-          <select
-            className="input-field"
-            value={studentId}
-            onChange={(e) => handleStudentChange(e.target.value)}
-            required
-          >
-            {students.map((s) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
-        </div>
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Right Column: Session Details */}
+        <div className="card space-y-5">
+          <h3 className="font-semibold border-b border-border pb-3 mb-1 text-primary text-base">
+            معلومات الجلسة
+          </h3>
 
-        <div>
-          <label className="form-label">تاريخ الجلسة</label>
-          <input
-            type="date"
-            className="input-field"
-            dir="ltr"
-            value={sessionDate}
-            onChange={(e) => setSessionDate(e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label className="form-label">نوع الجلسة <span className="required-star">*</span></label>
-          <div className="grid grid-cols-3 gap-2">
-            {SESSION_TYPES.map(({ value, label, icon: Icon, colors }) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setSessionType(value)}
-                className={`flex min-h-[72px] flex-col items-center justify-center gap-1.5 rounded-lg border-2 p-2 text-sm font-medium transition-colors ${
-                  sessionType === value ? colors : "border-border bg-card text-muted-foreground hover:bg-secondary"
-                }`}
-              >
-                <Icon className="size-5" />
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="form-label">السورة <span className="required-star">*</span></label>
-          <input
-            className="input-field mb-2"
-            placeholder="بحث عن سورة…"
-            value={surahSearch}
-            onChange={(e) => setSurahSearch(e.target.value)}
-          />
-          <select
-            className="input-field"
-            value={surahId}
-            onChange={(e) => handleSurahChange(Number(e.target.value))}
-            required
-            size={5}
-          >
-            {filteredSurahs.map((s) => (
-              <option key={s.id} value={s.id}>
-                {formatSurahLabel(s.id, s.name_arabic)} ({toArabicNumerals(s.total_ayahs)} آية)
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="form-label">آية من</label>
-            <input
-              type="number"
-              min={1}
-              max={selectedSurah?.total_ayahs ?? 286}
-              className="input-field"
-              dir="ltr"
-              value={fromAyah}
-              onChange={(e) => setFromAyah(e.target.value)}
+            <label className="form-label">الطالب <span className="required-star">*</span></label>
+            <select
+              className="input-field cursor-pointer"
+              value={studentId}
+              onChange={(e) => handleStudentChange(e.target.value)}
               required
+            >
+              {students.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="form-label">تاريخ الجلسة</label>
+            <input
+              type="date"
+              className="input-field cursor-pointer"
+              dir="ltr"
+              value={sessionDate}
+              onChange={(e) => setSessionDate(e.target.value)}
             />
           </div>
+
           <div>
-            <label className="form-label">آية إلى</label>
+            <label className="form-label">نوع الجلسة <span className="required-star">*</span></label>
+            <div className="grid grid-cols-2 gap-3">
+              {SESSION_TYPES.map(({ value, label, icon: Icon }) => {
+                const isSelected = sessionType === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setSessionType(value)}
+                    className={cn(
+                      "flex min-h-[64px] flex-col items-center justify-center gap-1.5 rounded-lg border p-2 text-sm font-medium transition-all shadow-xs cursor-pointer",
+                      isSelected
+                        ? value === "new_memorization"
+                          ? "border-[#2563eb] bg-[#2563eb]/10 text-[#1e40af] scale-[1.02] font-semibold"
+                          : "border-[#7c3aed] bg-[#7c3aed]/10 text-[#5b21b6] scale-[1.02] font-semibold"
+                        : "border-border bg-card text-muted-foreground hover:bg-secondary"
+                    )}
+                  >
+                    <Icon className="size-4.5" />
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <label className="form-label">التقييم <span className="required-star">*</span></label>
+            <div className="grid grid-cols-3 gap-2.5">
+              {RATINGS.map(({ value, label }) => {
+                const isSelected = rating === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setRating(value)}
+                    className={cn(
+                      "min-h-[46px] rounded-lg border text-sm font-medium transition-all shadow-xs cursor-pointer",
+                      isSelected
+                        ? value === "excellent"
+                          ? "border-[#16a34a] bg-[#16a34a]/10 text-[#15803d] font-bold scale-[1.02]"
+                          : value === "good"
+                          ? "border-[#ca8a04] bg-[#ca8a04]/10 text-[#a16207] font-bold scale-[1.02]"
+                          : "border-[#dc2626] bg-[#dc2626]/10 text-[#b91c1c] font-bold scale-[1.02]"
+                        : "border-border bg-card text-muted-foreground hover:bg-secondary"
+                    )}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Left Column: Quran Position */}
+        <div className="card space-y-5">
+          <h3 className="font-semibold border-b border-border pb-3 mb-1 text-primary text-base">
+            الموضع القرآني
+          </h3>
+
+          <div>
+            <label className="form-label">السورة <span className="required-star">*</span></label>
+            <input
+              className="input-field mb-2"
+              placeholder="🔍 ابحث باسم السورة…"
+              value={surahSearch}
+              onChange={(e) => setSurahSearch(e.target.value)}
+            />
+            <div className="border border-border rounded-lg overflow-hidden bg-card shadow-xs">
+              <div className="max-h-[160px] overflow-y-auto divide-y divide-border/60">
+                {filteredSurahs.map((s) => {
+                  const isSelected = s.id === surahId;
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => handleSurahChange(s.id)}
+                      className={cn(
+                        "w-full text-right px-3.5 py-2.5 text-sm transition-colors flex items-center justify-between cursor-pointer",
+                        isSelected
+                          ? "bg-primary/10 text-primary font-bold"
+                          : "hover:bg-secondary/60 text-foreground"
+                      )}
+                    >
+                      <span>{formatSurahLabel(s.id, s.name_arabic)}</span>
+                      <span className="text-xs text-muted-foreground">({toArabicNumerals(s.total_ayahs)} آية)</span>
+                    </button>
+                  );
+                })}
+                {filteredSurahs.length === 0 && (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    لا توجد نتائج مطابقة
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3.5">
+            <div>
+              <label className="form-label">آية من</label>
+              <input
+                type="number"
+                min={1}
+                max={selectedSurah?.total_ayahs ?? 286}
+                className="input-field"
+                dir="ltr"
+                value={fromAyah}
+                onChange={(e) => setFromAyah(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label className="form-label">آية إلى</label>
+              <input
+                type="number"
+                min={1}
+                max={selectedSurah?.total_ayahs ?? 286}
+                className="input-field"
+                dir="ltr"
+                value={toAyah}
+                onChange={(e) => setToAyah(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="form-label">عدد الصفحات (اختياري)</label>
             <input
               type="number"
-              min={1}
-              max={selectedSurah?.total_ayahs ?? 286}
+              min={0}
               className="input-field"
               dir="ltr"
-              value={toAyah}
-              onChange={(e) => setToAyah(e.target.value)}
-              required
+              value={pages}
+              onChange={(e) => setPages(e.target.value)}
+              placeholder="مثال: 2"
             />
           </div>
-        </div>
 
-        <div>
-          <label className="form-label">عدد الصفحات (اختياري)</label>
-          <input
-            type="number"
-            min={0}
-            className="input-field"
-            dir="ltr"
-            value={pages}
-            onChange={(e) => setPages(e.target.value)}
-            placeholder="مثال: 2"
-          />
-          <p className="mt-1 text-xs text-muted-foreground">
-            عدد الصفحات التي حفظها/سمّعها الطالب في هذه الجلسة
-          </p>
-        </div>
-
-        {preview && (
-          <p className="rounded-lg bg-secondary p-3 text-sm font-medium text-center">
-            {preview}
-          </p>
-        )}
-
-        <div>
-          <label className="form-label">التقييم <span className="required-star">*</span></label>
-          <div className="grid grid-cols-3 gap-2">
-            {RATINGS.map(({ value, label, colors }) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setRating(value)}
-                className={`min-h-[52px] rounded-lg border-2 text-sm font-medium transition-colors ${
-                  rating === value ? colors : "border-border bg-card text-muted-foreground hover:bg-secondary"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="form-label">ملاحظات</label>
-          <textarea
-            className="input-field min-h-[72px] resize-none"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="ملاحظات اختيارية…"
-          />
+          {preview && (
+            <div className="rounded-lg bg-emerald-950/5 border border-emerald-950/10 p-3 text-sm font-semibold text-emerald-800 text-center shadow-xs">
+              {preview}
+            </div>
+          )}
         </div>
       </div>
 
-      {error && <p className="field-error text-base">{error}</p>}
+      {/* Bottom Notes & Submit */}
+      <div className="card space-y-4">
+        <div>
+          <label className="form-label">ملاحظات وتوجيهات للمعلم أو الطالب (اختياري)</label>
+          <textarea
+            className="input-field min-h-[80px] resize-none"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="مثال: بحاجة لتثبيت الغنن، مراجعة مخارج الحروف الشجرية…"
+          />
+        </div>
 
-      <button type="submit" className="btn-primary w-full py-3 text-base" disabled={isPending}>
-        {isPending ? <Loader2 className="size-5 animate-spin" /> : "حفظ الجلسة"}
-      </button>
+        {error && <p className="field-error text-base">{error}</p>}
+
+        <button 
+          type="submit" 
+          className="btn-primary w-full py-3.5 text-base font-bold shadow-md hover:scale-[1.005] active:scale-[0.995] transition-all cursor-pointer" 
+          disabled={isPending}
+        >
+          {isPending ? (
+            <span className="flex items-center justify-center gap-2">
+              <Loader2 className="size-5 animate-spin" />
+              <span>جاري الحفظ…</span>
+            </span>
+          ) : (
+            "حفظ الجلسة"
+          )}
+        </button>
+      </div>
     </form>
   );
 }

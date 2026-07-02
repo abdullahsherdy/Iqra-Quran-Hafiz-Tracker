@@ -4,7 +4,7 @@ import Link from "next/link";
 import { GenderBadge } from "@/components/badges";
 import { PlusCircle, Users } from "lucide-react";
 
-export const metadata = { title: "المحفظون | أقرأ" };
+export const metadata = { title: "المحفظون | اقرأ" };
 
 export default async function AdminTeachersPage() {
   await requireRole("admin");
@@ -12,12 +12,12 @@ export default async function AdminTeachersPage() {
   const admin = createSupabaseAdminClient();
   const teachers = admin
     ? (
-        await admin
-          .from("users")
-          .select("id, name, username, gender, phone, is_active, can_view_all_genders, created_at")
-          .eq("role", "teacher")
-          .order("name")
-      ).data ?? []
+      await admin
+        .from("users")
+        .select("id, name, username, gender, phone, is_active, can_view_all_genders, created_at")
+        .eq("role", "teacher")
+        .order("name")
+    ).data ?? []
     : [];
 
   // Count active students per teacher
@@ -106,11 +106,10 @@ export default async function AdminTeachersPage() {
                   </td>
                   <td className="px-4 py-3 text-center">
                     <span
-                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        t.is_active
+                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${t.is_active
                           ? "bg-[#dcfce7] text-[#166534]"
                           : "bg-[#fee2e2] text-[#991b1b]"
-                      }`}
+                        }`}
                     >
                       {t.is_active ? "نشط" : "غير نشط"}
                     </span>

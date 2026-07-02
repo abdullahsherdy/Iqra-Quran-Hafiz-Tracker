@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { NewStudentForm } from "@/components/new-student-form";
 
-export const metadata = { title: "إضافة طالب | أقرأ" };
+export const metadata = { title: "إضافة طالب | اقرأ" };
 
 export default async function AdminNewStudentPage() {
   await requireRole("admin");

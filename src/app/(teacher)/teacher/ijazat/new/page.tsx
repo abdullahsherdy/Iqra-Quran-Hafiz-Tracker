@@ -5,7 +5,7 @@ import { GrantIjazaForm } from "@/components/grant-ijaza-form";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-export const metadata = { title: "منح إجازة | أقرأ" };
+export const metadata = { title: "منح إجازة | اقرأ" };
 
 interface PageProps {
   searchParams: Promise<{ student_id?: string }>;
@@ -46,7 +46,7 @@ export default async function TeacherGrantIjazaPage({ searchParams }: PageProps)
   const { data: students } = await studentsQuery;
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 mx-auto max-w-2xl">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Link href="/teacher/students" className="btn-secondary px-2 py-1.5 text-xs">

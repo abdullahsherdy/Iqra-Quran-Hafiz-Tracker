@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Award, Loader2, CheckCircle2 } from "lucide-react";
 import { toArabicNumerals } from "@/lib/arabic";
+import { cn } from "@/lib/utils";
 
 interface StudentOption {
   id: string;
@@ -87,12 +88,12 @@ export function GrantIjazaForm({
 
   if (success) {
     return (
-      <div className="card flex flex-col items-center gap-4 py-12 text-center">
-        <div className="rounded-full bg-green-100 p-4">
-          <CheckCircle2 className="size-10 text-green-600" />
+      <div className="card flex flex-col items-center gap-4 py-12 text-center shadow-md border border-border">
+        <div className="rounded-full bg-[#dcfce7] p-4 animate-bounce">
+          <CheckCircle2 className="size-10 text-[#166534]" />
         </div>
         <div>
-          <h3 className="font-bold text-lg">تم منح الإجازة بنجاح 🎉</h3>
+          <h3 className="font-bold text-lg text-foreground">تم منح الإجازة بنجاح 🎉</h3>
           <p className="text-sm text-muted-foreground mt-1">
             جاري تحديث خريطة تقدم الطالب...
           </p>
@@ -102,7 +103,7 @@ export function GrantIjazaForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="card space-y-5 max-w-xl">
+    <form onSubmit={handleSubmit} className="card space-y-6 w-full shadow-md border border-border">
       {/* Student selector */}
       {!preselectedStudentId ? (
         <div className="space-y-1.5">
@@ -113,7 +114,7 @@ export function GrantIjazaForm({
             id="grant-student"
             value={studentId}
             onChange={(e) => setStudentId(e.target.value)}
-            className="form-input"
+            className="input-field cursor-pointer"
             required
           >
             <option value="">— اختر الطالب —</option>
@@ -127,64 +128,70 @@ export function GrantIjazaForm({
       ) : (
         <div className="space-y-1.5">
           <label className="form-label">الطالب</label>
-          <p className="form-input bg-secondary/50 text-muted-foreground cursor-not-allowed">
+          <p className="input-field bg-secondary/40 text-muted-foreground cursor-not-allowed border-dashed">
             {students.find((s) => s.id === preselectedStudentId)?.name ?? preselectedStudentId}
           </p>
         </div>
       )}
 
-      {/* Ijaza type */}
-      <div className="space-y-1.5">
-        <label className="form-label">
-          نوع الإجازة <span className="text-destructive">*</span>
-        </label>
-        <div className="flex gap-3">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="ijaza_type"
-              value="juz"
-              checked={ijazaType === "juz"}
-              onChange={() => setIjazaType("juz")}
-              className="accent-primary"
-            />
-            <span className="text-sm">إجازة جزء</span>
+      {/* Visual grouping of Ijaza Type & conditional Juz number */}
+      <div className="rounded-xl border border-border/80 bg-secondary/10 p-4 space-y-4">
+        <div>
+          <label className="form-label mb-2">
+            نوع الإجازة <span className="text-destructive">*</span>
           </label>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="ijaza_type"
-              value="full_quran"
-              checked={ijazaType === "full_quran"}
-              onChange={() => setIjazaType("full_quran")}
-              className="accent-primary"
-            />
-            <span className="text-sm">إجازة القرآن الكريم كاملاً</span>
-          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setIjazaType("juz")}
+              className={cn(
+                "flex min-h-[56px] items-center justify-center gap-2 rounded-lg border p-2 text-sm font-semibold transition-all shadow-xs cursor-pointer",
+                ijazaType === "juz"
+                  ? "border-primary bg-primary/10 text-primary scale-[1.01]"
+                  : "border-border bg-card text-muted-foreground hover:bg-secondary"
+              )}
+            >
+              <Award className="size-4.5" />
+              <span>إجازة جزء</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIjazaType("full_quran")}
+              className={cn(
+                "flex min-h-[56px] items-center justify-center gap-2 rounded-lg border p-2 text-sm font-semibold transition-all shadow-xs cursor-pointer",
+                ijazaType === "full_quran"
+                  ? "border-[#16a34a] bg-[#16a34a]/10 text-[#15803d] scale-[1.01]"
+                  : "border-border bg-card text-muted-foreground hover:bg-secondary"
+              )}
+            >
+              <Award className="size-4.5" />
+              <span>القرآن كاملاً</span>
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Juz number — shown only when type=juz */}
-      {ijazaType === "juz" && (
-        <div className="space-y-1.5">
-          <label htmlFor="grant-juz" className="form-label">
-            رقم الجزء <span className="text-destructive">*</span>
-          </label>
-          <select
-            id="grant-juz"
-            value={juzNumber}
-            onChange={(e) => setJuzNumber(e.target.value)}
-            className="form-input"
-            required
-          >
-            {JUZ_OPTIONS.map((j) => (
-              <option key={j} value={j}>
-                الجزء {toArabicNumerals(j)}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+        {/* Juz number — shown only when type=juz */}
+        {ijazaType === "juz" && (
+          <div className="space-y-1.5 animate-fadeIn">
+            <label htmlFor="grant-juz" className="form-label">
+              رقم الجزء <span className="text-destructive">*</span>
+            </label>
+            <select
+              id="grant-juz"
+              value={juzNumber}
+              onChange={(e) => setJuzNumber(e.target.value)}
+              className="input-field cursor-pointer"
+              required
+            >
+              {JUZ_OPTIONS.map((j) => (
+                <option key={j} value={j}>
+                  الجزء {toArabicNumerals(j)}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
 
       {/* Sheikh name */}
       <div className="space-y-1.5">
@@ -197,7 +204,7 @@ export function GrantIjazaForm({
           value={sheikhName}
           onChange={(e) => setSheikhName(e.target.value)}
           placeholder="مثال: الشيخ عبد الله الأحمد"
-          className="form-input"
+          className="input-field"
           required
         />
       </div>
@@ -212,7 +219,7 @@ export function GrantIjazaForm({
           type="date"
           value={ijazaDate}
           onChange={(e) => setIjazaDate(e.target.value)}
-          className="form-input"
+          className="input-field cursor-pointer"
           required
         />
       </div>
@@ -228,7 +235,7 @@ export function GrantIjazaForm({
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
           placeholder="أي ملاحظات إضافية عن الإجازة..."
-          className="form-input resize-none"
+          className="input-field resize-none"
         />
       </div>
 
@@ -239,24 +246,24 @@ export function GrantIjazaForm({
         </p>
       )}
 
-      {/* Submit */}
-      <div className="flex items-center gap-3 pt-1">
+      {/* Submit & Cancel Buttons */}
+      <div className="grid grid-cols-2 gap-3 pt-2">
         <button
           type="submit"
           disabled={isPending}
-          className="btn-primary gap-2"
+          className="btn-primary w-full py-3 text-sm font-bold flex items-center justify-center gap-2 cursor-pointer shadow-sm"
         >
           {isPending ? (
             <Loader2 className="size-4 animate-spin" />
           ) : (
-            <Award className="size-4" />
+            <Award className="size-4.5" />
           )}
-          منح الإجازة
+          <span>منح الإجازة</span>
         </button>
         <button
           type="button"
           onClick={() => router.back()}
-          className="btn-secondary"
+          className="btn-secondary w-full py-3 text-sm font-semibold cursor-pointer"
         >
           إلغاء
         </button>

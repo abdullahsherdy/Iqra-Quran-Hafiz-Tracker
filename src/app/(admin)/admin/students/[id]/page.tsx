@@ -13,7 +13,7 @@ interface PageProps {
 }
 
 export async function generateMetadata() {
-  return { title: `ملف الطالب | ${process.env.NEXT_PUBLIC_APP_NAME ?? "أقرأ"}` };
+  return { title: `ملف الطالب | ${process.env.NEXT_PUBLIC_APP_NAME ?? "اقرأ"}` };
 }
 
 export default async function AdminStudentProfilePage({ params }: PageProps) {

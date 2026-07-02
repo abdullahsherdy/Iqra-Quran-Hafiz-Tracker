@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: PageProps) {
   const admin = createSupabaseAdminClient();
   if (!admin) return { title: "تعديل الطالب" };
   const { data } = await admin.from("students").select("name").eq("id", id).maybeSingle();
-  return { title: `تعديل: ${data?.name ?? "الطالب"} | أقرأ` };
+  return { title: `تعديل: ${data?.name ?? "الطالب"} | اقرأ` };
 }
 
 export default async function EditStudentPage({ params }: PageProps) {

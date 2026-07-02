@@ -3,7 +3,7 @@ import Link from "next/link";
 import { PlusCircle } from "lucide-react";
 import { StudentsListClient } from "@/app/(admin)/admin/students/students-list-client";
 
-export const metadata = { title: "طلابي | أقرأ" };
+export const metadata = { title: "طلابي | اقرأ" };
 
 export default async function TeacherStudentsPage() {
   await requireRole("teacher");

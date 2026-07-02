@@ -4,7 +4,7 @@ import { Award, Plus } from "lucide-react";
 import { GrantIjazaForm } from "@/components/grant-ijaza-form";
 import { AdminIjazatTable } from "@/components/admin-ijazat-table";
 
-export const metadata = { title: "إدارة الإجازات | أقرأ" };
+export const metadata = { title: "إدارة الإجازات | اقرأ" };
 
 interface PageProps {
   searchParams: Promise<{ grant_for?: string }>;

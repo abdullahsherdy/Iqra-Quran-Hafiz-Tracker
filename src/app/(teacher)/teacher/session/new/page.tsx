@@ -3,7 +3,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { getAssignedStudentIds } from "@/lib/auth/student-access";
 import { SessionForm } from "@/components/session-form";
 
-export const metadata = { title: "تسجيل جلسة | أقرأ" };
+export const metadata = { title: "تسجيل جلسة | اقرأ" };
 
 export default async function TeacherNewSessionPage() {
   const user = await requireRole("teacher");
