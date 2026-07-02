@@ -6,6 +6,7 @@ import { ArrowRight, Pencil, Award } from "lucide-react";
 import { GenderBadge } from "@/components/badges";
 import { LevelBadge } from "@/components/level-badge";
 import { StudentProfileTabs } from "@/components/student-profile-tabs";
+import { StudentDeleteButton } from "@/components/student-delete-button";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -217,6 +218,17 @@ export default async function AdminStudentProfilePage({ params }: PageProps) {
         showAssignmentsTab
         isAdmin
       />
+
+      {/* Admin-only: deactivate / permanent delete */}
+      <div className="card space-y-4">
+        <h3 className="font-semibold border-b border-border pb-2">إدارة الطالب</h3>
+        <StudentDeleteButton
+          studentId={id}
+          studentName={student.name}
+          isActive={student.is_active}
+          redirectHref="/admin/students"
+        />
+      </div>
     </div>
   );
 }

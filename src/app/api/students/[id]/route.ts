@@ -172,3 +172,70 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
 
   return Response.json(finalStudent ?? data);
 }
+
+// DELETE /api/students/[id] — admin only.
+// Default (soft delete): toggles is_active = false. History is preserved and the
+// profile stays viewable (reversible by editing the student to re-activate).
+// ?permanent=true : hard delete — cascades every child row then removes the student.
+export async function DELETE(request: NextRequest, { params }: RouteContext) {
+  const { id } = await params;
+  const supabase = await createSupabaseServerComponentClient();
+  if (!supabase) return Response.json({ error: "Config missing" }, { status: 500 });
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+
+  const admin = createSupabaseAdminClient();
+  if (!admin) return Response.json({ error: "Config missing" }, { status: 500 });
+
+  const { data: appUser } = await admin
+    .from("users")
+    .select("id, role, is_active")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  // Admin only.
+  if (!appUser || !appUser.is_active || appUser.role !== "admin") {
+    return Response.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const { searchParams } = new URL(request.url);
+  const permanent = searchParams.get("permanent") === "true";
+
+  const { data: existing } = await admin
+    .from("students")
+    .select("id")
+    .eq("id", id)
+    .maybeSingle();
+  if (!existing) return Response.json({ error: "Not found" }, { status: 404 });
+
+  if (!permanent) {
+    // Soft delete: deactivate.
+    const { error } = await admin
+      .from("students")
+      .update({ is_active: false })
+      .eq("id", id);
+    if (error) return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ ok: true, deactivated: true });
+  }
+
+  // Permanent delete: cascade all child rows (FKs are not ON DELETE CASCADE, so we
+  // do it explicitly via the service-role client which bypasses RLS).
+  const childTables: Array<{ table: string; column: string }> = [
+    { table: "initial_memorization", column: "student_id" },
+    { table: "ijazat", column: "student_id" },
+    { table: "attendance", column: "student_id" },
+    { table: "sessions", column: "student_id" },
+    { table: "teacher_student_assignments", column: "student_id" },
+  ];
+
+  for (const { table, column } of childTables) {
+    const { error } = await admin.from(table).delete().eq(column, id);
+    if (error) return Response.json({ error: `فشل حذف ${table}: ${error.message}` }, { status: 500 });
+  }
+
+  const { error: delErr } = await admin.from("students").delete().eq("id", id);
+  if (delErr) return Response.json({ error: delErr.message }, { status: 500 });
+
+  return Response.json({ ok: true, deleted: true });
+}

@@ -27,13 +27,13 @@ export function AppShell({ role, username, children }: AppShellProps) {
   return (
     <div className="flex min-h-screen flex-col bg-background md:flex-row">
       {/* Desktop sidebar (right side in RTL) */}
-      <aside className="hidden w-60 shrink-0 border-l border-border bg-card md:flex md:flex-col">
-        <div className="flex items-center gap-2 border-b border-border px-5 py-4">
-          <BookOpenText className="size-7 text-primary" />
-          <span className="text-xl font-bold text-primary">{appName}</span>
+      <aside className="hidden w-64 shrink-0 border-l border-border bg-card md:flex md:flex-col md:sticky md:top-0 md:h-screen md:overflow-y-auto">
+        <div className="flex items-center gap-2 border-b border-border px-4 py-3">
+          <BookOpenText className="size-6 text-primary" />
+          <span className="text-lg font-bold text-primary">{appName}</span>
         </div>
 
-        <nav className="flex-1 space-y-1 p-3">
+        <nav className="space-y-0.5 p-2">
           {items.map((item) => {
             const active = isActive(item.href);
             const Icon = item.icon;
@@ -42,29 +42,29 @@ export function AppShell({ role, username, children }: AppShellProps) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium transition-colors",
                   active
                     ? "bg-primary text-primary-foreground"
                     : "text-foreground hover:bg-secondary"
                 )}
               >
-                <Icon className="size-5 shrink-0" />
+                <Icon className="size-4 shrink-0" />
                 <span>{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="border-t border-border p-3">
-          <div className="mb-2 flex items-center gap-2 px-3 text-sm text-muted-foreground">
+        <div className="border-t border-border p-2 mt-auto">
+          <div className="mb-1.5 flex items-center gap-2 px-2.5 text-xs text-muted-foreground">
             <span className="font-medium">{username ?? "—"}</span>
           </div>
           <form action={signOutAction}>
             <button
               type="submit"
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-secondary"
+              className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium text-foreground hover:bg-secondary"
             >
-              <LogOut className="size-5 shrink-0" />
+              <LogOut className="size-4 shrink-0" />
               <span>تسجيل الخروج</span>
             </button>
           </form>
@@ -78,9 +78,11 @@ export function AppShell({ role, username, children }: AppShellProps) {
           <h1 className="text-base font-bold">
             {items.find((i) => isActive(i.href))?.label ?? appName}
           </h1>
-          <span className="text-sm text-muted-foreground md:hidden">
-            {appName}
-          </span>
+          {/* Mobile app logo */}
+          <div className="flex items-center gap-2 md:hidden">
+            <BookOpenText className="size-6 text-primary" />
+            <span className="text-lg font-bold text-primary">{appName}</span>
+          </div>
         </header>
 
         {/* Page content */}
@@ -88,7 +90,7 @@ export function AppShell({ role, username, children }: AppShellProps) {
       </div>
 
       {/* Mobile bottom navigation */}
-      <nav className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-around border-t border-border bg-card md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-50 flex overflow-x-auto border-t border-border bg-card md:hidden snap-x snap-mandatory">
         {items.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
@@ -97,7 +99,7 @@ export function AppShell({ role, username, children }: AppShellProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-1 flex-col items-center gap-0.5 py-2 text-xs",
+                "flex min-w-[80px] shrink-0 flex-col items-center gap-0.5 py-3 px-4 text-xs snap-center",
                 active ? "text-primary" : "text-muted-foreground"
               )}
             >

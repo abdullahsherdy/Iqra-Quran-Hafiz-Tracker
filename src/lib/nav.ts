@@ -72,11 +72,6 @@ export function teacherNavItems(): NavItem[] {
       icon: Award,
     },
     {
-      label: "الحضور",
-      href: "/teacher/attendance",
-      icon: ClipboardList,
-    },
-    {
       label: "التقارير",
       href: "/teacher/reports",
       icon: BarChart3,

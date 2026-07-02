@@ -33,7 +33,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
 
   let query = admin
     .from("sessions")
-    .select("id, session_date, session_type, surah_id, from_ayah, to_ayah, rating, notes, teacher_id, surahs(id, name_arabic), users!sessions_teacher_id_fkey(id, name)")
+    .select("id, session_date, session_type, surah_id, from_ayah, to_ayah, pages, rating, notes, teacher_id, surahs(id, name_arabic), users!sessions_teacher_id_fkey(id, name)")
     .eq("student_id", studentId)
     .order("session_date", { ascending: false });
 
@@ -55,6 +55,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
       surah_name: surah?.name_arabic ?? "",
       from_ayah: s.from_ayah,
       to_ayah: s.to_ayah,
+      pages: s.pages,
       rating: s.rating,
       notes: s.notes,
       teacher_id: s.teacher_id,

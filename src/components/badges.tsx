@@ -4,9 +4,9 @@ const pill =
   "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium";
 
 export type Rating = "excellent" | "good" | "weak";
-export type SessionType = "new_memorization" | "review" | "Reciting";
+export type SessionType = "new_memorization" | "review";
 export type Gender = "male" | "female";
-export type AttendanceStatus = "present" | "absent" | "late";
+export type AttendanceStatus = "present" | "absent";
 
 const ratingMap: Record<Rating, { label: string; className: string }> = {
   excellent: { label: "ممتاز", className: "bg-[#dcfce7] text-[#166534]" },
@@ -18,9 +18,8 @@ const sessionTypeMap: Record<
   SessionType,
   { label: string; className: string }
 > = {
-  new_memorization: { label: "حفظ جديد", className: "bg-[#dbeafe] text-[#1e40af]" },
+  new_memorization: { label: "تسميع جديد", className: "bg-[#dbeafe] text-[#1e40af]" },
   review: { label: "مراجعة", className: "bg-[#ede9fe] text-[#5b21b6]" },
-  Reciting: { label: "تسميع", className: "bg-[#ccfbf1] text-[#0f766e]" },
 };
 
 const genderMap: Record<Gender, { label: string; className: string }> = {
@@ -34,7 +33,6 @@ const attendanceMap: Record<
 > = {
   present: { label: "حاضر", className: "bg-[#dcfce7] text-[#166534]" },
   absent: { label: "غائب", className: "bg-[#fee2e2] text-[#991b1b]" },
-  late: { label: "متأخر", className: "bg-[#fef9c3] text-[#854d0e]" },
 };
 
 export function RatingBadge({ value }: { value: Rating }) {

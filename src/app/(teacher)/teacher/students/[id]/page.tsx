@@ -85,30 +85,32 @@ export default async function TeacherStudentProfilePage({ params }: PageProps) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <Link href="/teacher/students" className="btn-secondary px-2 py-1.5 text-xs">
+          <Link href="/teacher/students" className="btn-secondary px-2 py-1.5 text-xs shrink-0">
             <ArrowRight className="size-4" />
           </Link>
-          <div>
-            <h2 className="text-xl font-bold flex items-center gap-2">
+          <div className="min-w-0">
+            <h2 className="text-lg sm:text-xl font-bold truncate">
               {student.name}
-              <GenderBadge value={student.gender as "male" | "female"} />
             </h2>
-            <p className="text-sm text-muted-foreground">
-              {student.is_active ? "نشط" : "غير نشط"}
-              {age ? ` · ${age} سنة` : ""}
-            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <GenderBadge value={student.gender as "male" | "female"} />
+              <p className="text-sm text-muted-foreground">
+                {student.is_active ? "نشط" : "غير نشط"}
+                {age ? ` · ${age} سنة` : ""}
+              </p>
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Link href={`/teacher/ijazat/new?student_id=${id}`} className="btn-primary gap-1.5 text-sm">
+          <Link href={`/teacher/ijazat/new?student_id=${id}`} className="btn-primary gap-1.5 text-sm px-3 py-2">
             <Award className="size-4" />
-            منح إجازة
+            <span>منح إجازة</span>
           </Link>
-          <Link href={`/teacher/students/${id}/edit`} className="btn-secondary gap-1.5">
+          <Link href={`/teacher/students/${id}/edit`} className="btn-secondary gap-1.5 px-3 py-2">
             <Pencil className="size-4" />
-            تعديل
+            <span>تعديل</span>
           </Link>
         </div>
       </div>

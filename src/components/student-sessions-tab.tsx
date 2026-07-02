@@ -7,7 +7,7 @@ import {
   SessionTypeBadge,
   type SessionType,
 } from "@/components/badges";
-import { formatAyahPreview } from "@/lib/arabic";
+import { formatAyahPreview, toArabicNumerals } from "@/lib/arabic";
 
 interface SessionRow {
   id: string;
@@ -16,6 +16,7 @@ interface SessionRow {
   surah_name: string;
   from_ayah: number;
   to_ayah: number;
+  pages: number | null;
   rating: "excellent" | "good" | "weak";
   notes: string | null;
   teacher_name: string;
@@ -27,9 +28,8 @@ interface StudentSessionsTabProps {
 
 const TYPE_OPTIONS: { value: string; label: string }[] = [
   { value: "", label: "كل الأنواع" },
-  { value: "new_memorization", label: "حفظ جديد" },
+  { value: "new_memorization", label: "تسميع جديد" },
   { value: "review", label: "مراجعة" },
-  { value: "listening", label: "سماع" },
 ];
 
 export function StudentSessionsTab({ studentId }: StudentSessionsTabProps) {
@@ -94,6 +94,7 @@ export function StudentSessionsTab({ studentId }: StudentSessionsTabProps) {
                 <th className="px-3 py-2 font-medium">التاريخ</th>
                 <th className="px-3 py-2 font-medium">النوع</th>
                 <th className="px-3 py-2 font-medium">السورة / الآيات</th>
+                <th className="px-3 py-2 font-medium">الصفحات</th>
                 <th className="px-3 py-2 font-medium">التقييم</th>
                 <th className="hidden px-3 py-2 font-medium md:table-cell">المحفظ</th>
               </tr>
@@ -113,6 +114,9 @@ export function StudentSessionsTab({ studentId }: StudentSessionsTabProps) {
                       {formatAyahPreview(s.surah_name, s.from_ayah, s.to_ayah).replace(`سورة ${s.surah_name} `, "")}
                     </p>
                     {s.notes && <p className="text-xs text-muted-foreground mt-0.5">{s.notes}</p>}
+                  </td>
+                  <td className="px-3 py-2 text-center">
+                    {s.pages != null ? toArabicNumerals(s.pages) : "—"}
                   </td>
                   <td className="px-3 py-2">
                     <RatingBadge value={s.rating} />

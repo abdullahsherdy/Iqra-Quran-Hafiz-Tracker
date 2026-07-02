@@ -16,7 +16,6 @@ interface AttendanceRow {
 interface AttendanceStats {
   total: number;
   present: number;
-  late: number;
   absent: number;
   attendanceRate: number | null;
 }
@@ -55,7 +54,7 @@ export function StudentAttendanceTab({ studentId }: StudentAttendanceTabProps) {
   return (
     <div className="space-y-4">
       {stats && stats.total > 0 && (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div className="rounded-lg border border-border bg-secondary p-3 text-center">
             <p className="text-2xl font-bold text-primary">
               {stats.attendanceRate !== null ? `${toArabicNumerals(stats.attendanceRate)}%` : "—"}
@@ -65,10 +64,6 @@ export function StudentAttendanceTab({ studentId }: StudentAttendanceTabProps) {
           <div className="rounded-lg border border-border bg-secondary p-3 text-center">
             <p className="text-2xl font-bold">{toArabicNumerals(stats.present)}</p>
             <p className="text-xs text-muted-foreground">حاضر</p>
-          </div>
-          <div className="rounded-lg border border-border bg-secondary p-3 text-center">
-            <p className="text-2xl font-bold">{toArabicNumerals(stats.late)}</p>
-            <p className="text-xs text-muted-foreground">متأخر</p>
           </div>
           <div className="rounded-lg border border-border bg-secondary p-3 text-center">
             <p className="text-2xl font-bold">{toArabicNumerals(stats.absent)}</p>

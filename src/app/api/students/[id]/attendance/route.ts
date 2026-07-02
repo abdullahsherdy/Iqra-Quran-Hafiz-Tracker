@@ -56,13 +56,11 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
 
   const total = records.length;
   const present = records.filter((r) => r.status === "present").length;
-  const late = records.filter((r) => r.status === "late").length;
   const absent = records.filter((r) => r.status === "absent").length;
-  const attended = present + late;
-  const attendanceRate = total > 0 ? Math.round((attended / total) * 100) : null;
+  const attendanceRate = total > 0 ? Math.round((present / total) * 100) : null;
 
   return Response.json({
     records,
-    stats: { total, present, late, absent, attendanceRate },
+    stats: { total, present, absent, attendanceRate },
   });
 }
