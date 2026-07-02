@@ -8,7 +8,7 @@ const cairo = Cairo({
   display: "swap",
 });
 
-const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "أقرأ";
+const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "اقرأ";
 
 export const metadata: Metadata = {
   title: appName,

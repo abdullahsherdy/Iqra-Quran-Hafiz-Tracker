@@ -1,25 +1,29 @@
 @import "tailwindcss";
 
 /*
-  أقرأ (Iqra) global styles.
+  اقرأ (Iqra) global styles.
   Arabic, light-only, RTL. Tailwind v4 CSS-first theme (design §8.2, §8.3).
 */
 
 
 :root {
   /* shadcn-style semantic tokens (light only) */
-  --background: #f9fafb; /* page */
-  --foreground: #111827; /* text primary */
+  --background: #f9fafb;
+  /* page */
+  --foreground: #111827;
+  /* text primary */
   --card: #ffffff;
   --card-foreground: #111827;
   --popover: #ffffff;
   --popover-foreground: #111827;
-  --primary: #1a6b3c; /* Islamic green */
+  --primary: #1a6b3c;
+  /* Islamic green */
   --primary-foreground: #ffffff;
   --secondary: #f3f4f6;
   --secondary-foreground: #111827;
   --muted: #f3f4f6;
-  --muted-foreground: #6b7280; /* text secondary */
+  --muted-foreground: #6b7280;
+  /* text secondary */
   --accent: #ecfdf3;
   --accent-foreground: #145530;
   --destructive: #dc2626;
@@ -92,10 +96,12 @@ body {
   outline: none;
   transition: box-shadow 0.15s;
 }
+
 .input-field:focus {
   border-color: var(--ring);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 20%, transparent);
 }
+
 .input-field::placeholder {
   color: var(--muted-foreground);
 }
@@ -115,9 +121,11 @@ body {
   transition: background-color 0.15s;
   border: none;
 }
+
 .btn-primary:hover {
   background-color: var(--primary-hover);
 }
+
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -138,6 +146,7 @@ body {
   transition: background-color 0.15s;
   border: 1px solid var(--border);
 }
+
 .btn-secondary:hover {
   background-color: var(--muted);
 }
@@ -157,6 +166,7 @@ body {
   transition: opacity 0.15s;
   border: none;
 }
+
 .btn-destructive:hover {
   opacity: 0.88;
 }

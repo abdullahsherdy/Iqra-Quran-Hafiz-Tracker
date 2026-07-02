@@ -18,7 +18,7 @@ interface AppShellProps {
 export function AppShell({ role, username, children }: AppShellProps) {
   const pathname = usePathname();
   const items = getNavItems(role);
-  const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "أقرأ";
+  const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "اقرأ";
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const isActive = (href: string) =>
@@ -32,7 +32,7 @@ export function AppShell({ role, username, children }: AppShellProps) {
       <aside
         className={cn(
           "hidden shrink-0 border-l border-border bg-card md:flex md:flex-col md:sticky md:top-0 md:h-screen md:overflow-y-auto transition-all duration-300",
-          isCollapsed ? "w-20" : "w-72"
+          isCollapsed ? "w-20" : "w-64"
         )}
       >
         {isCollapsed ? (
@@ -44,14 +44,14 @@ export function AppShell({ role, username, children }: AppShellProps) {
             >
               <Menu className="size-6" />
             </button>
-            <BookOpenText className="size-7 text-primary" />
+            <BookOpenText className="size-6 text-primary" />
           </div>
         ) : (
-          <div className="flex flex-col border-b border-border p-4">
+          <div className="flex flex-col border-b border-border p-3.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <BookOpenText className="size-7 text-primary shrink-0" />
-                <span className="text-xl font-bold text-primary">{appName}</span>
+                <BookOpenText className="size-6 text-primary shrink-0" />
+                <span className="text-lg font-bold text-primary">{appName}</span>
               </div>
               <button
                 onClick={() => setIsCollapsed(true)}
@@ -61,13 +61,13 @@ export function AppShell({ role, username, children }: AppShellProps) {
                 <ChevronRight className="size-5" />
               </button>
             </div>
-            <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed text-right font-medium">
+            <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed text-right font-medium">
               اقرأ وارتق ورتل -{"{"}اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ{"}"}
             </p>
           </div>
         )}
 
-        <nav className={cn("p-3", isCollapsed ? "space-y-3" : "space-y-2")}>
+        <nav className={cn("p-2.5", isCollapsed ? "space-y-3" : "space-y-1.5")}>
           {items.map((item) => {
             const active = isActive(item.href);
             const Icon = item.icon;
@@ -77,23 +77,23 @@ export function AppShell({ role, username, children }: AppShellProps) {
                 href={item.href}
                 className={cn(
                   "flex items-center rounded-lg transition-all",
-                  isCollapsed ? "justify-center p-3" : "gap-3.5 px-4 py-3.5 text-base font-semibold",
+                  isCollapsed ? "justify-center p-2.5" : "gap-3 px-3 py-2.5 text-[15px] font-semibold",
                   active
                     ? "bg-primary text-primary-foreground shadow-sm"
                     : "text-foreground hover:bg-secondary"
                 )}
                 title={isCollapsed ? item.label : undefined}
               >
-                <Icon className={cn("shrink-0", isCollapsed ? "size-6" : "size-5.5")} />
+                <Icon className={cn("shrink-0", isCollapsed ? "size-6" : "size-5")} />
                 {!isCollapsed && <span>{item.label}</span>}
               </Link>
             );
           })}
         </nav>
 
-        <div className="border-t border-border p-3 mt-auto">
+        <div className="border-t border-border p-2.5 mt-auto">
           {!isCollapsed && (
-            <div className="mb-2 flex items-center gap-2 px-4 text-xs font-semibold text-muted-foreground">
+            <div className="mb-2 flex items-center gap-2 px-3 text-xs font-semibold text-muted-foreground">
               <span>{username ?? "—"}</span>
             </div>
           )}
@@ -102,11 +102,11 @@ export function AppShell({ role, username, children }: AppShellProps) {
               type="submit"
               className={cn(
                 "flex w-full items-center rounded-lg transition-colors text-foreground hover:bg-secondary cursor-pointer",
-                isCollapsed ? "justify-center p-3" : "gap-3.5 px-4 py-3.5 text-base font-semibold"
+                isCollapsed ? "justify-center p-2.5" : "gap-3 px-3 py-2.5 text-[15px] font-semibold"
               )}
               title={isCollapsed ? "تسجيل الخروج" : undefined}
             >
-              <LogOut className={cn("shrink-0", isCollapsed ? "size-6" : "size-5.5")} />
+              <LogOut className={cn("shrink-0", isCollapsed ? "size-6" : "size-5")} />
               {!isCollapsed && <span>تسجيل الخروج</span>}
             </button>
           </form>
@@ -117,7 +117,7 @@ export function AppShell({ role, username, children }: AppShellProps) {
       <div className="flex min-h-screen flex-1 flex-col">
         {/* Topbar */}
         <header className="flex h-14 items-center justify-between border-b border-border bg-card px-4">
-          <h1 className="text-base font-bold">
+          <h1 className="text-2xl font-bold text-foreground">
             {items.find((i) => isActive(i.href))?.label ?? appName}
           </h1>
           {/* Mobile app logo */}
