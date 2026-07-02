@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerComponentClient } from "@/lib/supabase/server";
-import { getLevelInfo, countsFromInitialMemorization, validateInitialMemorization } from "@/lib/students";
+import { getLevelInfo, countsFromInitialMemorization, validateInitialMemorization, recalculateStudentSummary } from "@/lib/students";
 
 // GET /api/students — role-scoped list with search, filters and pagination
 export async function GET(request: NextRequest) {
@@ -236,5 +236,13 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  return Response.json(student, { status: 201 });
+  await recalculateStudentSummary(admin, student.id);
+
+  const { data: finalStudent } = await admin
+    .from("students")
+    .select("*")
+    .eq("id", student.id)
+    .single();
+
+  return Response.json(finalStudent ?? student, { status: 201 });
 }

@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerComponentClient } from "@/lib/supabase/server";
-import { countsFromInitialMemorization, validateInitialMemorization } from "@/lib/students";
+import { countsFromInitialMemorization, validateInitialMemorization, recalculateStudentSummary } from "@/lib/students";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -139,10 +139,6 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
       return Response.json({ error: initValidationError }, { status: 400 });
     }
 
-    const counts = countsFromInitialMemorization(initRows);
-    updates.memorized_juz_count = counts.memorized_juz_count;
-    updates.ijaza_juz_count = counts.ijaza_juz_count;
-
     await admin.from("initial_memorization").delete().eq("student_id", id);
 
     if (initRows.length > 0) {
@@ -165,5 +161,14 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     .single();
 
   if (error) return Response.json({ error: error.message }, { status: 500 });
-  return Response.json(data);
+
+  await recalculateStudentSummary(admin, id);
+
+  const { data: finalStudent } = await admin
+    .from("students")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  return Response.json(finalStudent ?? data);
 }

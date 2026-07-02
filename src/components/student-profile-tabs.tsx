@@ -5,6 +5,8 @@ import Link from "next/link";
 import { InitialMemorizationGrid, type JuzEntry } from "@/components/initial-memorization-grid";
 import { StudentSessionsTab } from "@/components/student-sessions-tab";
 import { StudentAttendanceTab } from "@/components/student-attendance-tab";
+import { ProgressMap } from "@/components/progress-map";
+import { StudentIjazatTab } from "@/components/student-ijazat-tab";
 
 export interface AssignmentHistoryRow {
   id: string;
@@ -22,6 +24,7 @@ interface StudentProfileTabsProps {
   initMemValue: JuzEntry[];
   assignmentHistory?: AssignmentHistoryRow[];
   showAssignmentsTab?: boolean;
+  isAdmin?: boolean;
 }
 
 const TABS: { id: TabId; label: string; adminOnly?: boolean }[] = [
@@ -37,6 +40,7 @@ export function StudentProfileTabs({
   initMemValue,
   assignmentHistory = [],
   showAssignmentsTab = false,
+  isAdmin = false,
 }: StudentProfileTabsProps) {
   const visibleTabs = TABS.filter((t) => !t.adminOnly || showAssignmentsTab);
   const [activeTab, setActiveTab] = useState<TabId>("progress");
@@ -62,16 +66,15 @@ export function StudentProfileTabs({
 
       <div className="p-4">
         {activeTab === "progress" && (
-          initMemValue.length > 0 ? (
-            <div className="space-y-3">
-              <p className="text-sm font-medium">الحفظ السابق قبل الانضمام</p>
-              <InitialMemorizationGrid value={initMemValue} readOnly />
-            </div>
-          ) : (
-            <p className="text-center py-10 text-sm text-muted-foreground">
-              لم يُسجَّل حفظ سابق — محتوى هذا التبويب سيُعبأ في الخطة التالية
-            </p>
-          )
+          <div className="space-y-6">
+            <ProgressMap studentId={studentId} />
+            {initMemValue.length > 0 && (
+              <div className="space-y-3 border-t border-border pt-4">
+                <p className="text-sm font-medium">الحفظ السابق قبل الانضمام</p>
+                <InitialMemorizationGrid value={initMemValue} readOnly />
+              </div>
+            )}
+          </div>
         )}
 
         {activeTab === "sessions" && (
@@ -83,9 +86,7 @@ export function StudentProfileTabs({
         )}
 
         {activeTab === "ijazat" && (
-          <p className="text-center py-10 text-sm text-muted-foreground">
-            سجل الإجازات سيُعرض هنا في الخطة التالية
-          </p>
+          <StudentIjazatTab studentId={studentId} isAdmin={isAdmin} />
         )}
 
         {activeTab === "assignments" && showAssignmentsTab && (

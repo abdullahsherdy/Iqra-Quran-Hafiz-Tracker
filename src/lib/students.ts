@@ -33,11 +33,19 @@ export function validateInitialMemorization(
   return null;
 }
 
-/** Plan 05 will implement full recalculation; stub updates last_session_date only. */
+import { computeJuzProgress } from "./progress";
+
+/** Plan 05 full recalculation. */
 export async function recalculateStudentSummary(
   admin: import("@supabase/supabase-js").SupabaseClient,
   studentId: string
 ): Promise<void> {
+  const progress = await computeJuzProgress(admin, studentId);
+  const memorized_juz_count = progress.filter(
+    (p) => p.color === "blue" || p.color === "green"
+  ).length;
+  const ijaza_juz_count = progress.filter((p) => p.hasIjaza).length;
+
   const { data: latest } = await admin
     .from("sessions")
     .select("session_date")
@@ -48,7 +56,11 @@ export async function recalculateStudentSummary(
 
   await admin
     .from("students")
-    .update({ last_session_date: latest?.session_date ?? null })
+    .update({
+      memorized_juz_count,
+      ijaza_juz_count,
+      last_session_date: latest?.session_date ?? null,
+    })
     .eq("id", studentId);
 }
 

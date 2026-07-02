@@ -2,7 +2,7 @@ import { requireRole } from "@/lib/auth/session";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Pencil } from "lucide-react";
+import { ArrowRight, Pencil, Award } from "lucide-react";
 import { GenderBadge } from "@/components/badges";
 import { LevelBadge } from "@/components/level-badge";
 import { StudentProfileTabs } from "@/components/student-profile-tabs";
@@ -101,10 +101,16 @@ export default async function TeacherStudentProfilePage({ params }: PageProps) {
             </p>
           </div>
         </div>
-        <Link href={`/teacher/students/${id}/edit`} className="btn-secondary gap-1.5">
-          <Pencil className="size-4" />
-          تعديل الملاحظات
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href={`/teacher/ijazat/new?student_id=${id}`} className="btn-primary gap-1.5 text-sm">
+            <Award className="size-4" />
+            منح إجازة
+          </Link>
+          <Link href={`/teacher/students/${id}/edit`} className="btn-secondary gap-1.5">
+            <Pencil className="size-4" />
+            تعديل
+          </Link>
+        </div>
       </div>
 
       {/* Profile grid */}

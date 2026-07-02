@@ -5,6 +5,7 @@ import {
   ClipboardList,
   BookOpen,
   BarChart3,
+  Award,
   type LucideIcon,
 } from "lucide-react";
 
@@ -64,6 +65,11 @@ export function teacherNavItems(): NavItem[] {
       label: "تسجيل جلسة",
       href: "/teacher/session/new",
       icon: BookOpen,
+    },
+    {
+      label: "منح إجازة",
+      href: "/teacher/ijazat/new",
+      icon: Award,
     },
     {
       label: "الحضور",
