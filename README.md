@@ -1,4 +1,4 @@
-# أقرأ (Iqra) — Quran Memorization Tracker
+# اقرأ (Iqra) — Quran Memorization Tracker
 
 تطبيق متابعة حلقة تحفيظ القرآن الكريم.
 

@@ -13,6 +13,9 @@ const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "أقرأ";
 export const metadata: Metadata = {
   title: appName,
   description: "تطبيق متابعة حلقة تحفيظ القرآن الكريم",
+  icons: {
+    icon: "/15044096.webp",
+  },
 };
 
 export default function RootLayout({

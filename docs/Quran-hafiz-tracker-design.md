@@ -1,6 +1,6 @@
-# أقرأ (Iqra) — Quran Hafiz Tracker Complete Design Document
+# اقرأ (Iqra) — Quran Hafiz Tracker Complete Design Document
 > A web application to manage and track Quran memorization sessions for a mosque halaqah.
-> **App name:** أقرأ | **UI Language:** Arabic (RTL) | **Deployment:** Vercel + Supabase (free tier)
+> **App name:** اقرأ | **UI Language:** Arabic (RTL) | **Deployment:** Vercel + Supabase (free tier)
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Field | Value |
 |---|---|
-| App Name | أقرأ |
+| App Name | اقرأ |
 | Purpose | Track Quran memorization progress across multiple teachers |
 | Users | Admin (mosque management) + Teachers (محفظون) |
 | Language | Arabic — full RTL interface |
@@ -781,7 +781,7 @@ The teachers are NOT tech-savvy. Every screen MUST follow these rules:
 **Sidebar (right-side, Arabic RTL):**
 ```
 ┌─────────────────────┐
-│  � أقرأ            │
+│  � اقرأ            │
 ├─────────────────────┤
 │ 🏠 لوحة التحكم     │  (admin) or لوحتي (teacher)
 │ 👥 الطلاب          │
@@ -1071,7 +1071,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJxxx...
 SUPABASE_SERVICE_ROLE_KEY=eyJxxx...  # server-only, never expose to client
 # Sessions/auth are handled by Supabase Auth — no NextAuth secret needed.
 AUTH_EMAIL_DOMAIN=halaqa.local        # used to build synthetic emails from usernames
-NEXT_PUBLIC_APP_NAME=أقرأ
+NEXT_PUBLIC_APP_NAME=اقرأ
 ```
 
 ### 10.4 Vercel Deployment

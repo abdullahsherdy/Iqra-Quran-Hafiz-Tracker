@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-**أقرأ (Iqra)** — a Quran memorization (تحفيظ) tracking app for a halaqa. The entire UI is **Arabic and RTL**; user-facing strings are Arabic literals in the source. Domain vocabulary: *juz* (جزء, 1–30), *ijaza* (إجازة, a formal certification of memorization), *halaqa* (حلقة, study circle), *hafiz* (memorizer).
+**اقرأ (Iqra)** — a Quran memorization (تحفيظ) tracking app for a halaqa. The entire UI is **Arabic and RTL**; user-facing strings are Arabic literals in the source. Domain vocabulary: *juz* (جزء, 1–30), *ijaza* (إجازة, a formal certification of memorization), *halaqa* (حلقة, study circle), *hafiz* (memorizer).
 
 ## Commands
 

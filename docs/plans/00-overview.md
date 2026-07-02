@@ -1,4 +1,4 @@
-# أقرأ (Iqra) — Implementation Plans Index
+# اقرأ (Iqra) — Implementation Plans Index
 
 This folder splits the full design (`../Quran-hafiz-tracker-design.md`) into small, ordered
 plans. Each plan is self-contained and sized so a smaller/weaker coding model can implement it
@@ -27,7 +27,7 @@ correctly in one focused session.
 ## Global conventions (apply to every plan)
 - **Language/UI:** Arabic only, full RTL. No English visible to end users. (design §8)
 - **Non-tech users:** follow the UX principles in design §8.0 on every screen.
-- **App name:** أقرأ (env `NEXT_PUBLIC_APP_NAME`).
+- **App name:** اقرأ (env `NEXT_PUBLIC_APP_NAME`).
 - **Stack:** Next.js 14 App Router + TypeScript, Tailwind + shadcn/ui, Supabase. (design §2)
 - **Types:** type all function args/returns; avoid `any`.
 - **Access rules:** enforce on the server (route handlers/server actions) AND with Supabase RLS.

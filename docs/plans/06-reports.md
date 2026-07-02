@@ -10,7 +10,7 @@ a student over a weekly or monthly period. Available to admin (any student) and 
 
 ## YOUR ACTIONS (manual)
 - (Optional) Provide a **mosque name and/or logo image** for the PDF header. If none, the app
-  uses `NEXT_PUBLIC_APP_NAME` (أقرأ) as the header.
+  uses `NEXT_PUBLIC_APP_NAME` (اقرأ) as the header.
 
 ## Tasks
 1. **Report data endpoint** `GET /api/reports/:studentId?period=weekly|monthly[&month=YYYY-MM]`:
@@ -21,7 +21,7 @@ a student over a weekly or monthly period. Available to admin (any student) and 
    - A4, full RTL, **embed the Amiri font** so Arabic glyphs render correctly.
    - Lay out exactly the structure in §6.6 (header with student/guardian/teachers/period,
      period summary, what-was-done list, ratings, ijazat, notes, overall progress, signature
-     line). Header shows mosque name/logo or أقرأ.
+     line). Header shows mosque name/logo or اقرأ.
    - Return a downloadable blob; filename includes student name + period.
 3. **WhatsApp text** `GET /api/reports/:studentId/whatsapp` (§6.7): build the exact template;
    expose a "نسخ للواتساب" button that copies to clipboard and shows a "تم النسخ ✓" toast.

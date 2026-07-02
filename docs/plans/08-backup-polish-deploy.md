@@ -13,7 +13,7 @@ Vercel so all laptops can use it from a browser with no installation.
 2. Create a **Vercel account** and connect it to that GitHub repo.
 3. In the **Vercel project settings → Environment Variables**, add the same values from
    `.env.local` (§10.3): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
-   `SUPABASE_SERVICE_ROLE_KEY`, `AUTH_EMAIL_DOMAIN`, `NEXT_PUBLIC_APP_NAME=أقرأ`.
+   `SUPABASE_SERVICE_ROLE_KEY`, `AUTH_EMAIL_DOMAIN`, `NEXT_PUBLIC_APP_NAME=اقرأ`.
 4. After deploy, **share the Vercel URL** with the teachers/laptops.
 5. Decide a routine to click **"نسخ احتياطي"** (e.g. monthly) and keep the exported file safe.
 

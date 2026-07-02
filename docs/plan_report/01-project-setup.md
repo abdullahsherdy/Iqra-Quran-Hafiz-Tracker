@@ -18,7 +18,7 @@
 ### 2. RTL + Cairo Font ✅
 - Root layout (`src/app/layout.tsx`): `<html lang="ar" dir="rtl">`, Cairo font via `next/font/google` with `--font-cairo` variable
 - `globals.css`: `direction: rtl`, `color-scheme: light`, Cairo as `--font-sans`
-- App metadata: title from `NEXT_PUBLIC_APP_NAME` (default "أقرأ"), Arabic description
+- App metadata: title from `NEXT_PUBLIC_APP_NAME` (default "اقرأ"), Arabic description
 - Light-only (no dark mode) per design
 
 ### 3. shadcn/ui Base Components ✅
@@ -71,7 +71,7 @@
 - Note: `/teacher/ijazat/new` from plan was not created (ijazat creation is admin-initiated per design; can add later if needed)
 
 ### 7. Environment + README ✅
-- `.env.local.example` — `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `AUTH_EMAIL_DOMAIN`, `NEXT_PUBLIC_APP_NAME=أقرأ`
+- `.env.local.example` — `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `AUTH_EMAIL_DOMAIN`, `NEXT_PUBLIC_APP_NAME=اقرأ`
 - `README.md` — setup instructions, tech stack, project structure, shadcn component guide
 
 ---

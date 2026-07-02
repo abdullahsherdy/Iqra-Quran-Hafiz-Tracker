@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, BookOpenText } from "lucide-react";
+import { LogOut, BookOpenText, ChevronLeft, ChevronRight, Menu } from "lucide-react";
+import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { type Role, getNavItems } from "@/lib/nav";
@@ -18,6 +19,7 @@ export function AppShell({ role, username, children }: AppShellProps) {
   const pathname = usePathname();
   const items = getNavItems(role);
   const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "أقرأ";
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const isActive = (href: string) =>
     href === `/${role}`
@@ -27,13 +29,45 @@ export function AppShell({ role, username, children }: AppShellProps) {
   return (
     <div className="flex min-h-screen flex-col bg-background md:flex-row">
       {/* Desktop sidebar (right side in RTL) */}
-      <aside className="hidden w-64 shrink-0 border-l border-border bg-card md:flex md:flex-col md:sticky md:top-0 md:h-screen md:overflow-y-auto">
-        <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-          <BookOpenText className="size-6 text-primary" />
-          <span className="text-lg font-bold text-primary">{appName}</span>
-        </div>
+      <aside
+        className={cn(
+          "hidden shrink-0 border-l border-border bg-card md:flex md:flex-col md:sticky md:top-0 md:h-screen md:overflow-y-auto transition-all duration-300",
+          isCollapsed ? "w-20" : "w-72"
+        )}
+      >
+        {isCollapsed ? (
+          <div className="flex flex-col items-center border-b border-border py-4 gap-4">
+            <button
+              onClick={() => setIsCollapsed(false)}
+              className="p-2 rounded-lg hover:bg-secondary text-primary transition-colors cursor-pointer"
+              title="فتح القائمة"
+            >
+              <Menu className="size-6" />
+            </button>
+            <BookOpenText className="size-7 text-primary" />
+          </div>
+        ) : (
+          <div className="flex flex-col border-b border-border p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BookOpenText className="size-7 text-primary shrink-0" />
+                <span className="text-xl font-bold text-primary">{appName}</span>
+              </div>
+              <button
+                onClick={() => setIsCollapsed(true)}
+                className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground transition-colors cursor-pointer"
+                title="إغلاق القائمة"
+              >
+                <ChevronRight className="size-5" />
+              </button>
+            </div>
+            <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed text-right font-medium">
+              اقرأ وارتق ورتل -{"{"}اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ{"}"}
+            </p>
+          </div>
+        )}
 
-        <nav className="space-y-0.5 p-2">
+        <nav className={cn("p-3", isCollapsed ? "space-y-3" : "space-y-2")}>
           {items.map((item) => {
             const active = isActive(item.href);
             const Icon = item.icon;
@@ -42,30 +76,38 @@ export function AppShell({ role, username, children }: AppShellProps) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium transition-colors",
+                  "flex items-center rounded-lg transition-all",
+                  isCollapsed ? "justify-center p-3" : "gap-3.5 px-4 py-3.5 text-base font-semibold",
                   active
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-primary text-primary-foreground shadow-sm"
                     : "text-foreground hover:bg-secondary"
                 )}
+                title={isCollapsed ? item.label : undefined}
               >
-                <Icon className="size-4 shrink-0" />
-                <span>{item.label}</span>
+                <Icon className={cn("shrink-0", isCollapsed ? "size-6" : "size-5.5")} />
+                {!isCollapsed && <span>{item.label}</span>}
               </Link>
             );
           })}
         </nav>
 
-        <div className="border-t border-border p-2 mt-auto">
-          <div className="mb-1.5 flex items-center gap-2 px-2.5 text-xs text-muted-foreground">
-            <span className="font-medium">{username ?? "—"}</span>
-          </div>
+        <div className="border-t border-border p-3 mt-auto">
+          {!isCollapsed && (
+            <div className="mb-2 flex items-center gap-2 px-4 text-xs font-semibold text-muted-foreground">
+              <span>{username ?? "—"}</span>
+            </div>
+          )}
           <form action={signOutAction}>
             <button
               type="submit"
-              className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium text-foreground hover:bg-secondary"
+              className={cn(
+                "flex w-full items-center rounded-lg transition-colors text-foreground hover:bg-secondary cursor-pointer",
+                isCollapsed ? "justify-center p-3" : "gap-3.5 px-4 py-3.5 text-base font-semibold"
+              )}
+              title={isCollapsed ? "تسجيل الخروج" : undefined}
             >
-              <LogOut className="size-4 shrink-0" />
-              <span>تسجيل الخروج</span>
+              <LogOut className={cn("shrink-0", isCollapsed ? "size-6" : "size-5.5")} />
+              {!isCollapsed && <span>تسجيل الخروج</span>}
             </button>
           </form>
         </div>

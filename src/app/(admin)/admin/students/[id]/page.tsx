@@ -12,12 +12,8 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps) {
-  const { id } = await params;
-  const admin = createSupabaseAdminClient();
-  if (!admin) return { title: "الطالب" };
-  const { data } = await admin.from("students").select("name").eq("id", id).maybeSingle();
-  return { title: `${data?.name ?? "الطالب"} | أقرأ` };
+export async function generateMetadata() {
+  return { title: `ملف الطالب | ${process.env.NEXT_PUBLIC_APP_NAME ?? "أقرأ"}` };
 }
 
 export default async function AdminStudentProfilePage({ params }: PageProps) {
@@ -110,7 +106,7 @@ export default async function AdminStudentProfilePage({ params }: PageProps) {
       <div className="grid gap-4 sm:grid-cols-2">
         {/* Info */}
         <div className="card space-y-3">
-          <h3 className="font-semibold border-b border-border pb-2">البيانات الأساسية</h3>
+          <h3 className="font-semibold border-b border-border pb-3 mb-1">البيانات الأساسية</h3>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">ولي الأمر</dt>
@@ -141,7 +137,7 @@ export default async function AdminStudentProfilePage({ params }: PageProps) {
 
         {/* Progress summary */}
         <div className="card space-y-3">
-          <h3 className="font-semibold border-b border-border pb-2">ملخص التقدم</h3>
+          <h3 className="font-semibold border-b border-border pb-3 mb-1">ملخص التقدم</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">المستوى</span>
@@ -170,7 +166,7 @@ export default async function AdminStudentProfilePage({ params }: PageProps) {
                 <span>نسبة الحفظ</span>
                 <span>{Math.round((student.memorized_juz_count / 30) * 100)}%</span>
               </div>
-              <div className="h-2 rounded-full bg-secondary overflow-hidden">
+              <div className="h-2 rounded-full bg-emerald-950/10 overflow-hidden">
                 <div
                   className="h-full rounded-full bg-primary transition-all"
                   style={{ width: `${Math.round((student.memorized_juz_count / 30) * 100)}%` }}
@@ -183,22 +179,23 @@ export default async function AdminStudentProfilePage({ params }: PageProps) {
 
       {/* Current teachers */}
       <div className="card space-y-3">
-        <h3 className="font-semibold border-b border-border pb-2">
+        <h3 className="font-semibold border-b border-border pb-3 mb-1">
           المحفظون الحاليون ({activeAssignments?.length ?? 0})
         </h3>
         {!activeAssignments?.length ? (
           <p className="text-sm text-muted-foreground">لا يوجد محفظون مسندون حالياً</p>
         ) : (
-          <div className="flex flex-wrap gap-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             {activeAssignments.map((a) => {
               const u = a.users as unknown as { id: string; name: string } | null;
               return u ? (
                 <Link
                   key={a.id}
                   href={`/admin/teachers/${u.id}`}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1 text-sm font-medium hover:bg-muted transition-colors"
+                  className="flex items-center gap-2.5 rounded-lg border border-border bg-secondary/40 px-3.5 py-3 hover:bg-secondary/80 transition-colors shadow-xs"
                 >
-                  {u.name}
+                  <div className="size-2 rounded-full bg-primary shrink-0" />
+                  <span className="font-semibold text-sm text-foreground">{u.name}</span>
                 </Link>
               ) : null;
             })}
@@ -221,7 +218,7 @@ export default async function AdminStudentProfilePage({ params }: PageProps) {
 
       {/* Admin-only: deactivate / permanent delete */}
       <div className="card space-y-4">
-        <h3 className="font-semibold border-b border-border pb-2">إدارة الطالب</h3>
+        <h3 className="font-semibold border-b border-border pb-3 mb-1">إدارة الطالب</h3>
         <StudentDeleteButton
           studentId={id}
           studentName={student.name}

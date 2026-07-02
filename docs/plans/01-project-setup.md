@@ -1,7 +1,7 @@
 # Plan 01 — Project Setup (Foundation)
 
 **Goal:** A running Next.js app with Arabic RTL, the Cairo font, Tailwind + shadcn/ui, the app
-name أقرأ, and an empty role-aware shell layout (sidebar + topbar). No data yet.
+name اقرأ, and an empty role-aware shell layout (sidebar + topbar). No data yet.
 
 **Depends on:** none.
 
@@ -24,7 +24,7 @@ name أقرأ, and an empty role-aware shell layout (sidebar + topbar). No data 
    session / gender / juz colors). Create small helper components for the badges in §8.5
    (rating badge, session-type badge, gender badge, attendance status badge).
 5. Build the **app shell** (not wired to auth yet):
-   - Right-side sidebar (240px) with the nav items from §8.4. Header shows "📖 أقرأ".
+   - Right-side sidebar (240px) with the nav items from §8.4. Header shows "📖 اقرأ".
    - The sidebar takes a `role` prop (`'admin' | 'teacher'`) and hides admin-only items.
    - Mobile: collapses to a bottom nav bar (§8.7).
    - A topbar with the current page title and the logged-in user placeholder.
