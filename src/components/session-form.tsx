@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useTransition, useMemo } from "react";
+import { useState, useTransition, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { Rating, SessionType } from "@/components/badges";
-import { Loader2, BookOpen, RotateCcw, Headphones, CheckCircle2 } from "lucide-react";
+import { Loader2, BookOpen, RotateCcw, CheckCircle2 } from "lucide-react";
 import {
   formatAyahPreview,
   formatSurahLabel,
@@ -28,9 +28,8 @@ interface SessionFormProps {
 }
 
 const SESSION_TYPES: { value: SessionType; label: string; icon: typeof BookOpen; colors: string }[] = [
-  { value: "new_memorization", label: "حفظ جديد", icon: BookOpen, colors: "border-[#2563eb] bg-[#dbeafe] text-[#1e40af]" },
+  { value: "new_memorization", label: "تسميع جديد", icon: BookOpen, colors: "border-[#2563eb] bg-[#dbeafe] text-[#1e40af]" },
   { value: "review", label: "مراجعة", icon: RotateCcw, colors: "border-[#7c3aed] bg-[#ede9fe] text-[#5b21b6]" },
-  { value: "Reciting", label: "تسميع", icon: Headphones, colors: "border-[#0d9488] bg-[#ccfbf1] text-[#0f766e]" },
 ];
 
 const RATINGS: { value: Rating; label: string; colors: string }[] = [
@@ -55,19 +54,29 @@ export function SessionForm({ students, surahs, defaultStudentId }: SessionFormP
   const [studentId, setStudentId] = useState(defaultStudentId ?? students[0]?.id ?? "");
   const [sessionDate, setSessionDate] = useState(today);
   const [sessionType, setSessionType] = useState<SessionType>("new_memorization");
-  const [surahId, setSurahId] = useState<number>(() => {
-    if (typeof window !== "undefined" && studentId) {
-      const saved = localStorage.getItem(lastSurahKey(studentId));
-      if (saved) return Number(saved);
-    }
-    return surahs[0]?.id ?? 1;
-  });
+  const [surahId, setSurahId] = useState<number>(surahs[0]?.id ?? 1);
   const [fromAyah, setFromAyah] = useState("1");
   const [toAyah, setToAyah] = useState("1");
+  const [pages, setPages] = useState("");
   const [rating, setRating] = useState<Rating>("good");
   const [notes, setNotes] = useState("");
 
   const selectedSurah = surahs.find((s) => s.id === surahId);
+
+  // Restore last-used surah per student after hydration (client-only),
+  // so SSR and the first client render agree on the initial surah.
+  useEffect(() => {
+    if (!studentId) return;
+    const saved = localStorage.getItem(lastSurahKey(studentId));
+    if (saved) {
+      const num = Number(saved);
+      if (surahs.some((s) => s.id === num) && num !== surahId) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setSurahId(num);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [studentId]);
 
   const filteredSurahs = useMemo(() => {
     const q = surahSearch.trim().toLowerCase();
@@ -134,6 +143,12 @@ export function SessionForm({ students, surahs, defaultStudentId }: SessionFormP
       return;
     }
 
+    const pagesNum = Number(pages);
+    if (pages !== "" && (Number.isNaN(pagesNum) || pagesNum < 0)) {
+      setError("عدد الصفحات يجب أن يكون رقماً صحيحاً");
+      return;
+    }
+
     startTransition(async () => {
       try {
         const res = await fetch("/api/sessions", {
@@ -146,6 +161,7 @@ export function SessionForm({ students, surahs, defaultStudentId }: SessionFormP
             surah_id: surahId,
             from_ayah: from,
             to_ayah: to,
+            pages: pages === "" ? null : pagesNum,
             rating,
             notes: notes || null,
           }),
@@ -155,6 +171,7 @@ export function SessionForm({ students, surahs, defaultStudentId }: SessionFormP
 
         setSuccess(true);
         setNotes("");
+        setPages("");
         router.refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : "حدث خطأ");
@@ -275,6 +292,22 @@ export function SessionForm({ students, surahs, defaultStudentId }: SessionFormP
               required
             />
           </div>
+        </div>
+
+        <div>
+          <label className="form-label">عدد الصفحات (اختياري)</label>
+          <input
+            type="number"
+            min={0}
+            className="input-field"
+            dir="ltr"
+            value={pages}
+            onChange={(e) => setPages(e.target.value)}
+            placeholder="مثال: 2"
+          />
+          <p className="mt-1 text-xs text-muted-foreground">
+            عدد الصفحات التي حفظها/سمّعها الطالب في هذه الجلسة
+          </p>
         </div>
 
         {preview && (

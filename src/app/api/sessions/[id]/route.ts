@@ -4,6 +4,7 @@ import { createSupabaseServerComponentClient } from "@/lib/supabase/server";
 import { getApiAppUser, canAccessStudent } from "@/lib/auth/student-access";
 import { validateSessionPayload } from "@/lib/sessions";
 import { recalculateStudentSummary } from "@/lib/students";
+import { recalculateStudentAttendance } from "@/lib/attendance";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -74,6 +75,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
   if (error) return Response.json({ error: error.message }, { status: 500 });
 
   await recalculateStudentSummary(admin, sessionPayload.student_id);
+  await recalculateStudentAttendance(admin, sessionPayload.student_id);
   return Response.json(data);
 }
 
@@ -99,5 +101,6 @@ export async function DELETE(_req: NextRequest, { params }: RouteContext) {
   if (error) return Response.json({ error: error.message }, { status: 500 });
 
   await recalculateStudentSummary(admin, existing.student_id);
+  await recalculateStudentAttendance(admin, existing.student_id);
   return Response.json({ ok: true });
 }

@@ -8,10 +8,11 @@ export interface SessionPayload {
   from_ayah: number;
   to_ayah: number;
   rating: Rating;
+  pages?: number | null;
   notes?: string | null;
 }
 
-const SESSION_TYPES: SessionType[] = ["new_memorization", "review", "Reciting"];
+const SESSION_TYPES: SessionType[] = ["new_memorization", "review"];
 const RATINGS: Rating[] = ["excellent", "good", "weak"];
 
 export function validateSessionPayload(
@@ -26,6 +27,7 @@ export function validateSessionPayload(
     from_ayah,
     to_ayah,
     rating,
+    pages,
     notes,
   } = body;
 
@@ -59,6 +61,16 @@ export function validateSessionPayload(
     return { error: `آية النهاية لا يمكن أن تتجاوز ${totalAyahs} (عدد آيات السورة)` };
   }
 
+  // Optional pages count (>= 0). Empty/absent → null.
+  let pagesValue: number | null = null;
+  if (pages !== undefined && pages !== null && pages !== "") {
+    const pNum = Number(pages);
+    if (Number.isNaN(pNum) || pNum < 0) {
+      return { error: "عدد الصفحات يجب أن يكون رقماً صحيحاً" };
+    }
+    pagesValue = Math.floor(pNum);
+  }
+
   return {
     data: {
       student_id,
@@ -68,6 +80,7 @@ export function validateSessionPayload(
       from_ayah: from,
       to_ayah: to,
       rating: rating as Rating,
+      pages: pagesValue,
       notes: typeof notes === "string" ? notes : null,
     },
   };

@@ -4,6 +4,7 @@ import { createSupabaseServerComponentClient } from "@/lib/supabase/server";
 import { getApiAppUser, getAssignedStudentIds, canAccessStudent } from "@/lib/auth/student-access";
 import { validateSessionPayload } from "@/lib/sessions";
 import { recalculateStudentSummary } from "@/lib/students";
+import { recalculateStudentAttendance } from "@/lib/attendance";
 
 // GET /api/sessions — role-scoped list
 export async function GET(request: NextRequest) {
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
 
   let query = admin
     .from("sessions")
-    .select("id, student_id, teacher_id, session_date, session_type, surah_id, from_ayah, to_ayah, rating, notes, created_at, surahs(id, name_arabic, total_ayahs), students(id, name)")
+    .select("id, student_id, teacher_id, session_date, session_type, surah_id, from_ayah, to_ayah, pages, rating, notes, created_at, surahs(id, name_arabic, total_ayahs), students(id, name)")
     .order("session_date", { ascending: false });
 
   if (appUser.role === "teacher") {
@@ -93,5 +94,6 @@ export async function POST(request: NextRequest) {
   if (error) return Response.json({ error: error.message }, { status: 500 });
 
   await recalculateStudentSummary(admin, sessionPayload.student_id);
+  await recalculateStudentAttendance(admin, sessionPayload.student_id);
   return Response.json(data, { status: 201 });
 }
