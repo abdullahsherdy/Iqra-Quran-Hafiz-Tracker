@@ -59,11 +59,12 @@ CREATE TABLE IF NOT EXISTS public.sessions (
   student_id UUID NOT NULL REFERENCES public.students(id),
   teacher_id UUID NOT NULL REFERENCES public.users(id),
   session_date DATE NOT NULL,
-  session_type TEXT NOT NULL CHECK (session_type IN ('new_memorization', 'review', 'Reciting')),
+  session_type TEXT NOT NULL CHECK (session_type IN ('new_memorization', 'review')),
   surah_id INTEGER NOT NULL REFERENCES public.surahs(id),
   from_ayah INTEGER NOT NULL,
   to_ayah INTEGER NOT NULL,
   rating TEXT NOT NULL CHECK (rating IN ('excellent', 'good', 'weak')),
+  pages INTEGER CHECK (pages IS NULL OR pages >= 0),
   notes TEXT,
   created_at TIMESTAMPTZ DEFAULT now(),
   CONSTRAINT valid_ayah_range CHECK (from_ayah <= to_ayah)
