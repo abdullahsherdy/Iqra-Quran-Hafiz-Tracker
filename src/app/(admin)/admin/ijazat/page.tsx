@@ -31,7 +31,7 @@ export default async function AdminIjazatPage({ searchParams }: PageProps) {
   const { data: students } = await admin
     .from("students")
     .select("id, name")
-    .eq("is_active", true)
+    .eq("status", "active")
     .order("name");
 
   return (

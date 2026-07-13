@@ -3,7 +3,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Pencil, Award } from "lucide-react";
-import { GenderBadge } from "@/components/badges";
+import { GenderBadge, StudentStatusBadge, type StudentStatus } from "@/components/badges";
 import { LevelBadge } from "@/components/level-badge";
 import { StudentProfileTabs } from "@/components/student-profile-tabs";
 import { StudentDeleteButton } from "@/components/student-delete-button";
@@ -85,7 +85,7 @@ export default async function AdminStudentProfilePage({ params }: PageProps) {
               <GenderBadge value={student.gender as "male" | "female"} />
             </h2>
             <p className="text-sm text-muted-foreground">
-              {student.is_active ? "نشط" : "غير نشط"}
+              <StudentStatusBadge value={student.status as StudentStatus} />
               {age ? ` · ${age} سنة` : ""}
             </p>
           </div>
@@ -222,7 +222,7 @@ export default async function AdminStudentProfilePage({ params }: PageProps) {
         <StudentDeleteButton
           studentId={id}
           studentName={student.name}
-          isActive={student.is_active}
+          status={student.status as StudentStatus}
           redirectHref="/admin/students"
         />
       </div>

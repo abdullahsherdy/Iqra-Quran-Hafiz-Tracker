@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS public.students (
   guardian_phone VARCHAR(20) NOT NULL,
   enrollment_date DATE NOT NULL DEFAULT CURRENT_DATE,
   notes TEXT,
-  is_active BOOLEAN DEFAULT true,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused', 'graduated', 'withdrawn')),
   memorized_juz_count SMALLINT NOT NULL DEFAULT 0,
   ijaza_juz_count SMALLINT NOT NULL DEFAULT 0,
   last_session_date DATE,
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS public.initial_memorization (
 );
 
 CREATE INDEX IF NOT EXISTS idx_students_gender ON public.students(gender);
-CREATE INDEX IF NOT EXISTS idx_students_active ON public.students(is_active);
+CREATE INDEX IF NOT EXISTS idx_students_status ON public.students(status);
 CREATE INDEX IF NOT EXISTS idx_students_juzcount ON public.students(memorized_juz_count);
 CREATE INDEX IF NOT EXISTS idx_students_ijazacount ON public.students(ijaza_juz_count);
 CREATE INDEX IF NOT EXISTS idx_students_lastsession ON public.students(last_session_date DESC);

@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
   const ageMin = searchParams.get("age_min") ? Number(searchParams.get("age_min")) : null;
   const ageMax = searchParams.get("age_max") ? Number(searchParams.get("age_max")) : null;
   const teacherId = searchParams.get("teacher_id") ?? "";
-  const isActive = searchParams.get("is_active") ?? "";
+  const statusFilter = searchParams.get("status") ?? "";
   const lastActiveDays = searchParams.get("last_active_days") ? Number(searchParams.get("last_active_days")) : null;
   const lastActivity = searchParams.get("last_activity") ?? "";
   const sortBy = searchParams.get("sort_by") ?? "name";
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
   let query = admin
     .from("students")
     .select(
-      "id, name, gender, birth_date, enrollment_date, is_active, memorized_juz_count, ijaza_juz_count, last_session_date, guardian_name, guardian_phone, notes",
+      "id, name, gender, birth_date, enrollment_date, status, memorized_juz_count, ijaza_juz_count, last_session_date, guardian_name, guardian_phone, notes",
       { count: "exact" }
     );
 
@@ -75,8 +75,9 @@ export async function GET(request: NextRequest) {
   if (genderFilter && ["male", "female"].includes(genderFilter)) {
     query = query.eq("gender", genderFilter);
   }
-  if (isActive === "true") query = query.eq("is_active", true);
-  else if (isActive === "false") query = query.eq("is_active", false);
+  if (statusFilter && ["active", "paused", "graduated", "withdrawn"].includes(statusFilter)) {
+    query = query.eq("status", statusFilter);
+  }
 
   if (minJuz !== null) query = query.gte("memorized_juz_count", minJuz);
   if (maxJuz !== null) query = query.lte("memorized_juz_count", maxJuz);

@@ -37,13 +37,13 @@ export default async function TeacherProfilePage({ params }: PageProps) {
 
   const { data: assignments } = await admin
     .from("teacher_student_assignments")
-    .select("id, start_date, student_id, students(id, name, gender, memorized_juz_count, is_active)")
+    .select("id, start_date, student_id, students(id, name, gender, memorized_juz_count, status)")
     .eq("teacher_id", id)
     .is("end_date", null)
     .order("start_date");
 
   const students = (assignments ?? []).map((a) => {
-    const s = a.students as unknown as { id: string; name: string; gender: string; memorized_juz_count: number; is_active: boolean } | null;
+    const s = a.students as unknown as { id: string; name: string; gender: string; memorized_juz_count: number; status: string } | null;
     return s ? { ...s, assignment_id: a.id, start_date: a.start_date } : null;
   }).filter(Boolean);
 

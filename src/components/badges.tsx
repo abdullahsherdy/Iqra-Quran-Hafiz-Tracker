@@ -7,6 +7,7 @@ export type Rating = "excellent" | "good" | "weak";
 export type SessionType = "new_memorization" | "review";
 export type Gender = "male" | "female";
 export type AttendanceStatus = "present" | "absent";
+export type StudentStatus = "active" | "paused" | "graduated" | "withdrawn";
 
 const ratingMap: Record<Rating, { label: string; className: string }> = {
   excellent: { label: "ممتاز", className: "bg-[#dcfce7] text-[#166534]" },
@@ -35,6 +36,13 @@ const attendanceMap: Record<
   absent: { label: "غائب", className: "bg-[#fee2e2] text-[#991b1b]" },
 };
 
+const studentStatusMap: Record<StudentStatus, { label: string; className: string }> = {
+  active:    { label: "نشط",           className: "bg-[#dcfce7] text-[#166534]" },
+  paused:    { label: "موقوف مؤقتاً",  className: "bg-[#fef9c3] text-[#854d0e]" },
+  graduated: { label: "خريج",          className: "bg-[#dbeafe] text-[#1e40af]" },
+  withdrawn: { label: "منسحب",         className: "bg-[#fee2e2] text-[#991b1b]" },
+};
+
 export function RatingBadge({ value }: { value: Rating }) {
   const { label, className } = ratingMap[value];
   return <span className={cn(pill, className)}>{label}</span>;
@@ -52,5 +60,10 @@ export function GenderBadge({ value }: { value: Gender }) {
 
 export function AttendanceBadge({ value }: { value: AttendanceStatus }) {
   const { label, className } = attendanceMap[value];
+  return <span className={cn(pill, className)}>{label}</span>;
+}
+
+export function StudentStatusBadge({ value }: { value: StudentStatus }) {
+  const { label, className } = studentStatusMap[value] ?? studentStatusMap.active;
   return <span className={cn(pill, className)}>{label}</span>;
 }

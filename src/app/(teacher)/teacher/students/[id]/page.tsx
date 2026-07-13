@@ -3,7 +3,7 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Pencil, Award } from "lucide-react";
-import { GenderBadge } from "@/components/badges";
+import { GenderBadge, StudentStatusBadge, type StudentStatus } from "@/components/badges";
 import { LevelBadge } from "@/components/level-badge";
 import { StudentProfileTabs } from "@/components/student-profile-tabs";
 
@@ -92,10 +92,8 @@ export default async function TeacherStudentProfilePage({ params }: PageProps) {
             </h2>
             <div className="flex items-center gap-2 mt-1">
               <GenderBadge value={student.gender as "male" | "female"} />
-              <p className="text-sm text-muted-foreground">
-                {student.is_active ? "نشط" : "غير نشط"}
-                {age ? ` · ${age} سنة` : ""}
-              </p>
+              <StudentStatusBadge value={student.status as StudentStatus} />
+              {age ? <p className="text-sm text-muted-foreground">{age} سنة</p> : null}
             </div>
           </div>
         </div>

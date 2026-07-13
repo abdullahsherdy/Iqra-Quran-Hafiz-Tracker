@@ -18,7 +18,7 @@ interface StudentData {
   guardian_phone: string;
   enrollment_date: string;
   notes?: string | null;
-  is_active: boolean;
+  status: string;
 }
 
 interface EditStudentFormProps {
@@ -43,7 +43,7 @@ export function EditStudentForm({ student, initialMem, redirectBase, mode }: Edi
     guardian_phone: student.guardian_phone,
     enrollment_date: student.enrollment_date ? student.enrollment_date.split("T")[0] : "",
     notes: student.notes ?? "",
-    is_active: student.is_active,
+    status: student.status,
   });
 
   const set = (key: string, value: string | boolean) =>
@@ -98,7 +98,7 @@ export function EditStudentForm({ student, initialMem, redirectBase, mode }: Edi
             guardian_phone: form.guardian_phone,
             enrollment_date: form.enrollment_date,
             notes: form.notes || null,
-            is_active: form.is_active,
+            status: form.status,
             initial_memorization: initMem,
           }),
         });
@@ -254,27 +254,18 @@ export function EditStudentForm({ student, initialMem, redirectBase, mode }: Edi
           />
         </div>
 
-        <div className="flex items-center justify-between rounded-lg border border-border bg-secondary p-3">
-          <div>
-            <p className="text-sm font-medium">حالة الطالب</p>
-            <p className="text-xs text-muted-foreground">
-              {form.is_active ? "الطالب نشط" : "الطالب غير نشط"}
-            </p>
-          </div>
-          <button
-            type="button"
-            disabled={isPending}
-            onClick={() => set("is_active", !form.is_active)}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-              form.is_active ? "bg-primary" : "bg-[#e5e7eb]"
-            }`}
+        <div>
+          <label className="form-label">الحالة</label>
+          <select
+            className="input-field"
+            value={form.status}
+            onChange={(e) => set("status", e.target.value)}
           >
-            <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
-                form.is_active ? "translate-x-[-24px]" : "translate-x-[-4px]"
-              }`}
-            />
-          </button>
+            <option value="active">نشط</option>
+            <option value="paused">موقوف مؤقتاً</option>
+            <option value="graduated">خريج</option>
+            <option value="withdrawn">منسحب</option>
+          </select>
         </div>
       </div>
 

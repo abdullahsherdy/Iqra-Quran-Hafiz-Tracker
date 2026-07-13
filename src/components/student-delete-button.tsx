@@ -3,38 +3,43 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2, XOctagon, Loader2 } from "lucide-react";
+import { StudentStatusBadge, type StudentStatus } from "@/components/badges";
+
+const STATUS_OPTIONS: { value: StudentStatus; label: string }[] = [
+  { value: "active",    label: "نشط" },
+  { value: "paused",    label: "موقوف مؤقتاً" },
+  { value: "graduated", label: "خريج" },
+  { value: "withdrawn", label: "منسحب" },
+];
 
 interface StudentDeleteButtonProps {
   studentId: string;
   studentName: string;
-  isActive: boolean;
-  redirectHref: string; // where to go after permanent delete (e.g. /admin/students)
+  status: StudentStatus;
+  redirectHref: string;
 }
 
-/**
- * Admin-only student management actions:
- *  - Soft delete / re-activate (toggle is_active). Reversible.
- *  - Permanent delete (cascade). Irreversible, double-confirm.
- */
 export function StudentDeleteButton({
   studentId,
   studentName,
-  isActive,
+  status,
   redirectHref,
 }: StudentDeleteButtonProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<StudentStatus>(status);
   const [confirmPermanent, setConfirmPermanent] = useState(false);
 
-  const toggleActive = () => {
+  const updateStatus = () => {
+    if (selectedStatus === status) return;
     setError(null);
     startTransition(async () => {
       try {
         const res = await fetch(`/api/students/${studentId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ is_active: !isActive }),
+          body: JSON.stringify({ status: selectedStatus }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? "حدث خطأ");
@@ -67,22 +72,30 @@ export function StudentDeleteButton({
     <div className="space-y-3">
       {error && <p className="field-error text-sm">{error}</p>}
 
-      <div className="flex items-center justify-between rounded-lg border border-border bg-secondary p-3">
-        <div>
+      <div className="rounded-lg border border-border bg-secondary p-3 space-y-3">
+        <div className="flex items-center justify-between">
           <p className="text-sm font-medium">حالة الطالب</p>
-          <p className="text-xs text-muted-foreground">
-            {isActive ? "نشط حالياً" : "غير نشط (محذوف مؤقتاً)"}
-          </p>
+          <StudentStatusBadge value={status} />
         </div>
-        <button
-          type="button"
-          disabled={isPending}
-          onClick={toggleActive}
-          className="btn-secondary text-sm"
-        >
-          {isPending ? <Loader2 className="size-4 animate-spin" /> : null}
-          {isActive ? "إلغاء التفعيل (حذف مؤقت)" : "إعادة التفعيل"}
-        </button>
+        <div className="flex items-center gap-2">
+          <select
+            className="input-field flex-1"
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value as StudentStatus)}
+          >
+            {STATUS_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+          <button
+            type="button"
+            disabled={isPending || selectedStatus === status}
+            onClick={updateStatus}
+            className="btn-secondary text-sm whitespace-nowrap"
+          >
+            {isPending ? <Loader2 className="size-4 animate-spin" /> : "حفظ"}
+          </button>
+        </div>
       </div>
 
       <div className="rounded-lg border border-[#fee2e2] bg-[#fef2f2] p-3 space-y-2">

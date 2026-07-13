@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Search, SlidersHorizontal, ChevronRight, ChevronLeft, Users } from "lucide-react";
-import { GenderBadge } from "@/components/badges";
+import { GenderBadge, StudentStatusBadge, type StudentStatus } from "@/components/badges";
 import { LevelBadge } from "@/components/level-badge";
 
 interface Teacher {
@@ -20,7 +20,7 @@ interface Student {
   memorized_juz_count: number;
   ijaza_juz_count: number;
   last_session_date?: string;
-  is_active: boolean;
+  status: StudentStatus;
   level: { level: string; label: string };
   guardian_name: string;
 }
@@ -61,7 +61,7 @@ export function StudentsListClient({ teachers, role, basePath }: StudentsListCli
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [gender, setGender] = useState("");
   const [level, setLevel] = useState("");
-  const [isActive, setIsActive] = useState("true");
+  const [statusFilter, setStatusFilter] = useState<StudentStatus | "">( "active");
   const [hasIjaza, setHasIjaza] = useState("");
   const [teacherId, setTeacherId] = useState("");
   const [sortBy, setSortBy] = useState("name");
@@ -84,7 +84,7 @@ export function StudentsListClient({ teachers, role, basePath }: StudentsListCli
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (gender) params.set("gender", gender);
       if (level) params.set("level", level);
-      if (isActive) params.set("is_active", isActive);
+      if (statusFilter) params.set("status", statusFilter);
       if (hasIjaza) params.set("has_ijaza", hasIjaza);
       if (teacherId && role === "admin") params.set("teacher_id", teacherId);
       if (minJuz) params.set("min_juz", minJuz);
@@ -102,11 +102,11 @@ export function StudentsListClient({ teachers, role, basePath }: StudentsListCli
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch, gender, level, isActive, hasIjaza, teacherId, minJuz, maxJuz, ageMin, ageMax, lastActivity, sortBy, page, role]);
+  }, [debouncedSearch, gender, level, statusFilter, hasIjaza, teacherId, minJuz, maxJuz, ageMin, ageMax, lastActivity, sortBy, page, role]);
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, gender, level, isActive, hasIjaza, teacherId, minJuz, maxJuz, ageMin, ageMax, lastActivity, sortBy]);
+  }, [debouncedSearch, gender, level, statusFilter, hasIjaza, teacherId, minJuz, maxJuz, ageMin, ageMax, lastActivity, sortBy]);
 
   useEffect(() => {
     fetchStudents();
@@ -167,10 +167,12 @@ export function StudentsListClient({ teachers, role, basePath }: StudentsListCli
           </div>
           <div>
             <label className="form-label">الحالة</label>
-            <select className="input-field" value={isActive} onChange={(e) => setIsActive(e.target.value)}>
+            <select className="input-field" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as StudentStatus | "")}>
               <option value="">الكل</option>
-              <option value="true">نشط</option>
-              <option value="false">غير نشط</option>
+              <option value="active">نشط</option>
+              <option value="paused">موقوف مؤقتاً</option>
+              <option value="graduated">خريج</option>
+              <option value="withdrawn">منسحب</option>
             </select>
           </div>
           <div>
@@ -252,7 +254,7 @@ export function StudentsListClient({ teachers, role, basePath }: StudentsListCli
               type="button"
               className="btn-secondary w-full"
               onClick={() => {
-                setGender(""); setLevel(""); setIsActive("true");
+                setGender(""); setLevel(""); setStatusFilter("active");
                 setHasIjaza(""); setTeacherId("");
                 setMinJuz(""); setMaxJuz("");
                 setAgeMin(""); setAgeMax("");
@@ -326,13 +328,7 @@ export function StudentsListClient({ teachers, role, basePath }: StudentsListCli
                         : "—"}
                     </td>
                     <td className="hidden px-4 py-3 md:table-cell">
-                      <span
-                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                          s.is_active ? "bg-[#dcfce7] text-[#166534]" : "bg-[#fee2e2] text-[#991b1b]"
-                        }`}
-                      >
-                        {s.is_active ? "نشط" : "غير نشط"}
-                      </span>
+                      <StudentStatusBadge value={s.status} />
                     </td>
                   </tr>
                 ))}

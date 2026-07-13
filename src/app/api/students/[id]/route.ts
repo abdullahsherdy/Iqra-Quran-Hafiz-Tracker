@@ -124,7 +124,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     return Response.json(data);
   }
 
-  const allowedFields = ["name", "gender", "birth_date", "guardian_name", "guardian_phone", "enrollment_date", "notes", "is_active"];
+  const allowedFields = ["name", "gender", "birth_date", "guardian_name", "guardian_phone", "enrollment_date", "notes", "status"];
   const updates: Record<string, unknown> = {};
   for (const field of allowedFields) {
     if (field in body) updates[field] = body[field];
@@ -174,8 +174,8 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
 }
 
 // DELETE /api/students/[id] — admin only.
-// Default (soft delete): toggles is_active = false. History is preserved and the
-// profile stays viewable (reversible by editing the student to re-activate).
+// Default (soft delete): sets status = 'withdrawn'. History is preserved and the
+// profile stays viewable (reversible by setting status back to 'active').
 // ?permanent=true : hard delete — cascades every child row then removes the student.
 export async function DELETE(request: NextRequest, { params }: RouteContext) {
   const { id } = await params;
@@ -210,10 +210,10 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
   if (!existing) return Response.json({ error: "Not found" }, { status: 404 });
 
   if (!permanent) {
-    // Soft delete: deactivate.
+    // Soft delete: mark as withdrawn (reversible by setting status back to active).
     const { error } = await admin
       .from("students")
-      .update({ is_active: false })
+      .update({ status: "withdrawn" })
       .eq("id", id);
     if (error) return Response.json({ error: error.message }, { status: 500 });
     return Response.json({ ok: true, deactivated: true });
