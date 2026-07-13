@@ -27,7 +27,7 @@ export default async function TeacherEditStudentPage({ params }: PageProps) {
   // Fetch student
   const { data: student } = await admin
     .from("students")
-    .select("id, name, gender, birth_date, guardian_name, guardian_phone, enrollment_date, notes, is_active, memorized_juz_count")
+    .select("id, name, gender, birth_date, guardian_name, guardian_phone, enrollment_date, notes, status, memorized_juz_count")
     .eq("id", id)
     .maybeSingle();
 
