@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { apiPut, ApiError } from "@/lib/api-client";
 
 interface TeacherProfileActionsProps {
   teacherId: string;
@@ -23,16 +24,10 @@ export function TeacherProfileActions({
     setError(null);
     startTransition(async () => {
       try {
-        const res = await fetch(`/api/teachers/${teacherId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updates),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "حدث خطأ");
+        await apiPut(`/api/teachers/${teacherId}`, updates);
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "حدث خطأ");
+        setError(err instanceof ApiError ? err.message : "حدث خطأ");
       }
     });
   };

@@ -7,7 +7,8 @@ import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import {
   InitialMemorizationGrid,
   type JuzEntry,
-} from "@/components/initial-memorization-grid";
+} from "@/features/students/components/initial-memorization-grid";
+import { apiPut, ApiError } from "@/lib/api-client";
 
 interface StudentData {
   id: string;
@@ -56,17 +57,11 @@ export function EditStudentForm({ student, initialMem, redirectBase, mode }: Edi
     if (mode === "teacher") {
       startTransition(async () => {
         try {
-          const res = await fetch(`/api/students/${student.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ notes: form.notes || null }),
-          });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error ?? "حدث خطأ");
+          await apiPut(`/api/students/${student.id}`, { notes: form.notes || null });
           router.push(redirectBase);
           router.refresh();
         } catch (err) {
-          setError(err instanceof Error ? err.message : "حدث خطأ");
+          setError(err instanceof ApiError ? err.message : "حدث خطأ");
         }
       });
       return;
@@ -87,27 +82,21 @@ export function EditStudentForm({ student, initialMem, redirectBase, mode }: Edi
 
     startTransition(async () => {
       try {
-        const res = await fetch(`/api/students/${student.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: form.name,
-            gender: form.gender,
-            birth_date: form.birth_date || null,
-            guardian_name: form.guardian_name,
-            guardian_phone: form.guardian_phone,
-            enrollment_date: form.enrollment_date,
-            notes: form.notes || null,
-            status: form.status,
-            initial_memorization: initMem,
-          }),
+        await apiPut(`/api/students/${student.id}`, {
+          name: form.name,
+          gender: form.gender,
+          birth_date: form.birth_date || null,
+          guardian_name: form.guardian_name,
+          guardian_phone: form.guardian_phone,
+          enrollment_date: form.enrollment_date,
+          notes: form.notes || null,
+          status: form.status,
+          initial_memorization: initMem,
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "حدث خطأ");
         router.push(redirectBase);
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "حدث خطأ");
+        setError(err instanceof ApiError ? err.message : "حدث خطأ");
       }
     });
   };

@@ -1,26 +1,18 @@
 import { NextRequest } from "next/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerComponentClient } from "@/lib/supabase/server";
-import { getLevelInfo, countsFromInitialMemorization, validateInitialMemorization, recalculateStudentSummary } from "@/lib/students";
+import { and, count, desc, asc, eq, gte, lte, gt, lt, ilike, or, isNull, inArray, type SQL, type AnyColumn } from "drizzle-orm";
+import { studentsTable, teacherStudentAssignmentsTable, initialMemorizationTable } from "@/db/schema";
+import { getAssignedStudentIds } from "@/features/auth/student-access";
+import { getLevelInfo, countsFromInitialMemorization, validateInitialMemorization, validateStudentPayload } from "@/domain/students";
+import { recalculateStudentSummary } from "@/features/students/server/recalc";
+import { sanitizeError } from "@/lib/api-error";
+import { getApiContext } from "@/features/auth/api-context";
+import { todayDateString, toDateString } from "@/lib/utils";
 
 // GET /api/students — role-scoped list with search, filters and pagination
 export async function GET(request: NextRequest) {
-  const supabase = await createSupabaseServerComponentClient();
-  if (!supabase) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-
-  const admin = createSupabaseAdminClient();
-  if (!admin) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const { data: appUser } = await admin
-    .from("users")
-    .select("id, role, gender, can_view_all_genders")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (!appUser) return Response.json({ error: "User not found" }, { status: 403 });
+  const ctx = await getApiContext();
+  if (!ctx.ok) return ctx.response;
+  const { db, appUser } = ctx;
 
   const { searchParams } = new URL(request.url);
   const search = searchParams.get("search") ?? "";
@@ -39,139 +31,140 @@ export async function GET(request: NextRequest) {
   const page = Math.max(1, Number(searchParams.get("page") ?? "1"));
   const pageSize = 25;
   const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
 
-  let query = admin
-    .from("students")
-    .select(
-      "id, name, gender, birth_date, enrollment_date, status, memorized_juz_count, ijaza_juz_count, last_session_date, guardian_name, guardian_phone, notes",
-      { count: "exact" }
-    );
+  // Build dynamic conditions array
+  const conditions: SQL[] = [];
 
   // Role-scoping: teacher sees only assigned students
   if (appUser.role === "teacher") {
-    const { data: myAssignments } = await admin
-      .from("teacher_student_assignments")
-      .select("student_id")
-      .eq("teacher_id", appUser.id)
-      .is("end_date", null);
-
-    const myStudentIds = (myAssignments ?? []).map((a) => a.student_id);
+    const myStudentIds = await getAssignedStudentIds(db, appUser.id);
     if (myStudentIds.length === 0) {
       return Response.json({ data: [], count: 0, page, pageSize });
     }
-    query = query.in("id", myStudentIds);
+    conditions.push(inArray(studentsTable.id, myStudentIds));
 
     // Gender scoping
-    if (!appUser.can_view_all_genders) {
-      query = query.eq("gender", appUser.gender);
+    if (!appUser.can_view_all_genders && appUser.gender) {
+      conditions.push(eq(studentsTable.gender, appUser.gender));
     }
   }
 
   // Filters
   if (search) {
-    query = query.or(`name.ilike.%${search}%,guardian_name.ilike.%${search}%`);
+    conditions.push(or(ilike(studentsTable.name, `%${search}%`), ilike(studentsTable.guardian_name, `%${search}%`))!);
   }
   if (genderFilter && ["male", "female"].includes(genderFilter)) {
-    query = query.eq("gender", genderFilter);
+    conditions.push(eq(studentsTable.gender, genderFilter));
   }
   if (statusFilter && ["active", "paused", "graduated", "withdrawn"].includes(statusFilter)) {
-    query = query.eq("status", statusFilter);
+    conditions.push(eq(studentsTable.status, statusFilter));
   }
 
-  if (minJuz !== null) query = query.gte("memorized_juz_count", minJuz);
-  if (maxJuz !== null) query = query.lte("memorized_juz_count", maxJuz);
+  if (minJuz !== null) conditions.push(gte(studentsTable.memorized_juz_count, minJuz));
+  if (maxJuz !== null) conditions.push(lte(studentsTable.memorized_juz_count, maxJuz));
 
   // Level filter → translate to juz range
-  if (levelFilter === "beginner") query = query.lte("memorized_juz_count", 4);
-  else if (levelFilter === "intermediate") query = query.gte("memorized_juz_count", 5).lte("memorized_juz_count", 14);
-  else if (levelFilter === "advanced") query = query.gte("memorized_juz_count", 15).lte("memorized_juz_count", 29);
-  else if (levelFilter === "completed") query = query.eq("memorized_juz_count", 30);
+  if (levelFilter === "beginner") conditions.push(lte(studentsTable.memorized_juz_count, 4));
+  else if (levelFilter === "intermediate") { conditions.push(gte(studentsTable.memorized_juz_count, 5)); conditions.push(lte(studentsTable.memorized_juz_count, 14)); }
+  else if (levelFilter === "advanced") { conditions.push(gte(studentsTable.memorized_juz_count, 15)); conditions.push(lte(studentsTable.memorized_juz_count, 29)); }
+  else if (levelFilter === "completed") conditions.push(eq(studentsTable.memorized_juz_count, 30));
 
-  if (hasIjaza === "true") query = query.gt("ijaza_juz_count", 0);
-  else if (hasIjaza === "false") query = query.eq("ijaza_juz_count", 0);
+  if (hasIjaza === "true") conditions.push(gt(studentsTable.ijaza_juz_count, 0));
+  else if (hasIjaza === "false") conditions.push(eq(studentsTable.ijaza_juz_count, 0));
 
   // Age filter: birth_date derived
   if (ageMin !== null) {
     const maxBirth = new Date();
     maxBirth.setFullYear(maxBirth.getFullYear() - ageMin);
-    query = query.lte("birth_date", maxBirth.toISOString().split("T")[0]);
+    conditions.push(lte(studentsTable.birth_date, toDateString(maxBirth)));
   }
   if (ageMax !== null) {
     const minBirth = new Date();
     minBirth.setFullYear(minBirth.getFullYear() - ageMax - 1);
-    query = query.gte("birth_date", minBirth.toISOString().split("T")[0]);
+    conditions.push(gte(studentsTable.birth_date, toDateString(minBirth)));
   }
 
   if (lastActivity === "inactive") {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 30);
-    const cutoffStr = cutoff.toISOString().split("T")[0];
-    query = query.or(`last_session_date.is.null,last_session_date.lt.${cutoffStr}`);
+    const cutoffStr = toDateString(cutoff);
+    conditions.push(or(isNull(studentsTable.last_session_date), lt(studentsTable.last_session_date, cutoffStr))!);
   } else if (lastActivity === "7" || lastActivity === "30") {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - Number(lastActivity));
-    query = query.gte("last_session_date", cutoff.toISOString().split("T")[0]);
+    conditions.push(gte(studentsTable.last_session_date, toDateString(cutoff)));
   } else if (lastActiveDays !== null) {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - lastActiveDays);
-    query = query.gte("last_session_date", cutoff.toISOString().split("T")[0]);
+    conditions.push(gte(studentsTable.last_session_date, toDateString(cutoff)));
   }
 
   // Admin-only teacher_id filter
   if (appUser.role === "admin" && teacherId) {
-    const { data: tAssignments } = await admin
-      .from("teacher_student_assignments")
-      .select("student_id")
-      .eq("teacher_id", teacherId)
-      .is("end_date", null);
-    const ids = (tAssignments ?? []).map((a) => a.student_id);
+    const ids = await getAssignedStudentIds(db, teacherId);
     if (ids.length === 0) return Response.json({ data: [], count: 0, page, pageSize });
-    query = query.in("id", ids);
+    conditions.push(inArray(studentsTable.id, ids));
   }
 
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
   // Sort
-  const sortMap: Record<string, { column: string; ascending: boolean }> = {
-    name: { column: "name", ascending: true },
-    memorized_juz_count: { column: "memorized_juz_count", ascending: false },
-    age: { column: "birth_date", ascending: false },
-    last_session_date: { column: "last_session_date", ascending: false },
-    enrollment_date: { column: "enrollment_date", ascending: false },
+  const sortMap: Record<string, { column: AnyColumn; order: "asc" | "desc" }> = {
+    name: { column: studentsTable.name, order: "asc" },
+    memorized_juz_count: { column: studentsTable.memorized_juz_count, order: "desc" },
+    age: { column: studentsTable.birth_date, order: "desc" },
+    last_session_date: { column: studentsTable.last_session_date, order: "desc" },
+    enrollment_date: { column: studentsTable.enrollment_date, order: "desc" },
   };
   const sort = sortMap[sortBy] ?? sortMap.name;
-  query = query.order(sort.column, { ascending: sort.ascending });
-  query = query.range(from, to);
 
-  const { data, error, count } = await query;
-  if (error) return Response.json({ error: error.message }, { status: 500 });
+  try {
+    const [data, countResult] = await Promise.all([
+      db
+        .select({
+          id: studentsTable.id,
+          name: studentsTable.name,
+          gender: studentsTable.gender,
+          birth_date: studentsTable.birth_date,
+          enrollment_date: studentsTable.enrollment_date,
+          status: studentsTable.status,
+          memorized_juz_count: studentsTable.memorized_juz_count,
+          ijaza_juz_count: studentsTable.ijaza_juz_count,
+          last_session_date: studentsTable.last_session_date,
+          guardian_name: studentsTable.guardian_name,
+          guardian_phone: studentsTable.guardian_phone,
+          notes: studentsTable.notes,
+        })
+        .from(studentsTable)
+        .where(whereClause)
+        .orderBy(sort.order === "asc" ? asc(sort.column) : desc(sort.column))
+        .offset(from)
+        .limit(pageSize),
+      db
+        .select({ count: count() })
+        .from(studentsTable)
+        .where(whereClause),
+    ]);
 
-  // Attach level label
-  const enriched = (data ?? []).map((s) => ({
-    ...s,
-    level: getLevelInfo(s.memorized_juz_count),
-  }));
+    const totalCount = countResult[0]?.count ?? 0;
 
-  return Response.json({ data: enriched, count, page, pageSize });
+    // Attach level label
+    const enriched = data.map((s) => ({
+      ...s,
+      level: getLevelInfo(s.memorized_juz_count),
+    }));
+
+    return Response.json({ data: enriched, count: totalCount, page, pageSize });
+  } catch (error) {
+    return Response.json({ error: sanitizeError(error, "api") }, { status: 500 });
+  }
 }
 
 // POST /api/students — create student (admin or teacher self-add)
 export async function POST(request: NextRequest) {
-  const supabase = await createSupabaseServerComponentClient();
-  if (!supabase) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-
-  const admin = createSupabaseAdminClient();
-  if (!admin) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const { data: appUser } = await admin
-    .from("users")
-    .select("id, role, gender, can_view_all_genders, is_active")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (!appUser || !appUser.is_active) return Response.json({ error: "Forbidden" }, { status: 403 });
+  const ctx = await getApiContext();
+  if (!ctx.ok) return ctx.response;
+  const { db, appUser } = ctx;
 
   const body = await request.json();
   const {
@@ -179,8 +172,11 @@ export async function POST(request: NextRequest) {
     enrollment_date, notes, initial_memorization,
   } = body;
 
-  if (!name || !gender || !guardian_name || !guardian_phone) {
-    return Response.json({ error: "name, gender, guardian_name, guardian_phone required" }, { status: 400 });
+  const validationError = validateStudentPayload({
+    name, gender, birth_date, guardian_name, guardian_phone, enrollment_date, notes,
+  });
+  if (validationError) {
+    return Response.json({ error: validationError }, { status: 400 });
   }
 
   // Gender scoping for teachers
@@ -198,52 +194,55 @@ export async function POST(request: NextRequest) {
 
   const { memorized_juz_count, ijaza_juz_count } = countsFromInitialMemorization(initRows);
 
-  const { data: student, error: stuErr } = await admin
-    .from("students")
-    .insert({
-      name,
-      gender,
-      birth_date: birth_date ?? null,
-      guardian_name,
-      guardian_phone,
-      enrollment_date: enrollment_date ?? new Date().toISOString().split("T")[0],
-      notes: notes ?? null,
-      memorized_juz_count,
-      ijaza_juz_count,
-    })
-    .select()
-    .single();
+  try {
+    const [student] = await db
+      .insert(studentsTable)
+      .values({
+        name,
+        gender,
+        birth_date: birth_date ?? null,
+        guardian_name,
+        guardian_phone,
+        enrollment_date: enrollment_date ?? todayDateString(),
+        notes: notes ?? null,
+        memorized_juz_count,
+        ijaza_juz_count,
+      })
+      .returning();
 
-  if (stuErr || !student) return Response.json({ error: stuErr?.message }, { status: 500 });
+    if (!student) return Response.json({ error: sanitizeError(new Error("student insert failed"), "student insert") }, { status: 500 });
 
-  // Persist initial_memorization rows
-  if (initRows.length > 0) {
-    const rowsToInsert = initRows.map((r) => ({
-      student_id: student.id,
-      juz_number: r.juz_number,
-      status: r.status,
-      sheikh_name: r.sheikh_name ?? null,
-    }));
-    await admin.from("initial_memorization").insert(rowsToInsert);
+    // Persist initial_memorization rows
+    if (initRows.length > 0) {
+      const rowsToInsert = initRows.map((r) => ({
+        student_id: student.id,
+        juz_number: r.juz_number,
+        status: r.status,
+        sheikh_name: r.sheikh_name ?? null,
+      }));
+      await db.insert(initialMemorizationTable).values(rowsToInsert);
+    }
+
+    // Teacher self-add: auto-create active assignment
+    if (appUser.role === "teacher") {
+      await db.insert(teacherStudentAssignmentsTable).values({
+        teacher_id: appUser.id,
+        student_id: student.id,
+        start_date: enrollment_date ?? todayDateString(),
+        created_by: appUser.id,
+      });
+    }
+
+    await recalculateStudentSummary(db, student.id);
+
+    const [finalStudent] = await db
+      .select()
+      .from(studentsTable)
+      .where(eq(studentsTable.id, student.id))
+      .limit(1);
+
+    return Response.json(finalStudent ?? student, { status: 201 });
+  } catch (error) {
+    return Response.json({ error: sanitizeError(error, "student insert") }, { status: 500 });
   }
-
-  // Teacher self-add: auto-create active assignment
-  if (appUser.role === "teacher") {
-    await admin.from("teacher_student_assignments").insert({
-      teacher_id: appUser.id,
-      student_id: student.id,
-      start_date: enrollment_date ?? new Date().toISOString().split("T")[0],
-      created_by: appUser.id,
-    });
-  }
-
-  await recalculateStudentSummary(admin, student.id);
-
-  const { data: finalStudent } = await admin
-    .from("students")
-    .select("*")
-    .eq("id", student.id)
-    .single();
-
-  return Response.json(finalStudent ?? student, { status: 201 });
 }

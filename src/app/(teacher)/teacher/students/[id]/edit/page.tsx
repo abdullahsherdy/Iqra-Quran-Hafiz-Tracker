@@ -1,5 +1,12 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
+import {
+  studentsTable,
+  teacherStudentAssignmentsTable,
+  usersTable,
+  initialMemorizationTable,
+} from "@/db/schema";
+import { and, asc, eq, isNull } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -11,9 +18,13 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
-  const admin = createSupabaseAdminClient();
-  if (!admin) return { title: "تعديل الطالب" };
-  const { data } = await admin.from("students").select("name").eq("id", id).maybeSingle();
+  const db = getDb();
+  if (!db) return { title: "تعديل الطالب" };
+  const [data] = await db
+    .select({ name: studentsTable.name })
+    .from(studentsTable)
+    .where(eq(studentsTable.id, id))
+    .limit(1);
   return { title: `تعديل: ${data?.name ?? "الطالب"} | اقرأ` };
 }
 
@@ -21,46 +32,68 @@ export default async function TeacherEditStudentPage({ params }: PageProps) {
   const user = await requireRole("teacher");
   const { id } = await params;
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) return notFound();
+  const db = getDb();
+  if (!db) return notFound();
 
   // Fetch student
-  const { data: student } = await admin
-    .from("students")
-    .select("id, name, gender, birth_date, guardian_name, guardian_phone, enrollment_date, notes, status, memorized_juz_count")
-    .eq("id", id)
-    .maybeSingle();
+  const [student] = await db
+    .select({
+      id: studentsTable.id,
+      name: studentsTable.name,
+      gender: studentsTable.gender,
+      birth_date: studentsTable.birth_date,
+      guardian_name: studentsTable.guardian_name,
+      guardian_phone: studentsTable.guardian_phone,
+      enrollment_date: studentsTable.enrollment_date,
+      notes: studentsTable.notes,
+      status: studentsTable.status,
+      memorized_juz_count: studentsTable.memorized_juz_count,
+    })
+    .from(studentsTable)
+    .where(eq(studentsTable.id, id))
+    .limit(1);
 
   if (!student) return notFound();
 
   // Enforce assignment scoping
-  const { data: assign } = await admin
-    .from("teacher_student_assignments")
-    .select("id")
-    .eq("teacher_id", user.id)
-    .eq("student_id", id)
-    .is("end_date", null)
-    .maybeSingle();
+  const [assign] = await db
+    .select({ id: teacherStudentAssignmentsTable.id })
+    .from(teacherStudentAssignmentsTable)
+    .where(
+      and(
+        eq(teacherStudentAssignmentsTable.teacher_id, user.id),
+        eq(teacherStudentAssignmentsTable.student_id, id),
+        isNull(teacherStudentAssignmentsTable.end_date),
+      ),
+    )
+    .limit(1);
 
   if (!assign) return notFound();
 
   // Enforce gender scoping
-  const { data: teacherUser } = await admin
-    .from("users")
-    .select("gender, can_view_all_genders")
-    .eq("id", user.id)
-    .maybeSingle();
+  const [teacherUser] = await db
+    .select({
+      gender: usersTable.gender,
+      can_view_all_genders: usersTable.can_view_all_genders,
+    })
+    .from(usersTable)
+    .where(eq(usersTable.id, user.id))
+    .limit(1);
 
   if (!teacherUser) return notFound();
   if (!teacherUser.can_view_all_genders && student.gender !== teacherUser.gender) {
     return notFound();
   }
 
-  const { data: initMem } = await admin
-    .from("initial_memorization")
-    .select("juz_number, status, sheikh_name")
-    .eq("student_id", id)
-    .order("juz_number");
+  const initMem = await db
+    .select({
+      juz_number: initialMemorizationTable.juz_number,
+      status: initialMemorizationTable.status,
+      sheikh_name: initialMemorizationTable.sheikh_name,
+    })
+    .from(initialMemorizationTable)
+    .where(eq(initialMemorizationTable.student_id, id))
+    .orderBy(asc(initialMemorizationTable.juz_number));
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
@@ -76,7 +109,7 @@ export default async function TeacherEditStudentPage({ params }: PageProps) {
 
       <EditStudentForm
         student={student}
-        initialMem={(initMem ?? []).map((r) => ({
+        initialMem={initMem.map((r) => ({
           juz_number: r.juz_number,
           status: r.status as "memorized" | "with_ijaza",
           sheikh_name: r.sheikh_name ?? undefined,

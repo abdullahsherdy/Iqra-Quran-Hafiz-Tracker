@@ -1,13 +1,16 @@
 import { cn } from "@/lib/utils";
+import type {
+  Rating,
+  SessionType,
+  Gender,
+  AttendanceStatus,
+  StudentStatus,
+} from "@/domain/types";
+
+export type { Rating, SessionType, Gender, AttendanceStatus, StudentStatus };
 
 const pill =
   "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium";
-
-export type Rating = "excellent" | "good" | "weak";
-export type SessionType = "new_memorization" | "review";
-export type Gender = "male" | "female";
-export type AttendanceStatus = "present" | "absent";
-export type StudentStatus = "active" | "paused" | "graduated" | "withdrawn";
 
 const ratingMap: Record<Rating, { label: string; className: string }> = {
   excellent: { label: "ممتاز", className: "bg-[#dcfce7] text-[#166534]" },
@@ -34,6 +37,8 @@ const attendanceMap: Record<
 > = {
   present: { label: "حاضر", className: "bg-[#dcfce7] text-[#166534]" },
   absent: { label: "غائب", className: "bg-[#fee2e2] text-[#991b1b]" },
+  excused: { label: "غياب بعذر", className: "bg-[#fef9c3] text-[#854d0e]" },
+  holiday: { label: "إجازة", className: "bg-[#e0e7ff] text-[#3730a3]" },
 };
 
 const studentStatusMap: Record<StudentStatus, { label: string; className: string }> = {

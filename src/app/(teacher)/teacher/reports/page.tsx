@@ -1,9 +1,16 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
+import {
+  studentsTable,
+  sessionsTable,
+  teacherStudentAssignmentsTable,
+} from "@/db/schema";
+import { and, asc, desc, eq, gte, inArray, isNull, lt, or } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { BarChart3, AlertTriangle, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { GenderBadge, StudentStatusBadge, type StudentStatus } from "@/components/badges";
+import { toDateString } from "@/lib/utils";
 
 export async function generateMetadata() {
   return { title: `تقاريري | ${process.env.NEXT_PUBLIC_APP_NAME ?? "اقرأ"}` };
@@ -12,8 +19,8 @@ export async function generateMetadata() {
 export default async function TeacherReportsPage() {
   const user = await requireRole("teacher");
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) return notFound();
+  const db = getDb();
+  if (!db) return notFound();
 
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -21,16 +28,20 @@ export default async function TeacherReportsPage() {
     .split("T")[0];
   const thirtyDaysAgo = new Date(now);
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split("T")[0];
+  const thirtyDaysAgoStr = toDateString(thirtyDaysAgo);
 
   // My active student assignments
-  const { data: myAssignments } = await admin
-    .from("teacher_student_assignments")
-    .select("student_id")
-    .eq("teacher_id", user.id)
-    .is("end_date", null);
+  const myAssignments = await db
+    .select({ student_id: teacherStudentAssignmentsTable.student_id })
+    .from(teacherStudentAssignmentsTable)
+    .where(
+      and(
+        eq(teacherStudentAssignmentsTable.teacher_id, user.id),
+        isNull(teacherStudentAssignmentsTable.end_date),
+      ),
+    );
 
-  const myStudentIds = (myAssignments ?? []).map((a) => a.student_id);
+  const myStudentIds = myAssignments.map((a) => a.student_id);
 
   const monthName = now.toLocaleDateString("ar-EG", { month: "long", year: "numeric" });
 
@@ -51,29 +62,48 @@ export default async function TeacherReportsPage() {
     );
   }
 
-  const [myStudentsRes, mySessionsRes, atRiskRes] = await Promise.all([
-    admin
-      .from("students")
-      .select("id, name, gender, status, memorized_juz_count, ijaza_juz_count, last_session_date")
-      .in("id", myStudentIds)
-      .order("memorized_juz_count", { ascending: false }),
-    admin
-      .from("sessions")
-      .select("rating")
-      .eq("teacher_id", user.id)
-      .gte("session_date", monthStart),
-    admin
-      .from("students")
-      .select("id, name, last_session_date")
-      .in("id", myStudentIds)
-      .eq("status", "active")
-      .or(`last_session_date.is.null,last_session_date.lt.${thirtyDaysAgoStr}`)
-      .order("last_session_date", { ascending: true }),
+  const [myStudents, mySessions, atRisk] = await Promise.all([
+    db
+      .select({
+        id: studentsTable.id,
+        name: studentsTable.name,
+        gender: studentsTable.gender,
+        status: studentsTable.status,
+        memorized_juz_count: studentsTable.memorized_juz_count,
+        ijaza_juz_count: studentsTable.ijaza_juz_count,
+        last_session_date: studentsTable.last_session_date,
+      })
+      .from(studentsTable)
+      .where(inArray(studentsTable.id, myStudentIds))
+      .orderBy(desc(studentsTable.memorized_juz_count)),
+    db
+      .select({ rating: sessionsTable.rating })
+      .from(sessionsTable)
+      .where(
+        and(
+          eq(sessionsTable.teacher_id, user.id),
+          gte(sessionsTable.session_date, monthStart),
+        ),
+      ),
+    db
+      .select({
+        id: studentsTable.id,
+        name: studentsTable.name,
+        last_session_date: studentsTable.last_session_date,
+      })
+      .from(studentsTable)
+      .where(
+        and(
+          inArray(studentsTable.id, myStudentIds),
+          eq(studentsTable.status, "active"),
+          or(
+            isNull(studentsTable.last_session_date),
+            lt(studentsTable.last_session_date, thirtyDaysAgoStr),
+          ),
+        ),
+      )
+      .orderBy(asc(studentsTable.last_session_date)),
   ]);
-
-  const myStudents    = myStudentsRes.data ?? [];
-  const mySessions    = mySessionsRes.data ?? [];
-  const atRisk        = atRiskRes.data ?? [];
 
   const ratings = {
     excellent: mySessions.filter((s) => s.rating === "excellent").length,

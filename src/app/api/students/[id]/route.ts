@@ -1,7 +1,20 @@
 import { NextRequest } from "next/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerComponentClient } from "@/lib/supabase/server";
-import { countsFromInitialMemorization, validateInitialMemorization, recalculateStudentSummary } from "@/lib/students";
+import { and, eq, isNull, asc } from "drizzle-orm";
+import {
+  studentsTable,
+  teacherStudentAssignmentsTable,
+  initialMemorizationTable,
+  sessionsTable,
+  attendanceTable,
+  ijazatTable,
+  usersTable,
+} from "@/db/schema";
+import { validateInitialMemorization, validateStudentPayload } from "@/domain/students";
+import { recalculateStudentSummary } from "@/features/students/server/recalc";
+import { recalculateStudentAttendance } from "@/features/attendance/server/recalc";
+import { getApiContext } from "@/features/auth/api-context";
+import { sanitizeError } from "@/lib/api-error";
+import { todayDateString } from "@/lib/utils";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -10,167 +23,182 @@ interface RouteContext {
 // GET /api/students/[id]
 export async function GET(_req: NextRequest, { params }: RouteContext) {
   const { id } = await params;
-  const supabase = await createSupabaseServerComponentClient();
-  if (!supabase) return Response.json({ error: "Config missing" }, { status: 500 });
+  const ctx = await getApiContext();
+  if (!ctx.ok) return ctx.response;
+  const { db, appUser } = ctx;
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const [student] = await db
+      .select()
+      .from(studentsTable)
+      .where(eq(studentsTable.id, id))
+      .limit(1);
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) return Response.json({ error: "Config missing" }, { status: 500 });
+    if (!student) return Response.json({ error: "Not found" }, { status: 404 });
 
-  const { data: appUser } = await admin
-    .from("users")
-    .select("id, role, gender, can_view_all_genders")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (!appUser) return Response.json({ error: "Forbidden" }, { status: 403 });
-
-  const { data: student, error } = await admin
-    .from("students")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
-
-  if (error) return Response.json({ error: error.message }, { status: 500 });
-  if (!student) return Response.json({ error: "Not found" }, { status: 404 });
-
-  // Role-scope check for teachers
-  if (appUser.role === "teacher") {
-    if (!appUser.can_view_all_genders && student.gender !== appUser.gender) {
-      return Response.json({ error: "Forbidden" }, { status: 403 });
+    // Role-scope check for teachers
+    if (appUser.role === "teacher") {
+      if (!appUser.can_view_all_genders && student.gender !== appUser.gender) {
+        return Response.json({ error: "Forbidden" }, { status: 403 });
+      }
+      const [assign] = await db
+        .select({ id: teacherStudentAssignmentsTable.id })
+        .from(teacherStudentAssignmentsTable)
+        .where(
+          and(
+            eq(teacherStudentAssignmentsTable.teacher_id, appUser.id),
+            eq(teacherStudentAssignmentsTable.student_id, id),
+            isNull(teacherStudentAssignmentsTable.end_date),
+          ),
+        )
+        .limit(1);
+      if (!assign) return Response.json({ error: "Forbidden" }, { status: 403 });
     }
-    const { data: assign } = await admin
-      .from("teacher_student_assignments")
-      .select("id")
-      .eq("teacher_id", appUser.id)
-      .eq("student_id", id)
-      .is("end_date", null)
-      .maybeSingle();
-    if (!assign) return Response.json({ error: "Forbidden" }, { status: 403 });
+
+    // Active teachers for this student
+    const activeAssignments = await db
+      .select({
+        id: teacherStudentAssignmentsTable.id,
+        teacher_id: teacherStudentAssignmentsTable.teacher_id,
+        start_date: teacherStudentAssignmentsTable.start_date,
+        teacher_name: usersTable.name,
+      })
+      .from(teacherStudentAssignmentsTable)
+      .leftJoin(usersTable, eq(teacherStudentAssignmentsTable.teacher_id, usersTable.id))
+      .where(
+        and(
+          eq(teacherStudentAssignmentsTable.student_id, id),
+          isNull(teacherStudentAssignmentsTable.end_date),
+        ),
+      );
+
+    // Initial memorization
+    const initialMem = await db
+      .select({
+        juz_number: initialMemorizationTable.juz_number,
+        status: initialMemorizationTable.status,
+        sheikh_name: initialMemorizationTable.sheikh_name,
+      })
+      .from(initialMemorizationTable)
+      .where(eq(initialMemorizationTable.student_id, id))
+      .orderBy(asc(initialMemorizationTable.juz_number));
+
+    return Response.json({ student, activeAssignments, initialMem });
+  } catch (error) {
+    return Response.json({ error: sanitizeError(error, "student fetch") }, { status: 500 });
   }
-
-  // Active teachers for this student
-  const { data: activeAssignments } = await admin
-    .from("teacher_student_assignments")
-    .select("id, teacher_id, start_date, users!teacher_student_assignments_teacher_id_fkey(id, name)")
-    .eq("student_id", id)
-    .is("end_date", null);
-
-  // Initial memorization
-  const { data: initialMem } = await admin
-    .from("initial_memorization")
-    .select("juz_number, status, sheikh_name")
-    .eq("student_id", id)
-    .order("juz_number");
-
-  return Response.json({ student, activeAssignments: activeAssignments ?? [], initialMem: initialMem ?? [] });
 }
 
 // PUT /api/students/[id]
 export async function PUT(request: NextRequest, { params }: RouteContext) {
   const { id } = await params;
-  const supabase = await createSupabaseServerComponentClient();
-  if (!supabase) return Response.json({ error: "Config missing" }, { status: 500 });
+  const ctx = await getApiContext();
+  if (!ctx.ok) return ctx.response;
+  const { db, appUser } = ctx;
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const [existingStudent] = await db
+      .select({ id: studentsTable.id, gender: studentsTable.gender, status: studentsTable.status })
+      .from(studentsTable)
+      .where(eq(studentsTable.id, id))
+      .limit(1);
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) return Response.json({ error: "Config missing" }, { status: 500 });
+    if (!existingStudent) return Response.json({ error: "Not found" }, { status: 404 });
 
-  const { data: appUser } = await admin
-    .from("users")
-    .select("id, role, gender, can_view_all_genders, is_active")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (!appUser || !appUser.is_active) return Response.json({ error: "Forbidden" }, { status: 403 });
-
-  const { data: existingStudent } = await admin
-    .from("students")
-    .select("id, gender")
-    .eq("id", id)
-    .maybeSingle();
-
-  if (!existingStudent) return Response.json({ error: "Not found" }, { status: 404 });
-
-  if (appUser.role === "teacher") {
-    const { data: assign } = await admin
-      .from("teacher_student_assignments")
-      .select("id")
-      .eq("teacher_id", appUser.id)
-      .eq("student_id", id)
-      .is("end_date", null)
-      .maybeSingle();
-    if (!assign) return Response.json({ error: "Forbidden" }, { status: 403 });
-    if (!appUser.can_view_all_genders && existingStudent.gender !== appUser.gender) {
-      return Response.json({ error: "Forbidden" }, { status: 403 });
+    if (appUser.role === "teacher") {
+      const [assign] = await db
+        .select({ id: teacherStudentAssignmentsTable.id })
+        .from(teacherStudentAssignmentsTable)
+        .where(
+          and(
+            eq(teacherStudentAssignmentsTable.teacher_id, appUser.id),
+            eq(teacherStudentAssignmentsTable.student_id, id),
+            isNull(teacherStudentAssignmentsTable.end_date),
+          ),
+        )
+        .limit(1);
+      if (!assign) return Response.json({ error: "Forbidden" }, { status: 403 });
+      if (!appUser.can_view_all_genders && existingStudent.gender !== appUser.gender) {
+        return Response.json({ error: "Forbidden" }, { status: 403 });
+      }
     }
-  }
 
-  const body = await request.json();
+    const body = await request.json();
 
-  if (appUser.role === "teacher") {
-    const { data, error } = await admin
-      .from("students")
-      .update({ notes: body.notes ?? null })
-      .eq("id", id)
+    if (appUser.role === "teacher") {
+      const [data] = await db
+        .update(studentsTable)
+        .set({ notes: body.notes ?? null })
+        .where(eq(studentsTable.id, id))
+        .returning();
+
+      return Response.json(data);
+    }
+
+    const allowedFields = ["name", "gender", "birth_date", "guardian_name", "guardian_phone", "enrollment_date", "notes", "status"];
+    const updates: Record<string, unknown> = {};
+    for (const field of allowedFields) {
+      if (field in body) updates[field] = body[field];
+    }
+
+    // Validate the update payload (only the fields being changed).
+    const validationError = validateStudentPayload(updates);
+    if (validationError) {
+      return Response.json({ error: validationError }, { status: 400 });
+    }
+
+    // When status changes, stamp status_since = today so the attendance engine
+    // knows when the new status (paused/withdrawn/graduated/active) took effect.
+    const statusChanged =
+      "status" in body && typeof body.status === "string" && body.status !== existingStudent.status;
+    if (statusChanged) {
+      updates.status_since = todayDateString();
+    }
+
+    if ("initial_memorization" in body) {
+      const initRows: Array<{ juz_number: number; status: string; sheikh_name?: string }> =
+        Array.isArray(body.initial_memorization) ? body.initial_memorization : [];
+
+      const initValidationError = validateInitialMemorization(initRows);
+      if (initValidationError) {
+        return Response.json({ error: initValidationError }, { status: 400 });
+      }
+
+      await db.delete(initialMemorizationTable).where(eq(initialMemorizationTable.student_id, id));
+
+      if (initRows.length > 0) {
+        const rowsToInsert = initRows.map((r) => ({
+          student_id: id,
+          juz_number: r.juz_number,
+          status: r.status,
+          sheikh_name: r.sheikh_name ?? null,
+        }));
+        await db.insert(initialMemorizationTable).values(rowsToInsert);
+      }
+    }
+
+    const [data] = await db
+      .update(studentsTable)
+      .set(updates)
+      .where(eq(studentsTable.id, id))
+      .returning();
+
+    await recalculateStudentSummary(db, id);
+    // Status change reshapes the attendance calendar (pause/withdrawal/graduation).
+    if (statusChanged) {
+      await recalculateStudentAttendance(db, id);
+    }
+
+    const [finalStudent] = await db
       .select()
-      .single();
+      .from(studentsTable)
+      .where(eq(studentsTable.id, id))
+      .limit(1);
 
-    if (error) return Response.json({ error: error.message }, { status: 500 });
-    return Response.json(data);
+    return Response.json(finalStudent ?? data);
+  } catch (error) {
+    return Response.json({ error: sanitizeError(error, "student update") }, { status: 500 });
   }
-
-  const allowedFields = ["name", "gender", "birth_date", "guardian_name", "guardian_phone", "enrollment_date", "notes", "status"];
-  const updates: Record<string, unknown> = {};
-  for (const field of allowedFields) {
-    if (field in body) updates[field] = body[field];
-  }
-
-  if ("initial_memorization" in body) {
-    const initRows: Array<{ juz_number: number; status: string; sheikh_name?: string }> =
-      Array.isArray(body.initial_memorization) ? body.initial_memorization : [];
-
-    const initValidationError = validateInitialMemorization(initRows);
-    if (initValidationError) {
-      return Response.json({ error: initValidationError }, { status: 400 });
-    }
-
-    await admin.from("initial_memorization").delete().eq("student_id", id);
-
-    if (initRows.length > 0) {
-      const rowsToInsert = initRows.map((r) => ({
-        student_id: id,
-        juz_number: r.juz_number,
-        status: r.status,
-        sheikh_name: r.sheikh_name ?? null,
-      }));
-      const { error: memErr } = await admin.from("initial_memorization").insert(rowsToInsert);
-      if (memErr) return Response.json({ error: memErr.message }, { status: 500 });
-    }
-  }
-
-  const { data, error } = await admin
-    .from("students")
-    .update(updates)
-    .eq("id", id)
-    .select()
-    .single();
-
-  if (error) return Response.json({ error: error.message }, { status: 500 });
-
-  await recalculateStudentSummary(admin, id);
-
-  const { data: finalStudent } = await admin
-    .from("students")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  return Response.json(finalStudent ?? data);
 }
 
 // DELETE /api/students/[id] — admin only.
@@ -179,63 +207,44 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
 // ?permanent=true : hard delete — cascades every child row then removes the student.
 export async function DELETE(request: NextRequest, { params }: RouteContext) {
   const { id } = await params;
-  const supabase = await createSupabaseServerComponentClient();
-  if (!supabase) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-
-  const admin = createSupabaseAdminClient();
-  if (!admin) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const { data: appUser } = await admin
-    .from("users")
-    .select("id, role, is_active")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  // Admin only.
-  if (!appUser || !appUser.is_active || appUser.role !== "admin") {
-    return Response.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const ctx = await getApiContext();
+  if (!ctx.ok) return ctx.response;
+  const { db, appUser } = ctx;
+  if (appUser.role !== "admin") return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const { searchParams } = new URL(request.url);
   const permanent = searchParams.get("permanent") === "true";
 
-  const { data: existing } = await admin
-    .from("students")
-    .select("id")
-    .eq("id", id)
-    .maybeSingle();
-  if (!existing) return Response.json({ error: "Not found" }, { status: 404 });
+  try {
+    const [existing] = await db
+      .select({ id: studentsTable.id })
+      .from(studentsTable)
+      .where(eq(studentsTable.id, id))
+      .limit(1);
+    if (!existing) return Response.json({ error: "Not found" }, { status: 404 });
 
-  if (!permanent) {
-    // Soft delete: mark as withdrawn (reversible by setting status back to active).
-    const { error } = await admin
-      .from("students")
-      .update({ status: "withdrawn" })
-      .eq("id", id);
-    if (error) return Response.json({ error: error.message }, { status: 500 });
-    return Response.json({ ok: true, deactivated: true });
+    if (!permanent) {
+      // Soft delete: mark as withdrawn (reversible by setting status back to active).
+      const today = todayDateString();
+      await db
+        .update(studentsTable)
+        .set({ status: "withdrawn", status_since: today })
+        .where(eq(studentsTable.id, id));
+      return Response.json({ ok: true, deactivated: true });
+    }
+
+    // Permanent delete: cascade all child rows (FKs are not ON DELETE CASCADE, so we
+    // do it explicitly via the service-role client which bypasses RLS).
+    await db.delete(initialMemorizationTable).where(eq(initialMemorizationTable.student_id, id));
+    await db.delete(ijazatTable).where(eq(ijazatTable.student_id, id));
+    await db.delete(attendanceTable).where(eq(attendanceTable.student_id, id));
+    await db.delete(sessionsTable).where(eq(sessionsTable.student_id, id));
+    await db.delete(teacherStudentAssignmentsTable).where(eq(teacherStudentAssignmentsTable.student_id, id));
+
+    await db.delete(studentsTable).where(eq(studentsTable.id, id));
+
+    return Response.json({ ok: true, deleted: true });
+  } catch (error) {
+    return Response.json({ error: sanitizeError(error, "student delete") }, { status: 500 });
   }
-
-  // Permanent delete: cascade all child rows (FKs are not ON DELETE CASCADE, so we
-  // do it explicitly via the service-role client which bypasses RLS).
-  const childTables: Array<{ table: string; column: string }> = [
-    { table: "initial_memorization", column: "student_id" },
-    { table: "ijazat", column: "student_id" },
-    { table: "attendance", column: "student_id" },
-    { table: "sessions", column: "student_id" },
-    { table: "teacher_student_assignments", column: "student_id" },
-  ];
-
-  for (const { table, column } of childTables) {
-    const { error } = await admin.from(table).delete().eq(column, id);
-    if (error) return Response.json({ error: `فشل حذف ${table}: ${error.message}` }, { status: 500 });
-  }
-
-  const { error: delErr } = await admin.from("students").delete().eq("id", id);
-  if (delErr) return Response.json({ error: delErr.message }, { status: 500 });
-
-  return Response.json({ ok: true, deleted: true });
 }

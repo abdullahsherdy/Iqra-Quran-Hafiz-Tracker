@@ -1,5 +1,7 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
+import { usersTable, teacherStudentAssignmentsTable } from "@/db/schema";
+import { and, asc, eq, inArray, isNull } from "drizzle-orm";
 import Link from "next/link";
 import { GenderBadge } from "@/components/badges";
 import { PlusCircle, Users } from "lucide-react";
@@ -9,27 +11,33 @@ export const metadata = { title: "المحفظون | اقرأ" };
 export default async function AdminTeachersPage() {
   await requireRole("admin");
 
-  const admin = createSupabaseAdminClient();
-  const teachers = admin
-    ? (
-      await admin
-        .from("users")
-        .select("id, name, username, gender, phone, is_active, can_view_all_genders, created_at")
-        .eq("role", "teacher")
-        .order("name")
-    ).data ?? []
+  const db = getDb();
+  const teachers = db
+    ? await db
+        .select({
+          id: usersTable.id,
+          name: usersTable.name,
+          username: usersTable.username,
+          gender: usersTable.gender,
+          phone: usersTable.phone,
+          is_active: usersTable.is_active,
+          can_view_all_genders: usersTable.can_view_all_genders,
+          created_at: usersTable.created_at,
+        })
+        .from(usersTable)
+        .where(eq(usersTable.role, "teacher"))
+        .orderBy(asc(usersTable.name))
     : [];
 
   // Count active students per teacher
   const teacherIds = teachers.map((t) => t.id);
   const assignmentCounts: Record<string, number> = {};
-  if (admin && teacherIds.length > 0) {
-    const { data: counts } = await admin
-      .from("teacher_student_assignments")
-      .select("teacher_id")
-      .in("teacher_id", teacherIds)
-      .is("end_date", null);
-    for (const row of counts ?? []) {
+  if (db && teacherIds.length > 0) {
+    const counts = await db
+      .select({ teacher_id: teacherStudentAssignmentsTable.teacher_id })
+      .from(teacherStudentAssignmentsTable)
+      .where(and(inArray(teacherStudentAssignmentsTable.teacher_id, teacherIds), isNull(teacherStudentAssignmentsTable.end_date)));
+    for (const row of counts) {
       assignmentCounts[row.teacher_id] = (assignmentCounts[row.teacher_id] ?? 0) + 1;
     }
   }

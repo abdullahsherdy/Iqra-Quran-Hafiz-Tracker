@@ -1,68 +1,95 @@
 import { NextRequest } from "next/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerComponentClient } from "@/lib/supabase/server";
-import { getApiAppUser, canAccessStudent, getAssignedStudentIds } from "@/lib/auth/student-access";
-import { recalculateStudentSummary } from "@/lib/students";
+import { and, desc, eq, inArray } from "drizzle-orm";
+
+import { ijazatTable, studentsTable } from "@/db/schema";
+import { canAccessStudent, getAssignedStudentIds } from "@/features/auth/student-access";
+import { recalculateStudentSummary } from "@/features/students/server/recalc";
+import { sanitizeError } from "@/lib/api-error";
+import { getApiContext } from "@/features/auth/api-context";
 
 // GET /api/ijazat — list ijazat (role-scoped)
 export async function GET(request: NextRequest) {
-  const supabase = await createSupabaseServerComponentClient();
-  if (!supabase) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-
-  const admin = createSupabaseAdminClient();
-  if (!admin) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const appUser = await getApiAppUser(admin, user.id);
-  if (!appUser || !appUser.is_active) return Response.json({ error: "Forbidden" }, { status: 403 });
+  const ctx = await getApiContext();
+  if (!ctx.ok) return ctx.response;
+  const { db, appUser } = ctx;
 
   const { searchParams } = new URL(request.url);
   const studentId = searchParams.get("student_id") ?? "";
 
-  let query = admin
-    .from("ijazat")
-    .select("*, students(id, name, gender)")
-    .order("ijaza_date", { ascending: false });
+  const conditions = [];
 
   if (appUser.role === "teacher") {
-    const assignedIds = await getAssignedStudentIds(admin, appUser.id);
+    const assignedIds = await getAssignedStudentIds(db, appUser.id);
     if (assignedIds.length === 0) return Response.json([]);
-    
+
     if (studentId) {
       if (!assignedIds.includes(studentId)) {
         return Response.json({ error: "Forbidden" }, { status: 403 });
       }
-      query = query.eq("student_id", studentId);
+      conditions.push(eq(ijazatTable.student_id, studentId));
     } else {
-      query = query.in("student_id", assignedIds);
+      conditions.push(inArray(ijazatTable.student_id, assignedIds));
+    }
+
+    // Gender scoping (E4): a teacher who can't view all genders only sees
+    // ijazat for students matching their own gender.
+    if (!appUser.can_view_all_genders && appUser.gender) {
+      conditions.push(eq(studentsTable.gender, appUser.gender));
     }
   } else {
     // Admin can filter by any student
     if (studentId) {
-      query = query.eq("student_id", studentId);
+      conditions.push(eq(ijazatTable.student_id, studentId));
     }
   }
 
-  const { data, error } = await query;
-  if (error) return Response.json({ error: error.message }, { status: 500 });
-  return Response.json(data ?? []);
+  try {
+    const rows = await db
+      .select({
+        id: ijazatTable.id,
+        student_id: ijazatTable.student_id,
+        granted_by: ijazatTable.granted_by,
+        ijaza_type: ijazatTable.ijaza_type,
+        juz_number: ijazatTable.juz_number,
+        sheikh_name: ijazatTable.sheikh_name,
+        ijaza_date: ijazatTable.ijaza_date,
+        notes: ijazatTable.notes,
+        created_at: ijazatTable.created_at,
+        student_id_join: studentsTable.id,
+        student_name: studentsTable.name,
+        student_gender: studentsTable.gender,
+      })
+      .from(ijazatTable)
+      .leftJoin(studentsTable, eq(ijazatTable.student_id, studentsTable.id))
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(ijazatTable.ijaza_date));
+
+    const data = rows.map((r) => ({
+      id: r.id,
+      student_id: r.student_id,
+      granted_by: r.granted_by,
+      ijaza_type: r.ijaza_type,
+      juz_number: r.juz_number,
+      sheikh_name: r.sheikh_name,
+      ijaza_date: r.ijaza_date,
+      notes: r.notes,
+      created_at: r.created_at,
+      students: r.student_id_join
+        ? { id: r.student_id_join, name: r.student_name, gender: r.student_gender }
+        : null,
+    }));
+
+    return Response.json(data);
+  } catch (error) {
+    return Response.json({ error: sanitizeError(error, "api") }, { status: 500 });
+  }
 }
 
 // POST /api/ijazat — grant ijaza
 export async function POST(request: NextRequest) {
-  const supabase = await createSupabaseServerComponentClient();
-  if (!supabase) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-
-  const admin = createSupabaseAdminClient();
-  if (!admin) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const appUser = await getApiAppUser(admin, user.id);
-  if (!appUser || !appUser.is_active) return Response.json({ error: "Forbidden" }, { status: 403 });
+  const ctx = await getApiContext();
+  if (!ctx.ok) return ctx.response;
+  const { db, appUser } = ctx;
 
   const body = await request.json();
   const { student_id, ijaza_type, juz_number, sheikh_name, ijaza_date, notes } = body;
@@ -83,29 +110,30 @@ export async function POST(request: NextRequest) {
   }
 
   // Enforce access scoping
-  const allowed = await canAccessStudent(admin, appUser, student_id);
+  const allowed = await canAccessStudent(db, appUser, student_id);
   if (!allowed) {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { data, error } = await admin
-    .from("ijazat")
-    .insert({
-      student_id,
-      granted_by: appUser.id,
-      ijaza_type,
-      juz_number: ijaza_type === "juz" ? Number(juz_number) : null,
-      sheikh_name,
-      ijaza_date,
-      notes: notes ?? null
-    })
-    .select()
-    .single();
+  try {
+    const [created] = await db
+      .insert(ijazatTable)
+      .values({
+        student_id,
+        granted_by: appUser.id,
+        ijaza_type,
+        juz_number: ijaza_type === "juz" ? Number(juz_number) : null,
+        sheikh_name,
+        ijaza_date,
+        notes: notes ?? null,
+      })
+      .returning();
 
-  if (error) return Response.json({ error: error.message }, { status: 500 });
+    // Recalculate student summary
+    await recalculateStudentSummary(db, student_id);
 
-  // Recalculate student summary
-  await recalculateStudentSummary(admin, student_id);
-
-  return Response.json(data, { status: 201 });
+    return Response.json(created, { status: 201 });
+  } catch (error) {
+    return Response.json({ error: sanitizeError(error, "api") }, { status: 500 });
+  }
 }

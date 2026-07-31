@@ -1,23 +1,28 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseServerComponentClient } from "@/lib/supabase/server";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
+import { usersTable } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { NewStudentForm } from "@/components/new-student-form";
+import { NewStudentForm } from "@/features/students/components/new-student-form";
 
 export const metadata = { title: "إضافة طالب | اقرأ" };
 
 export default async function TeacherNewStudentPage() {
   const user = await requireRole("teacher");
 
-  const supabase = await createSupabaseServerComponentClient();
+  const db = getDb();
   let forcedGender: "male" | "female" | undefined = undefined;
 
-  if (supabase) {
-    const { data: appUser } = await supabase
-      .from("users")
-      .select("gender, can_view_all_genders")
-      .eq("id", user.id)
-      .maybeSingle();
+  if (db) {
+    const [appUser] = await db
+      .select({
+        gender: usersTable.gender,
+        can_view_all_genders: usersTable.can_view_all_genders,
+      })
+      .from(usersTable)
+      .where(eq(usersTable.id, user.id))
+      .limit(1);
 
     if (appUser && !appUser.can_view_all_genders && appUser.gender) {
       forcedGender = appUser.gender as "male" | "female";

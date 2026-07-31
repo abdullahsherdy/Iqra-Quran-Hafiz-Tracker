@@ -7,8 +7,8 @@ import { User, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import {
   initialLoginActionState,
   type LoginActionState,
-} from "@/lib/auth/shared";
-import { loginAction } from "@/lib/auth/actions";
+} from "@/features/auth/shared";
+import { loginAction } from "@/features/auth/actions";
 
 /* ── Shared styles ───────────────────────────────────────────────────── */
 const fieldWrap =

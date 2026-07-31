@@ -16,3 +16,8 @@ export function formatAyahPreview(
 ): string {
   return `سورة ${surahName} من الآية ${toArabicNumerals(fromAyah)} إلى الآية ${toArabicNumerals(toAyah)}`;
 }
+
+/** Format an ISO date string (YYYY-MM-DD) as an Arabic localized date. */
+export function formatArabicDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("ar-EG");
+}

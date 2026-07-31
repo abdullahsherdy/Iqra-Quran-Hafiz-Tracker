@@ -1,7 +1,9 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { getAssignedStudentIds } from "@/lib/auth/student-access";
-import { GrantIjazaForm } from "@/components/grant-ijaza-form";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
+import { studentsTable, usersTable } from "@/db/schema";
+import { and, asc, eq, inArray } from "drizzle-orm";
+import { getAssignedStudentIds } from "@/features/auth/student-access";
+import { GrantIjazaForm } from "@/features/ijazat/components/grant-ijaza-form";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
@@ -15,35 +17,39 @@ export default async function TeacherGrantIjazaPage({ searchParams }: PageProps)
   const user = await requireRole("teacher");
   const { student_id: preselectedId } = await searchParams;
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) {
+  const db = getDb();
+  if (!db) {
     return <div className="text-destructive p-4">خطأ في الاتصال بالخادم</div>;
   }
 
   // Load teacher's assigned active students only
-  const assignedIds = await getAssignedStudentIds(admin, user.id);
+  const assignedIds = await getAssignedStudentIds(db, user.id);
 
-  const { data: teacherUser } = await admin
-    .from("users")
-    .select("gender, can_view_all_genders")
-    .eq("id", user.id)
-    .maybeSingle();
+  const [teacherUser] = await db
+    .select({
+      gender: usersTable.gender,
+      can_view_all_genders: usersTable.can_view_all_genders,
+    })
+    .from(usersTable)
+    .where(eq(usersTable.id, user.id))
+    .limit(1);
 
-  let studentsQuery = admin
-    .from("students")
-    .select("id, name")
-    .in(
-      "id",
-      assignedIds.length > 0 ? assignedIds : ["00000000-0000-0000-0000-000000000000"]
-    )
-    .eq("is_active", true)
-    .order("name");
-
-  if (teacherUser && !teacherUser.can_view_all_genders) {
-    studentsQuery = studentsQuery.eq("gender", teacherUser.gender);
+  const conditions = [
+    inArray(
+      studentsTable.id,
+      assignedIds.length > 0 ? assignedIds : ["00000000-0000-0000-0000-000000000000"],
+    ),
+    eq(studentsTable.status, "active"),
+  ];
+  if (teacherUser && !teacherUser.can_view_all_genders && teacherUser.gender) {
+    conditions.push(eq(studentsTable.gender, teacherUser.gender));
   }
 
-  const { data: students } = await studentsQuery;
+  const students = await db
+    .select({ id: studentsTable.id, name: studentsTable.name })
+    .from(studentsTable)
+    .where(and(...conditions))
+    .orderBy(asc(studentsTable.name));
 
   return (
     <div className="space-y-6 mx-auto max-w-2xl">
@@ -60,7 +66,7 @@ export default async function TeacherGrantIjazaPage({ searchParams }: PageProps)
         </div>
       </div>
 
-      {students && students.length > 0 ? (
+      {students.length > 0 ? (
         <GrantIjazaForm
           students={students}
           preselectedStudentId={preselectedId}

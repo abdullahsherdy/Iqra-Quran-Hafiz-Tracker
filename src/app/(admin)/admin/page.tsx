@@ -1,79 +1,99 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { notFound } from "next/navigation";
-import Link from "next/link";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
 import {
-  Users, GraduationCap, BookOpen, Award,
+  studentsTable,
+  usersTable,
+  sessionsTable,
+  ijazatTable,
+} from "@/db/schema";
+import { and, count, eq, gte, isNull, lt, or, desc } from "drizzle-orm";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import {
+  BookOpen, Award,
   AlertTriangle, ClipboardList, Plus,
 } from "lucide-react";
-import { GenderBadge, StudentStatusBadge, type StudentStatus } from "@/components/badges";
+import { GenderBadge } from "@/components/badges";
+import { toDateString } from "@/lib/utils";
 
 export async function generateMetadata() {
   return { title: `لوحة التحكم | ${process.env.NEXT_PUBLIC_APP_NAME ?? "اقرأ"}` };
 }
 
 export default async function AdminDashboardPage() {
-  const user = await requireRole("admin");
+  await requireRole("admin");
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) return notFound();
+  const db = getDb();
+  if (!db) return notFound();
 
   const now = new Date();
-  const todayStr = now.toISOString().split("T")[0];
+  const todayStr = toDateString(now);
   const weekStart = new Date(now);
   weekStart.setDate(now.getDate() - 6);
-  const weekStartStr = weekStart.toISOString().split("T")[0];
+  const weekStartStr = toDateString(weekStart);
   const thirtyDaysAgo = new Date(now);
   thirtyDaysAgo.setDate(now.getDate() - 30);
-  const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split("T")[0];
+  const thirtyDaysAgoStr = toDateString(thirtyDaysAgo);
 
   const [
-    activeStudentsRes,
-    teachersRes,
-    sessionsTodayRes,
-    sessionsWeekRes,
-    recentSessionsRes,
-    recentIjazatRes,
-    atRiskRes,
-    unassignedRes,
+    activeStudentsRows,
+    teachersRows,
+    sessionsTodayRows,
+    sessionsWeekRows,
+    recentSessions,
+    recentIjazat,
+    atRisk,
   ] = await Promise.all([
-    admin.from("students").select("*", { count: "exact", head: true }).eq("status", "active"),
-    admin.from("users").select("*", { count: "exact", head: true }).eq("role", "teacher").eq("is_active", true),
-    admin.from("sessions").select("*", { count: "exact", head: true }).eq("session_date", todayStr),
-    admin.from("sessions").select("*", { count: "exact", head: true }).gte("session_date", weekStartStr),
-    admin
-      .from("sessions")
-      .select("id, session_date, session_type, rating, students(id, name), users!sessions_teacher_id_fkey(name)")
-      .order("session_date", { ascending: false })
-      .order("created_at", { ascending: false })
+    db.select({ count: count() }).from(studentsTable).where(eq(studentsTable.status, "active")),
+    db.select({ count: count() }).from(usersTable).where(and(eq(usersTable.role, "teacher"), eq(usersTable.is_active, true))),
+    db.select({ count: count() }).from(sessionsTable).where(eq(sessionsTable.session_date, todayStr)),
+    db.select({ count: count() }).from(sessionsTable).where(gte(sessionsTable.session_date, weekStartStr)),
+    db.select({
+        id: sessionsTable.id,
+        session_date: sessionsTable.session_date,
+        session_type: sessionsTable.session_type,
+        rating: sessionsTable.rating,
+        student_id: studentsTable.id,
+        student_name: studentsTable.name,
+        teacher_name: usersTable.name,
+      })
+      .from(sessionsTable)
+      .leftJoin(studentsTable, eq(sessionsTable.student_id, studentsTable.id))
+      .leftJoin(usersTable, eq(sessionsTable.teacher_id, usersTable.id))
+      .orderBy(desc(sessionsTable.session_date), desc(sessionsTable.created_at))
       .limit(6),
-    admin
-      .from("ijazat")
-      .select("id, ijaza_date, ijaza_type, juz_number, students(id, name), users!ijazat_granted_by_fkey(name)")
-      .order("ijaza_date", { ascending: false })
-      .order("created_at", { ascending: false })
+    db.select({
+        id: ijazatTable.id,
+        ijaza_date: ijazatTable.ijaza_date,
+        ijaza_type: ijazatTable.ijaza_type,
+        juz_number: ijazatTable.juz_number,
+        student_id: studentsTable.id,
+        student_name: studentsTable.name,
+      })
+      .from(ijazatTable)
+      .leftJoin(studentsTable, eq(ijazatTable.student_id, studentsTable.id))
+      .orderBy(desc(ijazatTable.ijaza_date), desc(ijazatTable.created_at))
       .limit(4),
-    admin
-      .from("students")
-      .select("id, name, gender, status, last_session_date")
-      .eq("status", "active")
-      .or(`last_session_date.is.null,last_session_date.lt.${thirtyDaysAgoStr}`)
-      .order("last_session_date", { ascending: true })
+    db.select({
+        id: studentsTable.id,
+        name: studentsTable.name,
+        gender: studentsTable.gender,
+        status: studentsTable.status,
+        last_session_date: studentsTable.last_session_date,
+      })
+      .from(studentsTable)
+      .where(and(
+        eq(studentsTable.status, "active"),
+        or(isNull(studentsTable.last_session_date), lt(studentsTable.last_session_date, thirtyDaysAgoStr)),
+      ))
+      .orderBy(studentsTable.last_session_date)
       .limit(5),
-    admin
-      .from("students")
-      .select("id, students:teacher_student_assignments!inner(student_id)", { count: "exact", head: true })
-      .is("teacher_student_assignments.end_date", null)
-      .neq("status", "withdrawn"),
   ]);
 
-  const activeStudents = activeStudentsRes.count ?? 0;
-  const teachersCount  = teachersRes.count ?? 0;
-  const sessionsToday  = sessionsTodayRes.count ?? 0;
-  const sessionsWeek   = sessionsWeekRes.count ?? 0;
-  const recentSessions = recentSessionsRes.data ?? [];
-  const recentIjazat   = recentIjazatRes.data ?? [];
-  const atRisk         = atRiskRes.data ?? [];
+  const activeStudents = activeStudentsRows[0]?.count ?? 0;
+  const teachersCount  = teachersRows[0]?.count ?? 0;
+  const sessionsToday  = sessionsTodayRows[0]?.count ?? 0;
+  const sessionsWeek   = sessionsWeekRows[0]?.count ?? 0;
 
   const ratingColor: Record<string, string> = {
     excellent: "bg-[#dcfce7] text-[#166534]",
@@ -152,18 +172,16 @@ export default async function AdminDashboardPage() {
           ) : (
             <ul className="space-y-2.5">
               {recentSessions.map((s) => {
-                const student = s.students as unknown as { id: string; name: string } | null;
-                const teacher = s.users as unknown as { name: string } | null;
                 return (
                   <li key={s.id} className="flex items-center justify-between text-sm gap-2">
                     <div className="min-w-0">
-                      {student ? (
-                        <Link href={`/admin/students/${student.id}`} className="font-medium text-primary hover:underline truncate block">
-                          {student.name}
+                      {s.student_id ? (
+                        <Link href={`/admin/students/${s.student_id}`} className="font-medium text-primary hover:underline truncate block">
+                          {s.student_name}
                         </Link>
                       ) : null}
                       <p className="text-xs text-muted-foreground truncate">
-                        {teacher?.name} · {sessionTypeLabel[s.session_type] ?? s.session_type}
+                        {s.teacher_name} · {sessionTypeLabel[s.session_type] ?? s.session_type}
                       </p>
                     </div>
                     <div className="shrink-0 flex items-center gap-1.5">
@@ -230,12 +248,11 @@ export default async function AdminDashboardPage() {
             ) : (
               <ul className="space-y-2">
                 {recentIjazat.map((ij) => {
-                  const student = ij.students as unknown as { id: string; name: string } | null;
                   return (
                     <li key={ij.id} className="flex items-center justify-between text-sm">
-                      {student ? (
-                        <Link href={`/admin/students/${student.id}`} className="font-medium text-primary hover:underline">
-                          {student.name}
+                      {ij.student_id ? (
+                        <Link href={`/admin/students/${ij.student_id}`} className="font-medium text-primary hover:underline">
+                          {ij.student_name}
                         </Link>
                       ) : null}
                       <span className="text-xs text-muted-foreground">

@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, BookOpenText, ChevronLeft, ChevronRight, Menu } from "lucide-react";
+import { LogOut, BookOpenText, ChevronRight, Menu } from "lucide-react";
 import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { type Role, getNavItems } from "@/lib/nav";
-import { signOutAction } from "@/lib/auth/actions";
+import { signOutAction } from "@/features/auth/actions";
 
 interface AppShellProps {
   role: Role;

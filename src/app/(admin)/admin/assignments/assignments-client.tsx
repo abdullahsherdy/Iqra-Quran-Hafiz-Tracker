@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, X, Search, Loader2 } from "lucide-react";
 import { GenderBadge } from "@/components/badges";
+import { apiPost, ApiError } from "@/lib/api-client";
 
 interface Teacher {
   id: string;
@@ -24,7 +25,7 @@ interface StudentWithAssignments {
   name: string;
   gender: string;
   memorized_juz_count: number;
-  is_active: boolean;
+  status: string;
   assignments: StudentAssignment[];
 }
 
@@ -54,23 +55,16 @@ export function AssignmentsClient({ students, teachers }: AssignmentsClientProps
     setError(null);
     startTransition(async () => {
       try {
-        const res = await fetch("/api/assignments", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            student_id: selectedStudent.id,
-            teacher_id: selectedTeacherId,
-          }),
+        await apiPost("/api/assignments", {
+          student_id: selectedStudent.id,
+          teacher_id: selectedTeacherId,
         });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "حدث خطأ");
 
         setSelectedStudent(null);
         setSelectedTeacherId("");
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "حدث خطأ");
+        setError(err instanceof ApiError ? err.message : "حدث خطأ");
       }
     });
   };
@@ -81,16 +75,11 @@ export function AssignmentsClient({ students, teachers }: AssignmentsClientProps
     setError(null);
     startTransition(async () => {
       try {
-        const res = await fetch(`/api/assignments/${assignmentId}/end`, {
-          method: "POST",
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "حدث خطأ");
+        await apiPost(`/api/assignments/${assignmentId}/end`);
 
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "حدث خطأ");
+        setError(err instanceof ApiError ? err.message : "حدث خطأ");
       }
     });
   };

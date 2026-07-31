@@ -1,5 +1,8 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
+import { studentsTable, usersTable, teacherStudentAssignmentsTable } from "@/db/schema";
+import { and, asc, eq, isNull } from "drizzle-orm";
+import { notFound } from "next/navigation";
 import { AssignmentsClient } from "./assignments-client";
 
 export const metadata = { title: "إسناد الطلاب | اقرأ" };
@@ -7,48 +10,69 @@ export const metadata = { title: "إسناد الطلاب | اقرأ" };
 export default async function AdminAssignmentsPage() {
   await requireRole("admin");
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) {
-    return <div className="text-destructive">Supabase client error</div>;
-  }
+  const db = getDb();
+  if (!db) return notFound();
 
   // Fetch all active teachers
-  const { data: teachers } = await admin
-    .from("users")
-    .select("id, name, gender, can_view_all_genders")
-    .eq("role", "teacher")
-    .eq("is_active", true)
-    .order("name");
+  const teacherRows = await db
+    .select({
+      id: usersTable.id,
+      name: usersTable.name,
+      gender: usersTable.gender,
+      can_view_all_genders: usersTable.can_view_all_genders,
+    })
+    .from(usersTable)
+    .where(and(eq(usersTable.role, "teacher"), eq(usersTable.is_active, true)))
+    .orderBy(asc(usersTable.name));
+
+  const teachers = teacherRows.map((t) => ({
+    id: t.id,
+    name: t.name,
+    gender: t.gender ?? "",
+    can_view_all_genders: t.can_view_all_genders ?? false,
+  }));
 
   // Fetch all active students
-  const { data: students } = await admin
-    .from("students")
-    .select("id, name, gender, memorized_juz_count, is_active")
-    .eq("is_active", true)
-    .order("name");
+  const students = await db
+    .select({
+      id: studentsTable.id,
+      name: studentsTable.name,
+      gender: studentsTable.gender,
+      memorized_juz_count: studentsTable.memorized_juz_count,
+      status: studentsTable.status,
+    })
+    .from(studentsTable)
+    .where(eq(studentsTable.status, "active"))
+    .orderBy(asc(studentsTable.name));
 
-  // Fetch all active assignments
-  const { data: activeAssignments } = await admin
-    .from("teacher_student_assignments")
-    .select("id, teacher_id, student_id, start_date, users!teacher_student_assignments_teacher_id_fkey(id, name)")
-    .is("end_date", null);
+  // Fetch all active assignments with teacher info
+  const activeAssignments = await db
+    .select({
+      id: teacherStudentAssignmentsTable.id,
+      teacher_id: teacherStudentAssignmentsTable.teacher_id,
+      student_id: teacherStudentAssignmentsTable.student_id,
+      start_date: teacherStudentAssignmentsTable.start_date,
+      teacher_name: usersTable.name,
+    })
+    .from(teacherStudentAssignmentsTable)
+    .leftJoin(usersTable, eq(teacherStudentAssignmentsTable.teacher_id, usersTable.id))
+    .where(isNull(teacherStudentAssignmentsTable.end_date));
 
   // Group assignments by student
   const studentAssignments: Record<string, Array<{ id: string; teacher_id: string; name: string; start_date: string }>> = {};
-  for (const a of activeAssignments ?? []) {
+  for (const a of activeAssignments) {
     if (!studentAssignments[a.student_id]) {
       studentAssignments[a.student_id] = [];
     }
-    const u = a.users as unknown as { id: string; name: string } | null;
     studentAssignments[a.student_id].push({
       id: a.id,
       teacher_id: a.teacher_id,
-      name: u?.name ?? "",
+      name: a.teacher_name ?? "",
       start_date: a.start_date,
     });
   }
 
-  const enrichedStudents = (students ?? []).map((s) => ({
+  const enrichedStudents = students.map((s) => ({
     ...s,
     assignments: studentAssignments[s.id] ?? [],
   }));
@@ -64,7 +88,7 @@ export default async function AdminAssignmentsPage() {
 
       <AssignmentsClient
         students={enrichedStudents}
-        teachers={teachers ?? []}
+        teachers={teachers}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import { requireRole } from "@/lib/auth/session";
+import { requireRole } from "@/features/auth/session";
 import Link from "next/link";
 import { PlusCircle } from "lucide-react";
 import { StudentsListClient } from "@/app/(admin)/admin/students/students-list-client";

@@ -1,8 +1,10 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
+import { ijazatTable, studentsTable } from "@/db/schema";
+import { asc, desc, eq } from "drizzle-orm";
 import { Award, Plus } from "lucide-react";
-import { GrantIjazaForm } from "@/components/grant-ijaza-form";
-import { AdminIjazatTable } from "@/components/admin-ijazat-table";
+import { GrantIjazaForm } from "@/features/ijazat/components/grant-ijaza-form";
+import { AdminIjazatTable } from "@/features/ijazat/components/admin-ijazat-table";
 
 export const metadata = { title: "إدارة الإجازات | اقرأ" };
 
@@ -14,25 +16,50 @@ export default async function AdminIjazatPage({ searchParams }: PageProps) {
   await requireRole("admin");
   const { grant_for: grantForId } = await searchParams;
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) {
+  const db = getDb();
+  if (!db) {
     return <div className="text-destructive p-4">خطأ في الاتصال بالخادم</div>;
   }
 
   // Fetch all ijazat with student info, sorted newest first
-  const { data: allIjazat } = await admin
-    .from("ijazat")
-    .select(
-      "id, ijaza_type, juz_number, sheikh_name, ijaza_date, notes, created_at, students(id, name, gender)"
-    )
-    .order("ijaza_date", { ascending: false });
+  const ijazatRows = await db
+    .select({
+      id: ijazatTable.id,
+      ijaza_type: ijazatTable.ijaza_type,
+      juz_number: ijazatTable.juz_number,
+      sheikh_name: ijazatTable.sheikh_name,
+      ijaza_date: ijazatTable.ijaza_date,
+      notes: ijazatTable.notes,
+      created_at: ijazatTable.created_at,
+      student_id: studentsTable.id,
+      student_name: studentsTable.name,
+      student_gender: studentsTable.gender,
+    })
+    .from(ijazatTable)
+    .leftJoin(studentsTable, eq(ijazatTable.student_id, studentsTable.id))
+    .orderBy(desc(ijazatTable.ijaza_date));
+
+  // Map to the shape expected by AdminIjazatTable (nested students object)
+  const allIjazat = ijazatRows.map((r) => ({
+    id: r.id,
+    ijaza_type: r.ijaza_type as "juz" | "full_quran",
+    juz_number: r.juz_number,
+    sheikh_name: r.sheikh_name,
+    ijaza_date: r.ijaza_date,
+    notes: r.notes,
+    created_at: r.created_at ? r.created_at.toISOString() : "",
+    students: r.student_id ? { id: r.student_id, name: r.student_name ?? "", gender: r.student_gender ?? "" } : null,
+  }));
 
   // Fetch all active students for the grant form
-  const { data: students } = await admin
-    .from("students")
-    .select("id, name")
-    .eq("status", "active")
-    .order("name");
+  const students = await db
+    .select({
+      id: studentsTable.id,
+      name: studentsTable.name,
+    })
+    .from(studentsTable)
+    .where(eq(studentsTable.status, "active"))
+    .orderBy(asc(studentsTable.name));
 
   return (
     <div className="space-y-8">
@@ -44,7 +71,7 @@ export default async function AdminIjazatPage({ searchParams }: PageProps) {
             إدارة الإجازات
           </h2>
           <p className="text-sm text-muted-foreground mt-0.5">
-            منح وإلغاء إجازات الطلاب — المجموع: {allIjazat?.length ?? 0} إجازة
+            منح وإلغاء إجازات الطلاب — المجموع: {allIjazat.length} إجازة
           </p>
         </div>
       </div>
@@ -56,7 +83,7 @@ export default async function AdminIjazatPage({ searchParams }: PageProps) {
           <h3 className="font-semibold text-base border-b border-border pb-2">
             سجل الإجازات
           </h3>
-          <AdminIjazatTable ijazat={allIjazat ?? []} />
+          <AdminIjazatTable ijazat={allIjazat} />
         </div>
 
         {/* Grant new ijaza form */}
@@ -66,7 +93,7 @@ export default async function AdminIjazatPage({ searchParams }: PageProps) {
             منح إجازة جديدة
           </h3>
           <GrantIjazaForm
-            students={students ?? []}
+            students={students}
             preselectedStudentId={grantForId}
             redirectTo={
               grantForId

@@ -1,9 +1,12 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { notFound } from "next/navigation";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
+import { studentsTable, sessionsTable, ijazatTable, usersTable } from "@/db/schema";
+import { and, count, desc, eq, gte, isNull, lt, or } from "drizzle-orm";
 import { BarChart3, AlertTriangle, TrendingUp, BookOpen } from "lucide-react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { GenderBadge, StudentStatusBadge, type StudentStatus } from "@/components/badges";
+import { toDateString } from "@/lib/utils";
 
 export async function generateMetadata() {
   return { title: `التقارير | ${process.env.NEXT_PUBLIC_APP_NAME ?? "اقرأ"}` };
@@ -12,8 +15,8 @@ export async function generateMetadata() {
 export default async function AdminReportsPage() {
   await requireRole("admin");
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) return notFound();
+  const db = getDb();
+  if (!db) return notFound();
 
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -21,68 +24,79 @@ export default async function AdminReportsPage() {
     .split("T")[0];
   const thirtyDaysAgo = new Date(now);
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split("T")[0];
+  const thirtyDaysAgoStr = toDateString(thirtyDaysAgo);
 
   const [
-    activeRes,
-    pausedRes,
-    graduatedRes,
-    withdrawnRes,
-    sessionsMonthRes,
-    ijazatMonthRes,
-    teachersRes,
-    topStudentsRes,
-    atRiskRes,
-    teacherSessionsRes,
+    activeRows,
+    pausedRows,
+    graduatedRows,
+    withdrawnRows,
+    sessionsMonthRows,
+    ijazatMonthRows,
+    teachersRows,
+    topStudents,
+    atRisk,
+    teacherSessionsRows,
   ] = await Promise.all([
-    admin.from("students").select("*", { count: "exact", head: true }).eq("status", "active"),
-    admin.from("students").select("*", { count: "exact", head: true }).eq("status", "paused"),
-    admin.from("students").select("*", { count: "exact", head: true }).eq("status", "graduated"),
-    admin.from("students").select("*", { count: "exact", head: true }).eq("status", "withdrawn"),
-    admin.from("sessions").select("*", { count: "exact", head: true }).gte("session_date", monthStart),
-    admin.from("ijazat").select("*", { count: "exact", head: true }).gte("ijaza_date", monthStart),
-    admin
-      .from("users")
-      .select("*", { count: "exact", head: true })
-      .eq("role", "teacher")
-      .eq("is_active", true),
-    admin
-      .from("students")
-      .select("id, name, gender, memorized_juz_count, ijaza_juz_count, last_session_date")
-      .eq("status", "active")
-      .order("memorized_juz_count", { ascending: false })
+    db.select({ count: count() }).from(studentsTable).where(eq(studentsTable.status, "active")),
+    db.select({ count: count() }).from(studentsTable).where(eq(studentsTable.status, "paused")),
+    db.select({ count: count() }).from(studentsTable).where(eq(studentsTable.status, "graduated")),
+    db.select({ count: count() }).from(studentsTable).where(eq(studentsTable.status, "withdrawn")),
+    db.select({ count: count() }).from(sessionsTable).where(gte(sessionsTable.session_date, monthStart)),
+    db.select({ count: count() }).from(ijazatTable).where(gte(ijazatTable.ijaza_date, monthStart)),
+    db.select({ count: count() }).from(usersTable).where(and(eq(usersTable.role, "teacher"), eq(usersTable.is_active, true))),
+    db
+      .select({
+        id: studentsTable.id,
+        name: studentsTable.name,
+        gender: studentsTable.gender,
+        memorized_juz_count: studentsTable.memorized_juz_count,
+        ijaza_juz_count: studentsTable.ijaza_juz_count,
+        last_session_date: studentsTable.last_session_date,
+      })
+      .from(studentsTable)
+      .where(eq(studentsTable.status, "active"))
+      .orderBy(desc(studentsTable.memorized_juz_count))
       .limit(10),
-    admin
-      .from("students")
-      .select("id, name, last_session_date")
-      .eq("status", "active")
-      .or(`last_session_date.is.null,last_session_date.lt.${thirtyDaysAgoStr}`)
-      .order("last_session_date", { ascending: true })
+    db
+      .select({
+        id: studentsTable.id,
+        name: studentsTable.name,
+        last_session_date: studentsTable.last_session_date,
+      })
+      .from(studentsTable)
+      .where(and(
+        eq(studentsTable.status, "active"),
+        or(isNull(studentsTable.last_session_date), lt(studentsTable.last_session_date, thirtyDaysAgoStr)),
+      ))
+      .orderBy(studentsTable.last_session_date)
       .limit(10),
-    admin
-      .from("sessions")
-      .select("teacher_id, users!sessions_teacher_id_fkey(id, name)")
-      .gte("session_date", monthStart),
+    db
+      .select({
+        teacher_id: sessionsTable.teacher_id,
+        teacher_id_join: usersTable.id,
+        teacher_name: usersTable.name,
+      })
+      .from(sessionsTable)
+      .leftJoin(usersTable, eq(sessionsTable.teacher_id, usersTable.id))
+      .where(gte(sessionsTable.session_date, monthStart)),
   ]);
 
-  const activeCount    = activeRes.count ?? 0;
-  const pausedCount    = pausedRes.count ?? 0;
-  const graduatedCount = graduatedRes.count ?? 0;
-  const withdrawnCount = withdrawnRes.count ?? 0;
-  const sessionsMonth  = sessionsMonthRes.count ?? 0;
-  const ijazatMonth    = ijazatMonthRes.count ?? 0;
-  const teachersCount  = teachersRes.count ?? 0;
-  const topStudents    = topStudentsRes.data ?? [];
-  const atRisk         = atRiskRes.data ?? [];
+  const activeCount    = activeRows[0]?.count ?? 0;
+  const pausedCount    = pausedRows[0]?.count ?? 0;
+  const graduatedCount = graduatedRows[0]?.count ?? 0;
+  const withdrawnCount = withdrawnRows[0]?.count ?? 0;
+  const sessionsMonth  = sessionsMonthRows[0]?.count ?? 0;
+  const ijazatMonth    = ijazatMonthRows[0]?.count ?? 0;
+  const teachersCount  = teachersRows[0]?.count ?? 0;
 
   // Aggregate sessions per teacher in JS
   const teacherMap = new Map<string, { name: string; count: number }>();
-  for (const s of teacherSessionsRes.data ?? []) {
-    const t = s.users as unknown as { id: string; name: string } | null;
-    if (!t) continue;
-    const entry = teacherMap.get(t.id);
+  for (const s of teacherSessionsRows) {
+    if (!s.teacher_id_join) continue;
+    const entry = teacherMap.get(s.teacher_id_join);
     if (entry) entry.count++;
-    else teacherMap.set(t.id, { name: t.name, count: 1 });
+    else teacherMap.set(s.teacher_id_join, { name: s.teacher_name ?? "", count: 1 });
   }
   const teacherActivity = [...teacherMap.entries()]
     .map(([id, v]) => ({ id, ...v }))

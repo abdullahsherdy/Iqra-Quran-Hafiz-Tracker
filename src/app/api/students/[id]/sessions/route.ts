@@ -1,7 +1,9 @@
 import { NextRequest } from "next/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerComponentClient } from "@/lib/supabase/server";
-import { canAccessStudent, getApiAppUser } from "@/lib/auth/student-access";
+import { and, eq, gte, lte, desc } from "drizzle-orm";
+import { sessionsTable, surahsTable, usersTable } from "@/db/schema";
+import { canAccessStudent } from "@/features/auth/student-access";
+import { sanitizeError } from "@/lib/api-error";
+import { getApiContext } from "@/features/auth/api-context";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -10,19 +12,11 @@ interface RouteContext {
 // GET /api/students/[id]/sessions — session history for student profile
 export async function GET(request: NextRequest, { params }: RouteContext) {
   const { id: studentId } = await params;
-  const supabase = await createSupabaseServerComponentClient();
-  if (!supabase) return Response.json({ error: "Config missing" }, { status: 500 });
+  const ctx = await getApiContext();
+  if (!ctx.ok) return ctx.response;
+  const { db, appUser } = ctx;
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-
-  const admin = createSupabaseAdminClient();
-  if (!admin) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const appUser = await getApiAppUser(admin, user.id);
-  if (!appUser || !appUser.is_active) return Response.json({ error: "Forbidden" }, { status: 403 });
-
-  if (!(await canAccessStudent(admin, appUser, studentId))) {
+  if (!(await canAccessStudent(db, appUser, studentId))) {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -31,37 +25,50 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   const dateFrom = searchParams.get("date_from") ?? "";
   const dateTo = searchParams.get("date_to") ?? "";
 
-  let query = admin
-    .from("sessions")
-    .select("id, session_date, session_type, surah_id, from_ayah, to_ayah, pages, rating, notes, teacher_id, surahs(id, name_arabic), users!sessions_teacher_id_fkey(id, name)")
-    .eq("student_id", studentId)
-    .order("session_date", { ascending: false });
+  const conditions = [eq(sessionsTable.student_id, studentId)];
+  if (sessionType) conditions.push(eq(sessionsTable.session_type, sessionType));
+  if (dateFrom) conditions.push(gte(sessionsTable.session_date, dateFrom));
+  if (dateTo) conditions.push(lte(sessionsTable.session_date, dateTo));
 
-  if (sessionType) query = query.eq("session_type", sessionType);
-  if (dateFrom) query = query.gte("session_date", dateFrom);
-  if (dateTo) query = query.lte("session_date", dateTo);
+  try {
+    const data = await db
+      .select({
+        id: sessionsTable.id,
+        session_date: sessionsTable.session_date,
+        session_type: sessionsTable.session_type,
+        surah_id: sessionsTable.surah_id,
+        from_ayah: sessionsTable.from_ayah,
+        to_ayah: sessionsTable.to_ayah,
+        pages: sessionsTable.pages,
+        rating: sessionsTable.rating,
+        notes: sessionsTable.notes,
+        teacher_id: sessionsTable.teacher_id,
+        surah_name: surahsTable.name_arabic,
+        teacher_name: usersTable.name,
+      })
+      .from(sessionsTable)
+      .leftJoin(surahsTable, eq(sessionsTable.surah_id, surahsTable.id))
+      .leftJoin(usersTable, eq(sessionsTable.teacher_id, usersTable.id))
+      .where(and(...conditions))
+      .orderBy(desc(sessionsTable.session_date));
 
-  const { data, error } = await query;
-  if (error) return Response.json({ error: error.message }, { status: 500 });
-
-  const sessions = (data ?? []).map((s) => {
-    const surah = s.surahs as unknown as { id: number; name_arabic: string } | null;
-    const teacher = s.users as unknown as { id: string; name: string } | null;
-    return {
+    const sessions = data.map((s) => ({
       id: s.id,
       session_date: s.session_date,
       session_type: s.session_type,
       surah_id: s.surah_id,
-      surah_name: surah?.name_arabic ?? "",
+      surah_name: s.surah_name ?? "",
       from_ayah: s.from_ayah,
       to_ayah: s.to_ayah,
       pages: s.pages,
       rating: s.rating,
       notes: s.notes,
       teacher_id: s.teacher_id,
-      teacher_name: teacher?.name ?? "",
-    };
-  });
+      teacher_name: s.teacher_name ?? "",
+    }));
 
-  return Response.json(sessions);
+    return Response.json(sessions);
+  } catch (error) {
+    return Response.json({ error: sanitizeError(error, "api") }, { status: 500 });
+  }
 }

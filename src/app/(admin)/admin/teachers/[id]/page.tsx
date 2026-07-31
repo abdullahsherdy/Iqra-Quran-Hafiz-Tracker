@@ -1,9 +1,11 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
+import { usersTable, teacherStudentAssignmentsTable, studentsTable } from "@/db/schema";
+import { and, asc, eq, isNull } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { GenderBadge } from "@/components/badges";
-import { LevelBadge } from "@/components/level-badge";
+import { LevelBadge } from "@/features/students/components/level-badge";
 import { ArrowRight } from "lucide-react";
 import { TeacherProfileActions } from "./teacher-profile-actions";
 
@@ -13,39 +15,62 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
-  const admin = createSupabaseAdminClient();
-  if (!admin) return { title: "المحفظ" };
-  const { data } = await admin.from("users").select("name").eq("id", id).maybeSingle();
-  return { title: `${data?.name ?? "المحفظ"} | اقرأ` };
+  const db = getDb();
+  if (!db) return { title: "المحفظ" };
+  const [row] = await db.select({ name: usersTable.name }).from(usersTable).where(eq(usersTable.id, id)).limit(1);
+  return { title: `${row?.name ?? "المحفظ"} | اقرأ` };
 }
 
 export default async function TeacherProfilePage({ params }: PageProps) {
   await requireRole("admin");
   const { id } = await params;
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) return notFound();
+  const db = getDb();
+  if (!db) return notFound();
 
-  const { data: teacher } = await admin
-    .from("users")
-    .select("id, name, username, phone, gender, can_view_all_genders, is_active, created_at")
-    .eq("id", id)
-    .eq("role", "teacher")
-    .maybeSingle();
+  const [teacher] = await db
+    .select({
+      id: usersTable.id,
+      name: usersTable.name,
+      username: usersTable.username,
+      phone: usersTable.phone,
+      gender: usersTable.gender,
+      can_view_all_genders: usersTable.can_view_all_genders,
+      is_active: usersTable.is_active,
+      created_at: usersTable.created_at,
+    })
+    .from(usersTable)
+    .where(and(eq(usersTable.id, id), eq(usersTable.role, "teacher")))
+    .limit(1);
 
   if (!teacher) return notFound();
 
-  const { data: assignments } = await admin
-    .from("teacher_student_assignments")
-    .select("id, start_date, student_id, students(id, name, gender, memorized_juz_count, status)")
-    .eq("teacher_id", id)
-    .is("end_date", null)
-    .order("start_date");
+  const assignments = await db
+    .select({
+      assignment_id: teacherStudentAssignmentsTable.id,
+      start_date: teacherStudentAssignmentsTable.start_date,
+      student_id: studentsTable.id,
+      student_name: studentsTable.name,
+      student_gender: studentsTable.gender,
+      student_memorized_juz_count: studentsTable.memorized_juz_count,
+      student_status: studentsTable.status,
+    })
+    .from(teacherStudentAssignmentsTable)
+    .leftJoin(studentsTable, eq(teacherStudentAssignmentsTable.student_id, studentsTable.id))
+    .where(and(eq(teacherStudentAssignmentsTable.teacher_id, id), isNull(teacherStudentAssignmentsTable.end_date)))
+    .orderBy(asc(teacherStudentAssignmentsTable.start_date));
 
-  const students = (assignments ?? []).map((a) => {
-    const s = a.students as unknown as { id: string; name: string; gender: string; memorized_juz_count: number; status: string } | null;
-    return s ? { ...s, assignment_id: a.id, start_date: a.start_date } : null;
-  }).filter(Boolean);
+  const students = assignments
+    .filter((a) => a.student_id !== null)
+    .map((a) => ({
+      id: a.student_id!,
+      name: a.student_name!,
+      gender: a.student_gender!,
+      memorized_juz_count: a.student_memorized_juz_count ?? 0,
+      status: a.student_status,
+      assignment_id: a.assignment_id,
+      start_date: a.start_date,
+    }));
 
   return (
     <div className="space-y-6">
@@ -84,7 +109,7 @@ export default async function TeacherProfilePage({ params }: PageProps) {
             </div>
             <div className="flex justify-between">
               <dt className="text-muted-foreground">تاريخ الإنشاء</dt>
-              <dd>{new Date(teacher.created_at).toLocaleDateString("ar-EG")}</dd>
+              <dd>{teacher.created_at ? new Date(teacher.created_at).toLocaleDateString("ar-EG") : "—"}</dd>
             </div>
           </dl>
         </div>
@@ -94,8 +119,8 @@ export default async function TeacherProfilePage({ params }: PageProps) {
           <h3 className="font-semibold">الإعدادات</h3>
           <TeacherProfileActions
             teacherId={teacher.id}
-            isActive={teacher.is_active}
-            canViewAllGenders={teacher.can_view_all_genders}
+            isActive={teacher.is_active ?? true}
+            canViewAllGenders={teacher.can_view_all_genders ?? false}
           />
         </div>
       </div>

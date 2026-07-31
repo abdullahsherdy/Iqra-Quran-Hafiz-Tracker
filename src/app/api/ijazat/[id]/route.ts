@@ -1,8 +1,10 @@
 import { NextRequest } from "next/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerComponentClient } from "@/lib/supabase/server";
-import { getApiAppUser } from "@/lib/auth/student-access";
-import { recalculateStudentSummary } from "@/lib/students";
+import { eq } from "drizzle-orm";
+
+import { ijazatTable } from "@/db/schema";
+import { recalculateStudentSummary } from "@/features/students/server/recalc";
+import { sanitizeError } from "@/lib/api-error";
+import { getApiContext } from "@/features/auth/api-context";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -11,38 +13,28 @@ interface RouteContext {
 // DELETE /api/ijazat/[id] — admin revoke ijaza
 export async function DELETE(_req: NextRequest, { params }: RouteContext) {
   const { id } = await params;
-  const supabase = await createSupabaseServerComponentClient();
-  if (!supabase) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-
-  const admin = createSupabaseAdminClient();
-  if (!admin) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const appUser = await getApiAppUser(admin, user.id);
-  if (!appUser || !appUser.is_active) return Response.json({ error: "Forbidden" }, { status: 403 });
+  const ctx = await getApiContext();
+  if (!ctx.ok) return ctx.response;
+  const { db, appUser } = ctx;
   if (appUser.role !== "admin") return Response.json({ error: "Forbidden" }, { status: 403 });
 
   // Get student id of this ijaza before deleting
-  const { data: ijaza, error: fetchErr } = await admin
-    .from("ijazat")
-    .select("student_id")
-    .eq("id", id)
-    .maybeSingle();
+  const [ijaza] = await db
+    .select({ student_id: ijazatTable.student_id })
+    .from(ijazatTable)
+    .where(eq(ijazatTable.id, id))
+    .limit(1);
 
-  if (fetchErr) return Response.json({ error: fetchErr.message }, { status: 500 });
   if (!ijaza) return Response.json({ error: "الإجازة غير موجودة" }, { status: 404 });
 
-  const { error: deleteErr } = await admin
-    .from("ijazat")
-    .delete()
-    .eq("id", id);
+  try {
+    await db.delete(ijazatTable).where(eq(ijazatTable.id, id));
 
-  if (deleteErr) return Response.json({ error: deleteErr.message }, { status: 500 });
+    // Recalculate
+    await recalculateStudentSummary(db, ijaza.student_id);
 
-  // Recalculate
-  await recalculateStudentSummary(admin, ijaza.student_id);
-
-  return Response.json({ ok: true });
+    return Response.json({ ok: true });
+  } catch (error) {
+    return Response.json({ error: sanitizeError(error, "ijaza delete") }, { status: 500 });
+  }
 }

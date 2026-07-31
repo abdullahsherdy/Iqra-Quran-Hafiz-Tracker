@@ -8,8 +8,9 @@ import {
   Award,
   type LucideIcon,
 } from "lucide-react";
+import type { AppRole } from "@/domain/types";
 
-export type Role = "admin" | "teacher";
+export type Role = AppRole;
 
 export interface NavItem {
   label: string;

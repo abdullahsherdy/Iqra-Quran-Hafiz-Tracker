@@ -1,9 +1,16 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
+import {
+  studentsTable,
+  sessionsTable,
+  teacherStudentAssignmentsTable,
+} from "@/db/schema";
+import { and, asc, count, desc, eq, gte, inArray, isNull, lt, or } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { BookOpen, Award, AlertTriangle, Plus } from "lucide-react";
 import { GenderBadge } from "@/components/badges";
+import { toDateString } from "@/lib/utils";
 
 export async function generateMetadata() {
   return { title: `لوحة المتابعة | ${process.env.NEXT_PUBLIC_APP_NAME ?? "اقرأ"}` };
@@ -12,76 +19,120 @@ export async function generateMetadata() {
 export default async function TeacherDashboardPage() {
   const user = await requireRole("teacher");
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) return notFound();
+  const db = getDb();
+  if (!db) return notFound();
 
   const now = new Date();
-  const todayStr = now.toISOString().split("T")[0];
+  const todayStr = toDateString(now);
   const weekStart = new Date(now);
   weekStart.setDate(now.getDate() - 6);
-  const weekStartStr = weekStart.toISOString().split("T")[0];
+  const weekStartStr = toDateString(weekStart);
   const thirtyDaysAgo = new Date(now);
   thirtyDaysAgo.setDate(now.getDate() - 30);
-  const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split("T")[0];
+  const thirtyDaysAgoStr = toDateString(thirtyDaysAgo);
 
   // My assigned students
-  const { data: myAssignments } = await admin
-    .from("teacher_student_assignments")
-    .select("student_id")
-    .eq("teacher_id", user.id)
-    .is("end_date", null);
+  const myAssignments = await db
+    .select({ student_id: teacherStudentAssignmentsTable.student_id })
+    .from(teacherStudentAssignmentsTable)
+    .where(
+      and(
+        eq(teacherStudentAssignmentsTable.teacher_id, user.id),
+        isNull(teacherStudentAssignmentsTable.end_date),
+      ),
+    );
 
-  const myStudentIds = (myAssignments ?? []).map((a) => a.student_id);
+  const myStudentIds = myAssignments.map((a) => a.student_id);
 
+  const emptyArray = [] as const;
   const [
-    sessionsTodayRes,
-    sessionsWeekRes,
-    recentSessionsRes,
-    atRiskRes,
-    myStudentsRes,
+    sessionsTodayRows,
+    sessionsWeekRows,
+    recentSessions,
+    atRisk,
+    myStudents,
   ] = await Promise.all([
-    admin
-      .from("sessions")
-      .select("*", { count: "exact", head: true })
-      .eq("teacher_id", user.id)
-      .eq("session_date", todayStr),
-    admin
-      .from("sessions")
-      .select("*", { count: "exact", head: true })
-      .eq("teacher_id", user.id)
-      .gte("session_date", weekStartStr),
-    admin
-      .from("sessions")
-      .select("id, session_date, session_type, rating, from_ayah, to_ayah, students(id, name, gender)")
-      .eq("teacher_id", user.id)
-      .order("session_date", { ascending: false })
-      .order("created_at", { ascending: false })
+    db
+      .select({ c: count() })
+      .from(sessionsTable)
+      .where(
+        and(
+          eq(sessionsTable.teacher_id, user.id),
+          eq(sessionsTable.session_date, todayStr),
+        ),
+      ),
+    db
+      .select({ c: count() })
+      .from(sessionsTable)
+      .where(
+        and(
+          eq(sessionsTable.teacher_id, user.id),
+          gte(sessionsTable.session_date, weekStartStr),
+        ),
+      ),
+    db
+      .select({
+        id: sessionsTable.id,
+        session_date: sessionsTable.session_date,
+        session_type: sessionsTable.session_type,
+        rating: sessionsTable.rating,
+        from_ayah: sessionsTable.from_ayah,
+        to_ayah: sessionsTable.to_ayah,
+        student_id: studentsTable.id,
+        student_name: studentsTable.name,
+        student_gender: studentsTable.gender,
+      })
+      .from(sessionsTable)
+      .leftJoin(studentsTable, eq(sessionsTable.student_id, studentsTable.id))
+      .where(eq(sessionsTable.teacher_id, user.id))
+      .orderBy(desc(sessionsTable.session_date), desc(sessionsTable.created_at))
       .limit(6),
     myStudentIds.length > 0
-      ? admin
-          .from("students")
-          .select("id, name, gender, last_session_date, memorized_juz_count")
-          .in("id", myStudentIds)
-          .eq("status", "active")
-          .or(`last_session_date.is.null,last_session_date.lt.${thirtyDaysAgoStr}`)
-          .order("last_session_date", { ascending: true })
-      : Promise.resolve({ data: [] }),
+      ? db
+          .select({
+            id: studentsTable.id,
+            name: studentsTable.name,
+            gender: studentsTable.gender,
+            last_session_date: studentsTable.last_session_date,
+            memorized_juz_count: studentsTable.memorized_juz_count,
+          })
+          .from(studentsTable)
+          .where(
+            and(
+              inArray(studentsTable.id, myStudentIds),
+              eq(studentsTable.status, "active"),
+              or(
+                isNull(studentsTable.last_session_date),
+                lt(studentsTable.last_session_date, thirtyDaysAgoStr),
+              ),
+            ),
+          )
+          .orderBy(asc(studentsTable.last_session_date))
+      : Promise.resolve(emptyArray),
     myStudentIds.length > 0
-      ? admin
-          .from("students")
-          .select("id, name, gender, memorized_juz_count, ijaza_juz_count, last_session_date")
-          .in("id", myStudentIds)
-          .eq("status", "active")
-          .order("last_session_date", { ascending: false })
+      ? db
+          .select({
+            id: studentsTable.id,
+            name: studentsTable.name,
+            gender: studentsTable.gender,
+            memorized_juz_count: studentsTable.memorized_juz_count,
+            ijaza_juz_count: studentsTable.ijaza_juz_count,
+            last_session_date: studentsTable.last_session_date,
+          })
+          .from(studentsTable)
+          .where(
+            and(
+              inArray(studentsTable.id, myStudentIds),
+              eq(studentsTable.status, "active"),
+            ),
+          )
+          .orderBy(desc(studentsTable.last_session_date))
           .limit(8)
-      : Promise.resolve({ data: [] }),
+      : Promise.resolve(emptyArray),
   ]);
 
-  const sessionsToday  = sessionsTodayRes.count ?? 0;
-  const sessionsWeek   = sessionsWeekRes.count ?? 0;
-  const recentSessions = recentSessionsRes.data ?? [];
-  const atRisk         = (atRiskRes.data ?? []) as Array<{ id: string; name: string; gender: string; last_session_date: string | null; memorized_juz_count: number }>;
-  const myStudents     = (myStudentsRes.data ?? []) as Array<{ id: string; name: string; gender: string; memorized_juz_count: number; ijaza_juz_count: number; last_session_date: string | null }>;
+  const sessionsToday  = sessionsTodayRows[0]?.c ?? 0;
+  const sessionsWeek   = sessionsWeekRows[0]?.c ?? 0;
 
   const ratingColor: Record<string, string> = {
     excellent: "bg-[#dcfce7] text-[#166534]",
@@ -177,13 +228,12 @@ export default async function TeacherDashboardPage() {
           ) : (
             <ul className="space-y-2.5">
               {recentSessions.map((s) => {
-                const student = s.students as unknown as { id: string; name: string; gender: string } | null;
                 return (
                   <li key={s.id} className="flex items-center justify-between text-sm gap-2">
                     <div className="min-w-0">
-                      {student ? (
-                        <Link href={`/teacher/students/${student.id}`} className="font-medium text-primary hover:underline truncate block">
-                          {student.name}
+                      {s.student_id ? (
+                        <Link href={`/teacher/students/${s.student_id}`} className="font-medium text-primary hover:underline truncate block">
+                          {s.student_name}
                         </Link>
                       ) : null}
                       <p className="text-xs text-muted-foreground">

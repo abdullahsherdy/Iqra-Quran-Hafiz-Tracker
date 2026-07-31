@@ -1,52 +1,43 @@
 import { NextRequest } from "next/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerComponentClient } from "@/lib/supabase/server";
-import { usernameToEmail } from "@/lib/auth/shared";
+import { asc, eq } from "drizzle-orm";
+
+import { createSupabaseAdminClient } from "@/infrastructure/auth/admin";
+import { usernameToEmail } from "@/features/auth/shared";
+import { sanitizeError } from "@/lib/api-error";
+import { usersTable } from "@/db/schema";
+import { getApiContext } from "@/features/auth/api-context";
 
 // GET /api/teachers — admin only
 export async function GET() {
-  const supabase = await createSupabaseServerComponentClient();
-  if (!supabase) return Response.json({ error: "Config missing" }, { status: 500 });
+  const ctx = await getApiContext();
+  if (!ctx.ok) return ctx.response;
+  const { db, appUser } = ctx;
+  if (appUser.role !== "admin") return Response.json({ error: "Forbidden" }, { status: 403 });
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
+  const data = await db
+    .select({
+      id: usersTable.id,
+      name: usersTable.name,
+      username: usersTable.username,
+      phone: usersTable.phone,
+      gender: usersTable.gender,
+      can_view_all_genders: usersTable.can_view_all_genders,
+      is_active: usersTable.is_active,
+      created_at: usersTable.created_at,
+    })
+    .from(usersTable)
+    .where(eq(usersTable.role, "teacher"))
+    .orderBy(asc(usersTable.name));
 
-  const { data: appUser } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (appUser?.role !== "admin") return Response.json({ error: "Forbidden" }, { status: 403 });
-
-  const admin = createSupabaseAdminClient();
-  if (!admin) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const { data, error } = await admin
-    .from("users")
-    .select("id, name, username, phone, gender, can_view_all_genders, is_active, created_at")
-    .eq("role", "teacher")
-    .order("name");
-
-  if (error) return Response.json({ error: error.message }, { status: 500 });
   return Response.json(data);
 }
 
 // POST /api/teachers — admin only; creates auth user + users row
 export async function POST(request: NextRequest) {
-  const supabase = await createSupabaseServerComponentClient();
-  if (!supabase) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-
-  const { data: appUser } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (appUser?.role !== "admin") return Response.json({ error: "Forbidden" }, { status: 403 });
+  const ctx = await getApiContext();
+  if (!ctx.ok) return ctx.response;
+  const { db, appUser } = ctx;
+  if (appUser.role !== "admin") return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const body = await request.json();
   const { name, username, password, phone, gender, can_view_all_genders } = body;
@@ -68,26 +59,28 @@ export async function POST(request: NextRequest) {
   });
 
   if (authError || !authData.user) {
-    return Response.json({ error: authError?.message ?? "Auth creation failed" }, { status: 400 });
+    return Response.json({ error: sanitizeError(authError, "auth create user") }, { status: 400 });
   }
 
   // Create users row (same UUID as auth user)
-  const { data: newUser, error: userError } = await admin.from("users").insert({
-    id: authData.user.id,
-    name,
-    username: username.trim().toLowerCase(),
-    role: "teacher",
-    phone: phone ?? null,
-    gender,
-    can_view_all_genders: can_view_all_genders ?? false,
-    is_active: true,
-  }).select().single();
-
-  if (userError) {
+  try {
+    const [newUser] = await db
+      .insert(usersTable)
+      .values({
+        id: authData.user.id,
+        name,
+        username: username.trim().toLowerCase(),
+        role: "teacher",
+        phone: phone ?? null,
+        gender,
+        can_view_all_genders: can_view_all_genders ?? false,
+        is_active: true,
+      })
+      .returning();
+    return Response.json(newUser, { status: 201 });
+  } catch (userError) {
     // Roll back auth user
     await admin.auth.admin.deleteUser(authData.user.id);
-    return Response.json({ error: userError.message }, { status: 500 });
+    return Response.json({ error: sanitizeError(userError, "user insert") }, { status: 500 });
   }
-
-  return Response.json(newUser, { status: 201 });
 }

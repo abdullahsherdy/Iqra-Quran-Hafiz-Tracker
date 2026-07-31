@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Search, SlidersHorizontal, ChevronRight, ChevronLeft, Users } from "lucide-react";
 import { GenderBadge, StudentStatusBadge, type StudentStatus } from "@/components/badges";
-import { LevelBadge } from "@/components/level-badge";
+import { LevelBadge } from "@/features/students/components/level-badge";
+import { apiGet } from "@/lib/api-client";
 
 interface Teacher {
   id: string;
@@ -95,20 +96,28 @@ export function StudentsListClient({ teachers, role, basePath }: StudentsListCli
       params.set("sort_by", sortBy);
       params.set("page", String(page));
 
-      const res = await fetch(`/api/students?${params}`);
-      const data = await res.json();
+      const data = await apiGet<{ data: Student[]; count: number }>(`/api/students?${params}`);
       setStudents(data.data ?? []);
       setTotal(data.count ?? 0);
+    } catch {
+      setStudents([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
   }, [debouncedSearch, gender, level, statusFilter, hasIjaza, teacherId, minJuz, maxJuz, ageMin, ageMax, lastActivity, sortBy, page, role]);
 
   useEffect(() => {
+    // Reset to page 1 when filters change. This is a legitimate state
+    // synchronization effect — we need page to reset before the fetch effect runs.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
   }, [debouncedSearch, gender, level, statusFilter, hasIjaza, teacherId, minJuz, maxJuz, ageMin, ageMax, lastActivity, sortBy]);
 
   useEffect(() => {
+    // Data-fetching effect: fetchStudents calls setState internally.
+    // Standard React data-fetching pattern — disable set-state-in-effect.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchStudents();
   }, [fetchStudents]);
 

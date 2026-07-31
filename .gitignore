@@ -40,3 +40,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .claude/settings.json
+
+# windows crash dumps
+*.stackdump
+
+# AI agent state (Devin CLI, oh-my-claudecode)
+.devin/
+.omc/
+
+# tool-generated timing files
+.ottotime

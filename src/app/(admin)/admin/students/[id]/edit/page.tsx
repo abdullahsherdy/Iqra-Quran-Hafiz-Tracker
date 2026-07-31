@@ -1,5 +1,7 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
+import { studentsTable, initialMemorizationTable } from "@/db/schema";
+import { asc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -11,32 +13,47 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
-  const admin = createSupabaseAdminClient();
-  if (!admin) return { title: "تعديل الطالب" };
-  const { data } = await admin.from("students").select("name").eq("id", id).maybeSingle();
-  return { title: `تعديل: ${data?.name ?? "الطالب"} | اقرأ` };
+  const db = getDb();
+  if (!db) return { title: "تعديل الطالب" };
+  const [row] = await db.select({ name: studentsTable.name }).from(studentsTable).where(eq(studentsTable.id, id)).limit(1);
+  return { title: `تعديل: ${row?.name ?? "الطالب"} | اقرأ` };
 }
 
 export default async function EditStudentPage({ params }: PageProps) {
   await requireRole("admin");
   const { id } = await params;
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) return notFound();
+  const db = getDb();
+  if (!db) return notFound();
 
-  const { data: student } = await admin
-    .from("students")
-    .select("id, name, gender, birth_date, guardian_name, guardian_phone, enrollment_date, notes, status, memorized_juz_count")
-    .eq("id", id)
-    .maybeSingle();
+  const [student] = await db
+    .select({
+      id: studentsTable.id,
+      name: studentsTable.name,
+      gender: studentsTable.gender,
+      birth_date: studentsTable.birth_date,
+      guardian_name: studentsTable.guardian_name,
+      guardian_phone: studentsTable.guardian_phone,
+      enrollment_date: studentsTable.enrollment_date,
+      notes: studentsTable.notes,
+      status: studentsTable.status,
+      memorized_juz_count: studentsTable.memorized_juz_count,
+    })
+    .from(studentsTable)
+    .where(eq(studentsTable.id, id))
+    .limit(1);
 
   if (!student) return notFound();
 
-  const { data: initMem } = await admin
-    .from("initial_memorization")
-    .select("juz_number, status, sheikh_name")
-    .eq("student_id", id)
-    .order("juz_number");
+  const initMem = await db
+    .select({
+      juz_number: initialMemorizationTable.juz_number,
+      status: initialMemorizationTable.status,
+      sheikh_name: initialMemorizationTable.sheikh_name,
+    })
+    .from(initialMemorizationTable)
+    .where(eq(initialMemorizationTable.student_id, id))
+    .orderBy(asc(initialMemorizationTable.juz_number));
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
@@ -52,7 +69,7 @@ export default async function EditStudentPage({ params }: PageProps) {
 
       <EditStudentForm
         student={student}
-        initialMem={(initMem ?? []).map((r) => ({
+        initialMem={initMem.map((r) => ({
           juz_number: r.juz_number,
           status: r.status as "memorized" | "with_ijaza",
           sheikh_name: r.sheikh_name ?? undefined,

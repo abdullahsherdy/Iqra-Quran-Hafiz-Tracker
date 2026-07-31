@@ -1,6 +1,8 @@
 import { NextRequest } from "next/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerComponentClient } from "@/lib/supabase/server";
+import { eq, desc } from "drizzle-orm";
+import { studentsTable, teacherStudentAssignmentsTable, usersTable } from "@/db/schema";
+import { sanitizeError } from "@/lib/api-error";
+import { getApiContext } from "@/features/auth/api-context";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
@@ -9,45 +11,43 @@ interface RouteContext {
 // GET /api/students/[id]/assignments — full assignment history (admin only)
 export async function GET(_req: NextRequest, { params }: RouteContext) {
   const { id } = await params;
-  const supabase = await createSupabaseServerComponentClient();
-  if (!supabase) return Response.json({ error: "Config missing" }, { status: 500 });
+  const ctx = await getApiContext();
+  if (!ctx.ok) return ctx.response;
+  const { db, appUser } = ctx;
+  if (appUser.role !== "admin") return Response.json({ error: "Forbidden" }, { status: 403 });
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-
-  const admin = createSupabaseAdminClient();
-  if (!admin) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const { data: appUser } = await admin
-    .from("users")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (appUser?.role !== "admin") return Response.json({ error: "Forbidden" }, { status: 403 });
-
-  const { data: student } = await admin.from("students").select("id").eq("id", id).maybeSingle();
+  const [student] = await db
+    .select({ id: studentsTable.id })
+    .from(studentsTable)
+    .where(eq(studentsTable.id, id))
+    .limit(1);
   if (!student) return Response.json({ error: "Not found" }, { status: 404 });
 
-  const { data, error } = await admin
-    .from("teacher_student_assignments")
-    .select("id, teacher_id, start_date, end_date, users!teacher_student_assignments_teacher_id_fkey(id, name)")
-    .eq("student_id", id)
-    .order("start_date", { ascending: false });
+  try {
+    const data = await db
+      .select({
+        id: teacherStudentAssignmentsTable.id,
+        teacher_id: teacherStudentAssignmentsTable.teacher_id,
+        start_date: teacherStudentAssignmentsTable.start_date,
+        end_date: teacherStudentAssignmentsTable.end_date,
+        teacher_name: usersTable.name,
+      })
+      .from(teacherStudentAssignmentsTable)
+      .leftJoin(usersTable, eq(teacherStudentAssignmentsTable.teacher_id, usersTable.id))
+      .where(eq(teacherStudentAssignmentsTable.student_id, id))
+      .orderBy(desc(teacherStudentAssignmentsTable.start_date));
 
-  if (error) return Response.json({ error: error.message }, { status: 500 });
-
-  const history = (data ?? []).map((a) => {
-    const u = a.users as unknown as { id: string; name: string } | null;
-    return {
+    const history = data.map((a) => ({
       id: a.id,
       teacher_id: a.teacher_id,
-      teacher_name: u?.name ?? "",
+      teacher_name: a.teacher_name ?? "",
       start_date: a.start_date,
       end_date: a.end_date,
       is_active: a.end_date === null,
-    };
-  });
+    }));
 
-  return Response.json(history);
+    return Response.json(history);
+  } catch (error) {
+    return Response.json({ error: sanitizeError(error, "api") }, { status: 500 });
+  }
 }

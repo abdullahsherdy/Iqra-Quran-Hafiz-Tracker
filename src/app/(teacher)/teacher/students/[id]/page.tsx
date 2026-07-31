@@ -1,11 +1,18 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
+import {
+  studentsTable,
+  teacherStudentAssignmentsTable,
+  usersTable,
+  initialMemorizationTable,
+} from "@/db/schema";
+import { and, asc, eq, isNull } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Pencil, Award } from "lucide-react";
 import { GenderBadge, StudentStatusBadge, type StudentStatus } from "@/components/badges";
-import { LevelBadge } from "@/components/level-badge";
-import { StudentProfileTabs } from "@/components/student-profile-tabs";
+import { LevelBadge } from "@/features/students/components/level-badge";
+import { StudentProfileTabs } from "@/features/students/components/student-profile-tabs";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -19,35 +26,42 @@ export default async function TeacherStudentProfilePage({ params }: PageProps) {
   const user = await requireRole("teacher");
   const { id } = await params;
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) return notFound();
+  const db = getDb();
+  if (!db) return notFound();
 
   // Fetch student details
-  const { data: student } = await admin
-    .from("students")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
+  const [student] = await db
+    .select()
+    .from(studentsTable)
+    .where(eq(studentsTable.id, id))
+    .limit(1);
 
   if (!student) return notFound();
 
   // Enforce assignment scoping
-  const { data: assign } = await admin
-    .from("teacher_student_assignments")
-    .select("id")
-    .eq("teacher_id", user.id)
-    .eq("student_id", id)
-    .is("end_date", null)
-    .maybeSingle();
+  const [assign] = await db
+    .select({ id: teacherStudentAssignmentsTable.id })
+    .from(teacherStudentAssignmentsTable)
+    .where(
+      and(
+        eq(teacherStudentAssignmentsTable.teacher_id, user.id),
+        eq(teacherStudentAssignmentsTable.student_id, id),
+        isNull(teacherStudentAssignmentsTable.end_date),
+      ),
+    )
+    .limit(1);
 
   if (!assign) return notFound();
 
   // Enforce gender scoping
-  const { data: teacherUser } = await admin
-    .from("users")
-    .select("gender, can_view_all_genders")
-    .eq("id", user.id)
-    .maybeSingle();
+  const [teacherUser] = await db
+    .select({
+      gender: usersTable.gender,
+      can_view_all_genders: usersTable.can_view_all_genders,
+    })
+    .from(usersTable)
+    .where(eq(usersTable.id, user.id))
+    .limit(1);
 
   if (!teacherUser) return notFound();
   if (!teacherUser.can_view_all_genders && student.gender !== teacherUser.gender) {
@@ -55,27 +69,41 @@ export default async function TeacherStudentProfilePage({ params }: PageProps) {
   }
 
   // Active teachers for this student
-  const { data: activeAssignments } = await admin
-    .from("teacher_student_assignments")
-    .select("id, teacher_id, start_date, users!teacher_student_assignments_teacher_id_fkey(id, name)")
-    .eq("student_id", id)
-    .is("end_date", null);
+  const activeAssignments = await db
+    .select({
+      id: teacherStudentAssignmentsTable.id,
+      teacher_id: teacherStudentAssignmentsTable.teacher_id,
+      start_date: teacherStudentAssignmentsTable.start_date,
+      teacher_name: usersTable.name,
+    })
+    .from(teacherStudentAssignmentsTable)
+    .leftJoin(usersTable, eq(teacherStudentAssignmentsTable.teacher_id, usersTable.id))
+    .where(
+      and(
+        eq(teacherStudentAssignmentsTable.student_id, id),
+        isNull(teacherStudentAssignmentsTable.end_date),
+      ),
+    );
 
   // Initial memorization
-  const { data: initialMem } = await admin
-    .from("initial_memorization")
-    .select("juz_number, status, sheikh_name")
-    .eq("student_id", id)
-    .order("juz_number");
+  const initialMem = await db
+    .select({
+      juz_number: initialMemorizationTable.juz_number,
+      status: initialMemorizationTable.status,
+      sheikh_name: initialMemorizationTable.sheikh_name,
+    })
+    .from(initialMemorizationTable)
+    .where(eq(initialMemorizationTable.student_id, id))
+    .orderBy(asc(initialMemorizationTable.juz_number));
 
-  const initMemValue = (initialMem ?? []).map((r) => ({
+  const initMemValue = initialMem.map((r) => ({
     juz_number: r.juz_number,
     status: r.status as "memorized" | "with_ijaza",
     sheikh_name: r.sheikh_name ?? undefined,
   }));
 
   const age = student.birth_date
-    ? Math.floor((Date.now() - new Date(student.birth_date).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+    ? Math.floor((new Date().getTime() - new Date(student.birth_date).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
     : null;
 
   return (
@@ -187,21 +215,20 @@ export default async function TeacherStudentProfilePage({ params }: PageProps) {
       {/* Current teachers */}
       <div className="card space-y-3">
         <h3 className="font-semibold border-b border-border pb-3 mb-1">
-          المحفظون الحاليون ({activeAssignments?.length ?? 0})
+          المحفظون الحاليون ({activeAssignments.length})
         </h3>
-        {!activeAssignments?.length ? (
+        {!activeAssignments.length ? (
           <p className="text-sm text-muted-foreground">لا يوجد محفظون مسندون حالياً</p>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {activeAssignments.map((a) => {
-              const u = a.users as unknown as { id: string; name: string } | null;
-              return u ? (
+              return a.teacher_name ? (
                 <span
                   key={a.id}
                   className="flex items-center gap-2.5 rounded-lg border border-border bg-secondary/40 px-3.5 py-3 shadow-xs"
                 >
                   <div className="size-2 rounded-full bg-primary shrink-0" />
-                  <span className="font-semibold text-sm text-foreground">{u.name}</span>
+                  <span className="font-semibold text-sm text-foreground">{a.teacher_name}</span>
                 </span>
               ) : null;
             })}
