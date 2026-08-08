@@ -5,6 +5,7 @@ import {
   date,
   index,
   integer,
+  jsonb,
   pgTable,
   primaryKey,
   smallint,
@@ -46,7 +47,7 @@ export const usersTable = pgTable(
     is_active: boolean("is_active").default(true),
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
   },
-  (t) => [check("users_role_check", sql`${t.role} IN ('admin', 'teacher')`), check("users_gender_check", sql`${t.gender} IS NULL OR ${t.gender} IN ('male', 'female')`)],
+  (t) => [check("users_role_check", sql`${t.role} IN ('admin', 'teacher', 'super_admin')`), check("users_gender_check", sql`${t.gender} IS NULL OR ${t.gender} IN ('male', 'female')`)],
 );
 
 export const studentsTable = pgTable(
@@ -88,33 +89,6 @@ export const studentsTable = pgTable(
   ],
 );
 
-export const teacherStudentAssignmentsTable = pgTable(
-  "teacher_student_assignments",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    teacher_id: uuid("teacher_id")
-      .notNull()
-      .references(() => usersTable.id),
-    student_id: uuid("student_id")
-      .notNull()
-      .references(() => studentsTable.id),
-    start_date: date("start_date")
-      .notNull()
-      .default(sql`CURRENT_DATE`),
-    end_date: date("end_date"),
-    created_by: uuid("created_by").references(() => usersTable.id),
-    created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
-  },
-  (t) => [
-    uniqueIndex("uniq_active_assignment")
-      .on(t.teacher_id, t.student_id)
-      .where(sql`end_date IS NULL`),
-    index("idx_active_assignments")
-      .on(t.student_id)
-      .where(sql`end_date IS NULL`),
-  ],
-);
-
 export const surahsTable = pgTable("surahs", {
   id: integer("id").primaryKey(),
   name_arabic: varchar("name_arabic", { length: 50 }).notNull(),
@@ -139,6 +113,38 @@ export const juzBoundariesTable = pgTable(
   ],
 );
 
+/**
+ * Page-level breakdown of each juz in the standard Hafs Madani mushaf.
+ * Maps each page within a juz to the surah(s) and ayah range(s) it contains.
+ * Used for exact ayah-level coverage computation when a student has memorized
+ * N pages of a juz (partial initial memorization).
+ *
+ * Note: most juz have 20 pages, but some have 21 and Juz 30 has 23.
+ * Total: 608 rows. The `mushaf_page` field is the physical page number in the
+ * 604-page mushaf (two rows can share the same mushaf_page when a page spans
+ * two juz).
+ */
+export const juzPagesTable = pgTable(
+  "juz_pages",
+  {
+    juz_number: integer("juz_number").notNull(),
+    page_number: integer("page_number").notNull(),
+    mushaf_page: integer("mushaf_page").notNull(),
+    surah_id: integer("surah_id")
+      .notNull()
+      .references(() => surahsTable.id),
+    from_ayah: integer("from_ayah").notNull(),
+    to_ayah: integer("to_ayah").notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.juz_number, t.page_number, t.surah_id] }),
+    check("juz_pages_juz_number_check", sql`${t.juz_number} BETWEEN 1 AND 30`),
+    check("juz_pages_page_number_check", sql`${t.page_number} BETWEEN 1 AND 23`),
+    check("juz_pages_valid_ayah_range", sql`${t.from_ayah} <= ${t.to_ayah}`),
+    index("idx_juz_pages_juz").on(t.juz_number, t.page_number),
+  ],
+);
+
 export const sessionsTable = pgTable(
   "sessions",
   {
@@ -150,6 +156,34 @@ export const sessionsTable = pgTable(
       .notNull()
       .references(() => usersTable.id),
     session_date: date("session_date").notNull(),
+    // Overall rating for the session (aggregates all items).
+    overall_rating: text("overall_rating").notNull(),
+    notes: text("notes"),
+    created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  },
+  (t) => [
+    check(
+      "sessions_overall_rating_check",
+      sql`${t.overall_rating} IN ('excellent', 'good', 'weak')`,
+    ),
+    index("idx_sessions_student").on(t.student_id, t.session_date),
+    index("idx_sessions_teacher").on(t.teacher_id, t.session_date),
+  ],
+);
+
+/**
+ * Session items — each session contains one or more items representing
+ * a Quran portion (surah + ayah range) that was recited. An item can be
+ * either "new_memorization" (تسميع جديد) or "review" (مراجعة). This allows
+ * a single session to include both new memorization and review portions.
+ */
+export const sessionItemsTable = pgTable(
+  "session_items",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    session_id: uuid("session_id")
+      .notNull()
+      .references(() => sessionsTable.id, { onDelete: "cascade" }),
     session_type: text("session_type").notNull(),
     surah_id: integer("surah_id")
       .notNull()
@@ -159,18 +193,16 @@ export const sessionsTable = pgTable(
     rating: text("rating").notNull(),
     pages: integer("pages"),
     notes: text("notes"),
-    created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
   },
   (t) => [
     check(
-      "sessions_session_type_check",
+      "session_items_type_check",
       sql`${t.session_type} IN ('new_memorization', 'review')`,
     ),
-    check("sessions_rating_check", sql`${t.rating} IN ('excellent', 'good', 'weak')`),
-    check("sessions_pages_check", sql`${t.pages} IS NULL OR ${t.pages} >= 0`),
-    check("sessions_valid_ayah_range", sql`${t.from_ayah} <= ${t.to_ayah}`),
-    index("idx_sessions_student").on(t.student_id, t.session_date),
-    index("idx_sessions_teacher").on(t.teacher_id, t.session_date),
+    check("session_items_rating_check", sql`${t.rating} IN ('excellent', 'good', 'weak')`),
+    check("session_items_pages_check", sql`${t.pages} IS NULL OR ${t.pages} >= 0`),
+    check("session_items_valid_ayah_range", sql`${t.from_ayah} <= ${t.to_ayah}`),
+    index("idx_session_items_session").on(t.session_id),
   ],
 );
 
@@ -181,21 +213,14 @@ export const attendanceTable = pgTable(
     student_id: uuid("student_id")
       .notNull()
       .references(() => studentsTable.id),
-    teacher_id: uuid("teacher_id").references(() => usersTable.id),
     attendance_date: date("attendance_date").notNull(),
     status: text("status").notNull(),
-    // True for manually-entered records (excused absences, holidays, manual
-    // present/absent). False for auto-derived rows from sessions. Manual
-    // records are preserved by recalculateStudentAttendance and never
-    // overwritten by the auto-derivation.
-    recorded_manually: boolean("recorded_manually").notNull().default(false),
-    notes: text("notes"),
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
   },
   (t) => [
     check(
       "attendance_status_check",
-      sql`${t.status} IN ('present', 'absent', 'excused', 'holiday')`,
+      sql`${t.status} IN ('present')`,
     ),
     uniqueIndex("attendance_student_id_attendance_date_key").on(
       t.student_id,
@@ -242,6 +267,9 @@ export const initialMemorizationTable = pgTable(
     juz_number: integer("juz_number").notNull(),
     status: text("status").notNull(),
     sheikh_name: varchar("sheikh_name", { length: 100 }),
+    // Number of pages memorized in this juz (Hafs Madani mushaf).
+    // NULL = full juz. 1-N = partial memorization (N varies per juz, max 23).
+    pages: smallint("pages"),
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
   },
   (t) => [
@@ -253,6 +281,10 @@ export const initialMemorizationTable = pgTable(
       "initial_memorization_status_check",
       sql`${t.status} IN ('memorized', 'with_ijaza')`,
     ),
+    check(
+      "initial_memorization_pages_check",
+      sql`${t.pages} IS NULL OR (${t.pages} BETWEEN 1 AND 23)`,
+    ),
     uniqueIndex("initial_memorization_student_id_juz_number_key").on(
       t.student_id,
       t.juz_number,
@@ -262,18 +294,45 @@ export const initialMemorizationTable = pgTable(
 
 // ---- Inferred row types (single source of truth for app entity types) ----
 
+export const auditLogsTable = pgTable(
+  "audit_logs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    user_id: uuid("user_id"),
+    username: varchar("username", { length: 50 }),
+    action: varchar("action", { length: 50 }).notNull(),
+    entity_type: varchar("entity_type", { length: 50 }).notNull(),
+    entity_id: uuid("entity_id"),
+    method: varchar("method", { length: 10 }).notNull(),
+    path: varchar("path", { length: 500 }).notNull(),
+    status_code: integer("status_code").notNull(),
+    request_body: jsonb("request_body"),
+    response_body: jsonb("response_body"),
+    created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    index("idx_audit_logs_user").on(t.user_id, t.created_at),
+    index("idx_audit_logs_entity").on(t.entity_type, t.entity_id, t.created_at),
+    index("idx_audit_logs_action").on(t.action, t.created_at),
+    index("idx_audit_logs_created").on(t.created_at),
+  ],
+);
+
 export type User = typeof usersTable.$inferSelect;
 export type NewUser = typeof usersTable.$inferInsert;
 export type Student = typeof studentsTable.$inferSelect;
 export type NewStudent = typeof studentsTable.$inferInsert;
-export type TeacherStudentAssignment = typeof teacherStudentAssignmentsTable.$inferSelect;
 export type Surah = typeof surahsTable.$inferSelect;
 export type JuzBoundary = typeof juzBoundariesTable.$inferSelect;
 export type Session = typeof sessionsTable.$inferSelect;
 export type NewSession = typeof sessionsTable.$inferInsert;
+export type SessionItem = typeof sessionItemsTable.$inferSelect;
+export type NewSessionItem = typeof sessionItemsTable.$inferInsert;
 export type Attendance = typeof attendanceTable.$inferSelect;
 export type NewAttendance = typeof attendanceTable.$inferInsert;
 export type Ijaza = typeof ijazatTable.$inferSelect;
 export type NewIjaza = typeof ijazatTable.$inferInsert;
 export type InitialMemorization = typeof initialMemorizationTable.$inferSelect;
 export type NewInitialMemorization = typeof initialMemorizationTable.$inferInsert;
+export type AuditLog = typeof auditLogsTable.$inferSelect;
+export type NewAuditLog = typeof auditLogsTable.$inferInsert;

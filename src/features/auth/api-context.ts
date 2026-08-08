@@ -2,7 +2,7 @@ import "server-only";
 
 import { createSupabaseServerComponentClient } from "@/infrastructure/auth/server";
 import { getDb, type Db } from "@/db/client";
-import { getApiAppUser, canAccessStudent } from "./student-access";
+import { getApiAppUser } from "./student-access";
 import type { AppUser } from "./shared";
 
 /**
@@ -48,21 +48,4 @@ export async function getApiContext(): Promise<ApiContext> {
   }
 
   return { ok: true, db, appUser };
-}
-
-/**
- * Convenience: get the context AND verify the caller can access a specific
- * student. Returns the context + a boolean for access.
- */
-export async function getApiContextForStudent(
-  studentId: string,
-): Promise<
-  | { ok: true; db: Db; appUser: AppUser; canAccess: boolean }
-  | { ok: false; response: Response }
-> {
-  const ctx = await getApiContext();
-  if (!ctx.ok) return ctx;
-
-  const canAccess = await canAccessStudent(ctx.db, ctx.appUser, studentId);
-  return { ok: true, db: ctx.db, appUser: ctx.appUser, canAccess };
 }

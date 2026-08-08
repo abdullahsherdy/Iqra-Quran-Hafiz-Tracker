@@ -65,7 +65,7 @@ export function ProgressMap({ studentId }: ProgressMapProps) {
   return (
     <div className="space-y-6">
       {/* 30 Juz Grid */}
-      <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-10 gap-2">
+      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-10 gap-2">
         {progressData.map((juzData) => {
           const isSelected = selectedJuz === juzData.juz;
           
@@ -142,7 +142,7 @@ export function ProgressMap({ studentId }: ProgressMapProps) {
               )}
             </div>
             
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <BookOpen className="size-4" />
                 <span>نسبة الحفظ:</span>

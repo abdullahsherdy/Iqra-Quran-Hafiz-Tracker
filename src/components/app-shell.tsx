@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, BookOpenText, ChevronRight, Menu } from "lucide-react";
-import { useState } from "react";
+import { LogOut, BookOpenText, ChevronRight, Menu, AlertTriangle } from "lucide-react";
+import { useState, useRef } from "react";
 
 import { cn } from "@/lib/utils";
 import { type Role, getNavItems } from "@/lib/nav";
@@ -20,11 +20,23 @@ export function AppShell({ role, username, children }: AppShellProps) {
   const items = getNavItems(role);
   const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "اقرأ";
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const logoutFormRef = useRef<HTMLFormElement>(null);
 
   const isActive = (href: string) =>
     href === `/${role}`
       ? pathname === href
       : pathname === href || pathname.startsWith(href + "/");
+
+  const handleLogoutClick = (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutConfirm(false);
+    logoutFormRef.current?.submit();
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-background md:flex-row">
@@ -97,11 +109,11 @@ export function AppShell({ role, username, children }: AppShellProps) {
               <span>{username ?? "—"}</span>
             </div>
           )}
-          <form action={signOutAction}>
+          <form ref={logoutFormRef} action={signOutAction} onSubmit={handleLogoutClick}>
             <button
               type="submit"
               className={cn(
-                "flex w-full items-center rounded-lg transition-colors text-foreground hover:bg-secondary cursor-pointer",
+                "flex w-full items-center rounded-lg transition-colors text-destructive hover:bg-destructive/10 cursor-pointer",
                 isCollapsed ? "justify-center p-2.5" : "gap-3 px-3 py-2.5 text-[15px] font-semibold"
               )}
               title={isCollapsed ? "تسجيل الخروج" : undefined}
@@ -117,13 +129,24 @@ export function AppShell({ role, username, children }: AppShellProps) {
       <div className="flex min-h-screen flex-1 flex-col">
         {/* Topbar */}
         <header className="flex h-14 items-center justify-between border-b border-border bg-card px-4">
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-xl font-bold text-foreground truncate">
             {items.find((i) => isActive(i.href))?.label ?? appName}
           </h1>
-          {/* Mobile app logo */}
-          <div className="flex items-center gap-2 md:hidden">
-            <BookOpenText className="size-6 text-primary" />
-            <span className="text-lg font-bold text-primary">{appName}</span>
+          <div className="flex items-center gap-3">
+            {/* Mobile app logo */}
+            <div className="flex items-center gap-2 md:hidden">
+              <BookOpenText className="size-6 text-primary" />
+              <span className="text-lg font-bold text-primary">{appName}</span>
+            </div>
+            {/* Mobile logout button (triggers shared confirmation modal) */}
+            <button
+              type="button"
+              onClick={() => setShowLogoutConfirm(true)}
+              className="md:hidden p-2 rounded-lg text-destructive hover:bg-destructive/10 transition-colors cursor-pointer"
+              title="تسجيل الخروج"
+            >
+              <LogOut className="size-5" />
+            </button>
           </div>
         </header>
 
@@ -151,6 +174,48 @@ export function AppShell({ role, username, children }: AppShellProps) {
           );
         })}
       </nav>
+
+      {/* Logout confirmation modal (in-app, not browser confirm) */}
+      {showLogoutConfirm && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 animate-in fade-in duration-150"
+          onClick={() => setShowLogoutConfirm(false)}
+        >
+          <div
+            className="card w-full max-w-sm space-y-5 shadow-xl border border-border"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="rounded-full bg-destructive/10 p-3.5">
+                <AlertTriangle className="size-7 text-destructive" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg text-foreground">تأكيد تسجيل الخروج</h3>
+                <p className="text-sm text-muted-foreground mt-1.5">
+                  هل أنت متأكد من تسجيل الخروج؟
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setShowLogoutConfirm(false)}
+                className="btn-secondary py-2.5 text-sm font-semibold cursor-pointer"
+              >
+                إلغاء
+              </button>
+              <button
+                type="button"
+                onClick={confirmLogout}
+                className="btn-destructive py-2.5 text-sm font-bold cursor-pointer"
+              >
+                <LogOut className="size-4" />
+                تسجيل الخروج
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

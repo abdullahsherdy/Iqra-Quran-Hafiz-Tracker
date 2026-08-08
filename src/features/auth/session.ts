@@ -3,11 +3,10 @@ import "server-only";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 
-import {
-  roleHomePath,
-  type AppRole,
-  type AppUser,
-} from "./shared";
+import { isAdmin, roleHomePath } from "@/features/auth/shared";
+import type { AppUser } from "@/features/auth/shared";
+import type { AppRole } from "@/domain/types";
+
 import { createSupabaseServerComponentClient } from "@/infrastructure/auth/server";
 import { getDb, type Db } from "@/db/client";
 import { usersTable } from "@/db/schema";
@@ -74,7 +73,9 @@ export async function requireRole(requiredRole: AppRole): Promise<AppUser> {
     redirect("/login");
   }
 
-  if (user.role !== requiredRole) {
+  if (requiredRole === "admin" && !isAdmin(user.role)) {
+    redirect(roleHomePath(user.role));
+  } else if (requiredRole === "teacher" && user.role !== "teacher") {
     redirect(roleHomePath(user.role));
   }
 

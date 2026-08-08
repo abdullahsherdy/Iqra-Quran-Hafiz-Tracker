@@ -1,8 +1,7 @@
 import { NextRequest } from "next/server";
-import { and, eq, isNull, asc } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 import {
   studentsTable,
-  teacherStudentAssignmentsTable,
   initialMemorizationTable,
   sessionsTable,
   attendanceTable,
@@ -13,6 +12,8 @@ import { validateInitialMemorization, validateStudentPayload } from "@/domain/st
 import { recalculateStudentSummary } from "@/features/students/server/recalc";
 import { recalculateStudentAttendance } from "@/features/attendance/server/recalc";
 import { getApiContext } from "@/features/auth/api-context";
+import { isAdmin } from "@/features/auth/shared";
+import { logAction } from "@/features/audit/audit-log";
 import { sanitizeError } from "@/lib/api-error";
 import { todayDateString } from "@/lib/utils";
 
@@ -36,41 +37,32 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
 
     if (!student) return Response.json({ error: "Not found" }, { status: 404 });
 
-    // Role-scope check for teachers
+    // Role-scope check for teachers (gender-only, no assignment check)
     if (appUser.role === "teacher") {
       if (!appUser.can_view_all_genders && student.gender !== appUser.gender) {
         return Response.json({ error: "Forbidden" }, { status: 403 });
       }
-      const [assign] = await db
-        .select({ id: teacherStudentAssignmentsTable.id })
-        .from(teacherStudentAssignmentsTable)
-        .where(
-          and(
-            eq(teacherStudentAssignmentsTable.teacher_id, appUser.id),
-            eq(teacherStudentAssignmentsTable.student_id, id),
-            isNull(teacherStudentAssignmentsTable.end_date),
-          ),
-        )
-        .limit(1);
-      if (!assign) return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Active teachers for this student
-    const activeAssignments = await db
+    // Teachers who have recorded sessions with this student (distinct)
+    const teacherRows = await db
       .select({
-        id: teacherStudentAssignmentsTable.id,
-        teacher_id: teacherStudentAssignmentsTable.teacher_id,
-        start_date: teacherStudentAssignmentsTable.start_date,
+        teacher_id: sessionsTable.teacher_id,
         teacher_name: usersTable.name,
       })
-      .from(teacherStudentAssignmentsTable)
-      .leftJoin(usersTable, eq(teacherStudentAssignmentsTable.teacher_id, usersTable.id))
-      .where(
-        and(
-          eq(teacherStudentAssignmentsTable.student_id, id),
-          isNull(teacherStudentAssignmentsTable.end_date),
-        ),
-      );
+      .from(sessionsTable)
+      .leftJoin(usersTable, eq(sessionsTable.teacher_id, usersTable.id))
+      .where(eq(sessionsTable.student_id, id))
+      .groupBy(sessionsTable.teacher_id, usersTable.name);
+    const activeAssignments = teacherRows
+      .filter((r) => r.teacher_name)
+      .map((r, i) => ({
+        id: `session-${r.teacher_id}`,
+        teacher_id: r.teacher_id,
+        start_date: "",
+        teacher_name: r.teacher_name!,
+        _index: i,
+      }));
 
     // Initial memorization
     const initialMem = await db
@@ -78,6 +70,7 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
         juz_number: initialMemorizationTable.juz_number,
         status: initialMemorizationTable.status,
         sheikh_name: initialMemorizationTable.sheikh_name,
+        pages: initialMemorizationTable.pages,
       })
       .from(initialMemorizationTable)
       .where(eq(initialMemorizationTable.student_id, id))
@@ -106,34 +99,12 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     if (!existingStudent) return Response.json({ error: "Not found" }, { status: 404 });
 
     if (appUser.role === "teacher") {
-      const [assign] = await db
-        .select({ id: teacherStudentAssignmentsTable.id })
-        .from(teacherStudentAssignmentsTable)
-        .where(
-          and(
-            eq(teacherStudentAssignmentsTable.teacher_id, appUser.id),
-            eq(teacherStudentAssignmentsTable.student_id, id),
-            isNull(teacherStudentAssignmentsTable.end_date),
-          ),
-        )
-        .limit(1);
-      if (!assign) return Response.json({ error: "Forbidden" }, { status: 403 });
       if (!appUser.can_view_all_genders && existingStudent.gender !== appUser.gender) {
         return Response.json({ error: "Forbidden" }, { status: 403 });
       }
     }
 
     const body = await request.json();
-
-    if (appUser.role === "teacher") {
-      const [data] = await db
-        .update(studentsTable)
-        .set({ notes: body.notes ?? null })
-        .where(eq(studentsTable.id, id))
-        .returning();
-
-      return Response.json(data);
-    }
 
     const allowedFields = ["name", "gender", "birth_date", "guardian_name", "guardian_phone", "enrollment_date", "notes", "status"];
     const updates: Record<string, unknown> = {};
@@ -156,7 +127,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     }
 
     if ("initial_memorization" in body) {
-      const initRows: Array<{ juz_number: number; status: string; sheikh_name?: string }> =
+      const initRows: Array<{ juz_number: number; status: string; sheikh_name?: string; pages?: number | null }> =
         Array.isArray(body.initial_memorization) ? body.initial_memorization : [];
 
       const initValidationError = validateInitialMemorization(initRows);
@@ -172,6 +143,7 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
           juz_number: r.juz_number,
           status: r.status,
           sheikh_name: r.sheikh_name ?? null,
+          pages: r.pages ?? null,
         }));
         await db.insert(initialMemorizationTable).values(rowsToInsert);
       }
@@ -197,6 +169,17 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
 
     return Response.json(finalStudent ?? data);
   } catch (error) {
+    await logAction(db, {
+      userId: appUser.id,
+      username: appUser.username,
+      action: "update",
+      entityType: "student",
+      entityId: id,
+      method: "PUT",
+      path: `/api/students/${id}`,
+      statusCode: 500,
+      responseBody: { error: sanitizeError(error, "student update") },
+    });
     return Response.json({ error: sanitizeError(error, "student update") }, { status: 500 });
   }
 }
@@ -210,7 +193,7 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
   const ctx = await getApiContext();
   if (!ctx.ok) return ctx.response;
   const { db, appUser } = ctx;
-  if (appUser.role !== "admin") return Response.json({ error: "Forbidden" }, { status: 403 });
+  if (!isAdmin(appUser.role)) return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const { searchParams } = new URL(request.url);
   const permanent = searchParams.get("permanent") === "true";
@@ -230,6 +213,18 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
         .update(studentsTable)
         .set({ status: "withdrawn", status_since: today })
         .where(eq(studentsTable.id, id));
+      await logAction(db, {
+        userId: appUser.id,
+        username: appUser.username,
+        action: "delete",
+        entityType: "student",
+        entityId: id,
+        method: "DELETE",
+        path: `/api/students/${id}`,
+        statusCode: 200,
+        requestBody: { permanent: false },
+        responseBody: { ok: true, deactivated: true },
+      });
       return Response.json({ ok: true, deactivated: true });
     }
 
@@ -239,12 +234,34 @@ export async function DELETE(request: NextRequest, { params }: RouteContext) {
     await db.delete(ijazatTable).where(eq(ijazatTable.student_id, id));
     await db.delete(attendanceTable).where(eq(attendanceTable.student_id, id));
     await db.delete(sessionsTable).where(eq(sessionsTable.student_id, id));
-    await db.delete(teacherStudentAssignmentsTable).where(eq(teacherStudentAssignmentsTable.student_id, id));
 
     await db.delete(studentsTable).where(eq(studentsTable.id, id));
 
+    await logAction(db, {
+      userId: appUser.id,
+      username: appUser.username,
+      action: "delete",
+      entityType: "student",
+      entityId: id,
+      method: "DELETE",
+      path: `/api/students/${id}`,
+      statusCode: 200,
+      requestBody: { permanent: true },
+      responseBody: { ok: true, deleted: true },
+    });
     return Response.json({ ok: true, deleted: true });
   } catch (error) {
+    await logAction(db, {
+      userId: appUser.id,
+      username: appUser.username,
+      action: "delete",
+      entityType: "student",
+      entityId: id,
+      method: "DELETE",
+      path: `/api/students/${id}`,
+      statusCode: 500,
+      responseBody: { error: sanitizeError(error, "student delete") },
+    });
     return Response.json({ error: sanitizeError(error, "student delete") }, { status: 500 });
   }
 }

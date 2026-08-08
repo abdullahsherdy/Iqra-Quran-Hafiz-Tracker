@@ -3,11 +3,10 @@ import type {
   Rating,
   SessionType,
   Gender,
-  AttendanceStatus,
   StudentStatus,
 } from "@/domain/types";
 
-export type { Rating, SessionType, Gender, AttendanceStatus, StudentStatus };
+export type { Rating, SessionType, Gender, StudentStatus };
 
 const pill =
   "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium";
@@ -31,16 +30,6 @@ const genderMap: Record<Gender, { label: string; className: string }> = {
   female: { label: "أنثى", className: "bg-[#fdf2f8] text-[#9d174d]" },
 };
 
-const attendanceMap: Record<
-  AttendanceStatus,
-  { label: string; className: string }
-> = {
-  present: { label: "حاضر", className: "bg-[#dcfce7] text-[#166534]" },
-  absent: { label: "غائب", className: "bg-[#fee2e2] text-[#991b1b]" },
-  excused: { label: "غياب بعذر", className: "bg-[#fef9c3] text-[#854d0e]" },
-  holiday: { label: "إجازة", className: "bg-[#e0e7ff] text-[#3730a3]" },
-};
-
 const studentStatusMap: Record<StudentStatus, { label: string; className: string }> = {
   active:    { label: "نشط",           className: "bg-[#dcfce7] text-[#166534]" },
   paused:    { label: "موقوف مؤقتاً",  className: "bg-[#fef9c3] text-[#854d0e]" },
@@ -60,11 +49,6 @@ export function SessionTypeBadge({ value }: { value: SessionType }) {
 
 export function GenderBadge({ value }: { value: Gender }) {
   const { label, className } = genderMap[value];
-  return <span className={cn(pill, className)}>{label}</span>;
-}
-
-export function AttendanceBadge({ value }: { value: AttendanceStatus }) {
-  const { label, className } = attendanceMap[value];
   return <span className={cn(pill, className)}>{label}</span>;
 }
 

@@ -39,8 +39,11 @@ const GENDERS = ["male", "female"] as const;
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
+/** Egyptian mobile phone: 11 digits starting with 010/011/012/015. */
+const EGYPT_PHONE_RE = /^01[0125]\d{8}$/;
+
 export function validateInitialMemorization(
-  rows: Array<{ juz_number: number; status: string; sheikh_name?: string | null }>
+  rows: Array<{ juz_number: number; status: string; sheikh_name?: string | null; pages?: number | null }>
 ): string | null {
   for (const row of rows) {
     if (
@@ -55,6 +58,13 @@ export function validateInitialMemorization(
     }
     if (row.status === "with_ijaza" && !row.sheikh_name?.trim()) {
       return `يرجى إدخال اسم الشيخ للجزء ${row.juz_number}`;
+    }
+    if (
+      row.pages !== undefined &&
+      row.pages !== null &&
+      (!Number.isFinite(row.pages) || !Number.isInteger(row.pages) || row.pages < 1 || row.pages > 23)
+    ) {
+      return `عدد الصفحات للجزء ${row.juz_number} يجب أن يكون بين 1 و 23`;
     }
   }
   return null;
@@ -85,6 +95,9 @@ export function validateStudentPayload(body: {
   }
   if (typeof guardian_phone !== "string" || !guardian_phone.trim()) {
     return "رقم هاتف ولي الأمر مطلوب";
+  }
+  if (!EGYPT_PHONE_RE.test(guardian_phone.trim())) {
+    return "رقم الهاتف يجب أن يكون 11 رقماً يبدأ بـ 010 أو 011 أو 012 أو 015";
   }
   if (!GENDERS.includes(gender as (typeof GENDERS)[number])) {
     return "الجنس يجب أن يكون ذكر أو أنثى";

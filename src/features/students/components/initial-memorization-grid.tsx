@@ -7,6 +7,8 @@ export interface JuzEntry {
   juz_number: number;
   status: "memorized" | "with_ijaza";
   sheikh_name?: string;
+  /** Pages memorized (1-23). null/undefined = full juz. */
+  pages?: number | null;
 }
 
 type InitialMemorizationGridProps =
@@ -36,7 +38,7 @@ export function InitialMemorizationGrid({ value, onChange, readOnly = false }: I
       onChange?.(value.filter((e) => e.juz_number !== juz));
       if (expandedJuz === juz) setExpandedJuz(null);
     } else {
-      onChange?.([...value, { juz_number: juz, status: "memorized", sheikh_name: undefined }]);
+      onChange?.([...value, { juz_number: juz, status: "memorized", sheikh_name: undefined, pages: null }]);
       setExpandedJuz(juz);
     }
   };
@@ -92,7 +94,9 @@ export function InitialMemorizationGrid({ value, onChange, readOnly = false }: I
                 </span>
               )}
               {checked && (
-                <span className="mt-0.5 text-[10px]">{isIjaza ? "إجازة" : "حفظ"}</span>
+                <span className="mt-0.5 text-[10px]">
+                  {isIjaza ? "إجازة" : entry?.pages ? `${entry.pages} ص` : "حفظ"}
+                </span>
               )}
             </button>
           );
@@ -124,6 +128,33 @@ export function InitialMemorizationGrid({ value, onChange, readOnly = false }: I
               />
               <span className="text-sm">إجازة</span>
             </label>
+          </div>
+          {/* Pages input — optional, 1-23. Empty = full juz. */}
+          <div>
+            <label className="block text-sm text-muted-foreground mb-1">
+              عدد الصفحات
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={23}
+              className="input-field w-24"
+              dir="ltr"
+              placeholder="كامل"
+              value={getEntry(expandedJuz)?.pages ?? ""}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === "") {
+                  updateEntry(expandedJuz, { pages: null });
+                } else {
+                  const num = Number(val);
+                  updateEntry(expandedJuz, { pages: Number.isFinite(num) ? num : null });
+                }
+              }}
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              اتركه فارغاً للحفظ الكامل للجزء
+            </p>
           </div>
           {getEntry(expandedJuz)?.status === "with_ijaza" && (
             <div>

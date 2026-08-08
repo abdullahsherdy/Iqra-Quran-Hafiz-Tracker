@@ -1,34 +1,25 @@
 import "server-only";
 
-import { and, eq, isNull } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 import type { Db } from "@/db/client";
-import {
-  studentsTable,
-  teacherStudentAssignmentsTable,
-} from "@/db/schema";
+import { studentsTable } from "@/db/schema";
 import type { AppUser } from "./shared";
+import { isAdmin } from "./shared";
 import { getAppUserByAuthId } from "./session";
 
 /** Re-export — same function as `getAppUserByAuthId` in `session.ts` (A2). */
 export const getApiAppUser = getAppUserByAuthId;
 
-export async function getAssignedStudentIds(
-  db: Db,
-  teacherId: string
-): Promise<string[]> {
-  const rows = await db
-    .select({ student_id: teacherStudentAssignmentsTable.student_id })
-    .from(teacherStudentAssignmentsTable)
-    .where(
-      and(
-        eq(teacherStudentAssignmentsTable.teacher_id, teacherId),
-        isNull(teacherStudentAssignmentsTable.end_date),
-      ),
-    );
-  return rows.map((r) => r.student_id);
-}
-
+/**
+ * Check whether a teacher can access a student. With the assignment system
+ * removed, access is determined solely by gender scoping:
+ *   - admin → always true
+ *   - teacher with can_view_all_genders → true
+ *   - teacher → true only if student.gender === teacher.gender
+ *
+ * Returns false if the student does not exist.
+ */
 export async function canAccessStudent(
   db: Db,
   appUser: AppUser,
@@ -41,23 +32,11 @@ export async function canAccessStudent(
     .limit(1);
 
   if (!student) return false;
-  if (appUser.role === "admin") return true;
+  if (isAdmin(appUser.role)) return true;
 
   if (!appUser.can_view_all_genders && student.gender !== appUser.gender) {
     return false;
   }
 
-  const [assign] = await db
-    .select({ id: teacherStudentAssignmentsTable.id })
-    .from(teacherStudentAssignmentsTable)
-    .where(
-      and(
-        eq(teacherStudentAssignmentsTable.teacher_id, appUser.id),
-        eq(teacherStudentAssignmentsTable.student_id, studentId),
-        isNull(teacherStudentAssignmentsTable.end_date),
-      ),
-    )
-    .limit(1);
-
-  return !!assign;
+  return true;
 }

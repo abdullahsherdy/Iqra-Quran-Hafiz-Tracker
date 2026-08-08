@@ -1,0 +1,1 @@
+DROP TABLE "teacher_student_assignments" CASCADE;

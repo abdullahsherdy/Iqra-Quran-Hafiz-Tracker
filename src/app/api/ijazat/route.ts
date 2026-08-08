@@ -1,11 +1,12 @@
 import { NextRequest } from "next/server";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 import { ijazatTable, studentsTable } from "@/db/schema";
-import { canAccessStudent, getAssignedStudentIds } from "@/features/auth/student-access";
+import { canAccessStudent } from "@/features/auth/student-access";
 import { recalculateStudentSummary } from "@/features/students/server/recalc";
 import { sanitizeError } from "@/lib/api-error";
 import { getApiContext } from "@/features/auth/api-context";
+import { logAction } from "@/features/audit/audit-log";
 
 // GET /api/ijazat — list ijazat (role-scoped)
 export async function GET(request: NextRequest) {
@@ -19,20 +20,13 @@ export async function GET(request: NextRequest) {
   const conditions = [];
 
   if (appUser.role === "teacher") {
-    const assignedIds = await getAssignedStudentIds(db, appUser.id);
-    if (assignedIds.length === 0) return Response.json([]);
-
+    // Gender scoping only — no assignment check.
     if (studentId) {
-      if (!assignedIds.includes(studentId)) {
-        return Response.json({ error: "Forbidden" }, { status: 403 });
-      }
+      const allowed = await canAccessStudent(db, appUser, studentId);
+      if (!allowed) return Response.json({ error: "Forbidden" }, { status: 403 });
       conditions.push(eq(ijazatTable.student_id, studentId));
-    } else {
-      conditions.push(inArray(ijazatTable.student_id, assignedIds));
     }
 
-    // Gender scoping (E4): a teacher who can't view all genders only sees
-    // ijazat for students matching their own gender.
     if (!appUser.can_view_all_genders && appUser.gender) {
       conditions.push(eq(studentsTable.gender, appUser.gender));
     }
@@ -132,8 +126,31 @@ export async function POST(request: NextRequest) {
     // Recalculate student summary
     await recalculateStudentSummary(db, student_id);
 
+    await logAction(db, {
+      userId: appUser.id,
+      username: appUser.username,
+      action: "create",
+      entityType: "ijaza",
+      entityId: created.id,
+      method: "POST",
+      path: "/api/ijazat",
+      statusCode: 201,
+      requestBody: { student_id, ijaza_type, juz_number, sheikh_name, ijaza_date },
+      responseBody: { id: created.id },
+    });
     return Response.json(created, { status: 201 });
   } catch (error) {
+    await logAction(db, {
+      userId: appUser.id,
+      username: appUser.username,
+      action: "create",
+      entityType: "ijaza",
+      method: "POST",
+      path: "/api/ijazat",
+      statusCode: 500,
+      requestBody: { student_id, ijaza_type },
+      responseBody: { error: sanitizeError(error, "api") },
+    });
     return Response.json({ error: sanitizeError(error, "api") }, { status: 500 });
   }
 }

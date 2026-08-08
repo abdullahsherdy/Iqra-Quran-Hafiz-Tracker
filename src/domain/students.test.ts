@@ -60,6 +60,56 @@ describe("validateInitialMemorization (I1)", () => {
       ]),
     ).toBe("يرجى إدخال اسم الشيخ للجزء 2");
   });
+
+  it("accepts valid pages (1-23)", () => {
+    expect(
+      validateInitialMemorization([
+        { juz_number: 1, status: "memorized", pages: 10 },
+      ]),
+    ).toBeNull();
+    expect(
+      validateInitialMemorization([
+        { juz_number: 1, status: "memorized", pages: 1 },
+      ]),
+    ).toBeNull();
+    expect(
+      validateInitialMemorization([
+        { juz_number: 1, status: "memorized", pages: 23 },
+      ]),
+    ).toBeNull();
+  });
+
+  it("accepts null pages (full juz)", () => {
+    expect(
+      validateInitialMemorization([
+        { juz_number: 1, status: "memorized", pages: null },
+      ]),
+    ).toBeNull();
+  });
+
+  it("accepts undefined pages (full juz)", () => {
+    expect(
+      validateInitialMemorization([
+        { juz_number: 1, status: "memorized" },
+      ]),
+    ).toBeNull();
+  });
+
+  it("rejects pages below 1", () => {
+    expect(
+      validateInitialMemorization([
+        { juz_number: 1, status: "memorized", pages: 0 },
+      ]),
+    ).toBe("عدد الصفحات للجزء 1 يجب أن يكون بين 1 و 23");
+  });
+
+  it("rejects pages above 23", () => {
+    expect(
+      validateInitialMemorization([
+        { juz_number: 5, status: "memorized", pages: 24 },
+      ]),
+    ).toBe("عدد الصفحات للجزء 5 يجب أن يكون بين 1 و 23");
+  });
 });
 
 describe("validateStudentPayload (I2)", () => {
@@ -67,7 +117,7 @@ describe("validateStudentPayload (I2)", () => {
     name: "عبد الله",
     gender: "male",
     guardian_name: "محمد",
-    guardian_phone: "0512345678",
+    guardian_phone: "01012345678",
   };
 
   it("returns null for a valid full payload", () => {
@@ -102,6 +152,30 @@ describe("validateStudentPayload (I2)", () => {
     expect(
       validateStudentPayload({ ...valid, guardian_phone: "" }),
     ).toBe("رقم هاتف ولي الأمر مطلوب");
+  });
+
+  it("rejects invalid phone format - too short", () => {
+    expect(
+      validateStudentPayload({ ...valid, guardian_phone: "0101234567" }),
+    ).toBe("رقم الهاتف يجب أن يكون 11 رقماً يبدأ بـ 010 أو 011 أو 012 أو 015");
+  });
+
+  it("rejects invalid phone format - wrong prefix", () => {
+    expect(
+      validateStudentPayload({ ...valid, guardian_phone: "01612345678" }),
+    ).toBe("رقم الهاتف يجب أن يكون 11 رقماً يبدأ بـ 010 أو 011 أو 012 أو 015");
+  });
+
+  it("rejects invalid phone format - letters", () => {
+    expect(
+      validateStudentPayload({ ...valid, guardian_phone: "01012345abc" }),
+    ).toBe("رقم الهاتف يجب أن يكون 11 رقماً يبدأ بـ 010 أو 011 أو 012 أو 015");
+  });
+
+  it("accepts all valid Egyptian prefixes", () => {
+    for (const prefix of ["010", "011", "012", "015"]) {
+      expect(validateStudentPayload({ ...valid, guardian_phone: `${prefix}12345678` })).toBeNull();
+    }
   });
 
   it("rejects invalid gender", () => {

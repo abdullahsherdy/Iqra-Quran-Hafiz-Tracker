@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
-import { roleHomePath, type AppRole } from "@/features/auth/shared";
+import { isAdmin, roleHomePath, type AppRole } from "@/features/auth/shared";
 import { getSupabasePublicEnv } from "./config";
 
 interface AppUserRow {
@@ -85,7 +85,7 @@ export async function updateSupabaseSession(request: NextRequest): Promise<NextR
     return NextResponse.redirect(new URL(roleHomePath(role), request.url));
   }
 
-  if (pathname.startsWith("/admin") && role !== "admin") {
+  if (pathname.startsWith("/admin") && !isAdmin(role)) {
     return NextResponse.redirect(new URL(roleHomePath(role), request.url));
   }
 

@@ -1,0 +1,1108 @@
+{
+  "id": "e3080eab-aa9a-4a26-a409-71990ea8f4be",
+  "prevId": "9679fa83-e290-453b-bcef-125d8ab3b043",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.attendance": {
+      "name": "attendance",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "student_id": {
+          "name": "student_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "teacher_id": {
+          "name": "teacher_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attendance_date": {
+          "name": "attendance_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recorded_manually": {
+          "name": "recorded_manually",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "attendance_student_id_attendance_date_key": {
+          "name": "attendance_student_id_attendance_date_key",
+          "columns": [
+            {
+              "expression": "student_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "attendance_date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_attendance_student_date": {
+          "name": "idx_attendance_student_date",
+          "columns": [
+            {
+              "expression": "student_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "attendance_date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "attendance_student_id_students_id_fk": {
+          "name": "attendance_student_id_students_id_fk",
+          "tableFrom": "attendance",
+          "tableTo": "students",
+          "columnsFrom": [
+            "student_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "attendance_teacher_id_users_id_fk": {
+          "name": "attendance_teacher_id_users_id_fk",
+          "tableFrom": "attendance",
+          "tableTo": "users",
+          "columnsFrom": [
+            "teacher_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "attendance_status_check": {
+          "name": "attendance_status_check",
+          "value": "\"attendance\".\"status\" IN ('present', 'absent', 'excused', 'holiday')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.ijazat": {
+      "name": "ijazat",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "student_id": {
+          "name": "student_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "granted_by": {
+          "name": "granted_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ijaza_type": {
+          "name": "ijaza_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "juz_number": {
+          "name": "juz_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sheikh_name": {
+          "name": "sheikh_name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ijaza_date": {
+          "name": "ijaza_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ijazat_student_id_students_id_fk": {
+          "name": "ijazat_student_id_students_id_fk",
+          "tableFrom": "ijazat",
+          "tableTo": "students",
+          "columnsFrom": [
+            "student_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ijazat_granted_by_users_id_fk": {
+          "name": "ijazat_granted_by_users_id_fk",
+          "tableFrom": "ijazat",
+          "tableTo": "users",
+          "columnsFrom": [
+            "granted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "ijazat_ijaza_type_check": {
+          "name": "ijazat_ijaza_type_check",
+          "value": "\"ijazat\".\"ijaza_type\" IN ('juz', 'full_quran')"
+        },
+        "ijazat_juz_number_check": {
+          "name": "ijazat_juz_number_check",
+          "value": "\"ijazat\".\"juz_number\" IS NULL OR \"ijazat\".\"juz_number\" BETWEEN 1 AND 30"
+        },
+        "juz_required_if_type": {
+          "name": "juz_required_if_type",
+          "value": "(\"ijazat\".\"ijaza_type\" = 'juz' AND \"ijazat\".\"juz_number\" IS NOT NULL) OR (\"ijazat\".\"ijaza_type\" = 'full_quran' AND \"ijazat\".\"juz_number\" IS NULL)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.initial_memorization": {
+      "name": "initial_memorization",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "student_id": {
+          "name": "student_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "juz_number": {
+          "name": "juz_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sheikh_name": {
+          "name": "sheikh_name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pages": {
+          "name": "pages",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "initial_memorization_student_id_juz_number_key": {
+          "name": "initial_memorization_student_id_juz_number_key",
+          "columns": [
+            {
+              "expression": "student_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "juz_number",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "initial_memorization_student_id_students_id_fk": {
+          "name": "initial_memorization_student_id_students_id_fk",
+          "tableFrom": "initial_memorization",
+          "tableTo": "students",
+          "columnsFrom": [
+            "student_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "initial_memorization_juz_number_check": {
+          "name": "initial_memorization_juz_number_check",
+          "value": "\"initial_memorization\".\"juz_number\" BETWEEN 1 AND 30"
+        },
+        "initial_memorization_status_check": {
+          "name": "initial_memorization_status_check",
+          "value": "\"initial_memorization\".\"status\" IN ('memorized', 'with_ijaza')"
+        },
+        "initial_memorization_pages_check": {
+          "name": "initial_memorization_pages_check",
+          "value": "\"initial_memorization\".\"pages\" IS NULL OR (\"initial_memorization\".\"pages\" BETWEEN 1 AND 20)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.juz_boundaries": {
+      "name": "juz_boundaries",
+      "schema": "",
+      "columns": {
+        "juz_number": {
+          "name": "juz_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "surah_id": {
+          "name": "surah_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "from_ayah": {
+          "name": "from_ayah",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "to_ayah": {
+          "name": "to_ayah",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "juz_boundaries_surah_id_surahs_id_fk": {
+          "name": "juz_boundaries_surah_id_surahs_id_fk",
+          "tableFrom": "juz_boundaries",
+          "tableTo": "surahs",
+          "columnsFrom": [
+            "surah_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "juz_boundaries_juz_number_surah_id_pk": {
+          "name": "juz_boundaries_juz_number_surah_id_pk",
+          "columns": [
+            "juz_number",
+            "surah_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "juz_boundaries_juz_number_check": {
+          "name": "juz_boundaries_juz_number_check",
+          "value": "\"juz_boundaries\".\"juz_number\" BETWEEN 1 AND 30"
+        },
+        "valid_juz_range": {
+          "name": "valid_juz_range",
+          "value": "\"juz_boundaries\".\"from_ayah\" <= \"juz_boundaries\".\"to_ayah\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.sessions": {
+      "name": "sessions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "student_id": {
+          "name": "student_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "teacher_id": {
+          "name": "teacher_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "session_date": {
+          "name": "session_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "session_type": {
+          "name": "session_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "surah_id": {
+          "name": "surah_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "from_ayah": {
+          "name": "from_ayah",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "to_ayah": {
+          "name": "to_ayah",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rating": {
+          "name": "rating",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pages": {
+          "name": "pages",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_sessions_student": {
+          "name": "idx_sessions_student",
+          "columns": [
+            {
+              "expression": "student_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "session_date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_sessions_teacher": {
+          "name": "idx_sessions_teacher",
+          "columns": [
+            {
+              "expression": "teacher_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "session_date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "sessions_student_id_students_id_fk": {
+          "name": "sessions_student_id_students_id_fk",
+          "tableFrom": "sessions",
+          "tableTo": "students",
+          "columnsFrom": [
+            "student_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "sessions_teacher_id_users_id_fk": {
+          "name": "sessions_teacher_id_users_id_fk",
+          "tableFrom": "sessions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "teacher_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "sessions_surah_id_surahs_id_fk": {
+          "name": "sessions_surah_id_surahs_id_fk",
+          "tableFrom": "sessions",
+          "tableTo": "surahs",
+          "columnsFrom": [
+            "surah_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "sessions_session_type_check": {
+          "name": "sessions_session_type_check",
+          "value": "\"sessions\".\"session_type\" IN ('new_memorization', 'review')"
+        },
+        "sessions_rating_check": {
+          "name": "sessions_rating_check",
+          "value": "\"sessions\".\"rating\" IN ('excellent', 'good', 'weak')"
+        },
+        "sessions_pages_check": {
+          "name": "sessions_pages_check",
+          "value": "\"sessions\".\"pages\" IS NULL OR \"sessions\".\"pages\" >= 0"
+        },
+        "sessions_valid_ayah_range": {
+          "name": "sessions_valid_ayah_range",
+          "value": "\"sessions\".\"from_ayah\" <= \"sessions\".\"to_ayah\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.students": {
+      "name": "students",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gender": {
+          "name": "gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "birth_date": {
+          "name": "birth_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "guardian_name": {
+          "name": "guardian_name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "guardian_phone": {
+          "name": "guardian_phone",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "enrollment_date": {
+          "name": "enrollment_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_DATE"
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "status_since": {
+          "name": "status_since",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "memorized_juz_count": {
+          "name": "memorized_juz_count",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "ijaza_juz_count": {
+          "name": "ijaza_juz_count",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "last_session_date": {
+          "name": "last_session_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "idx_students_gender": {
+          "name": "idx_students_gender",
+          "columns": [
+            {
+              "expression": "gender",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_students_status": {
+          "name": "idx_students_status",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_students_juzcount": {
+          "name": "idx_students_juzcount",
+          "columns": [
+            {
+              "expression": "memorized_juz_count",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_students_ijazacount": {
+          "name": "idx_students_ijazacount",
+          "columns": [
+            {
+              "expression": "ijaza_juz_count",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_students_lastsession": {
+          "name": "idx_students_lastsession",
+          "columns": [
+            {
+              "expression": "last_session_date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_students_birthdate": {
+          "name": "idx_students_birthdate",
+          "columns": [
+            {
+              "expression": "birth_date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_students_enrollment": {
+          "name": "idx_students_enrollment",
+          "columns": [
+            {
+              "expression": "enrollment_date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "students_gender_check": {
+          "name": "students_gender_check",
+          "value": "\"students\".\"gender\" IN ('male', 'female')"
+        },
+        "students_status_check": {
+          "name": "students_status_check",
+          "value": "\"students\".\"status\" IN ('active', 'paused', 'graduated', 'withdrawn')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.surahs": {
+      "name": "surahs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name_arabic": {
+          "name": "name_arabic",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "juz_number": {
+          "name": "juz_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_ayahs": {
+          "name": "total_ayahs",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.teacher_student_assignments": {
+      "name": "teacher_student_assignments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "teacher_id": {
+          "name": "teacher_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "student_id": {
+          "name": "student_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_date": {
+          "name": "start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_DATE"
+        },
+        "end_date": {
+          "name": "end_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "uniq_active_assignment": {
+          "name": "uniq_active_assignment",
+          "columns": [
+            {
+              "expression": "teacher_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "student_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "end_date IS NULL",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_active_assignments": {
+          "name": "idx_active_assignments",
+          "columns": [
+            {
+              "expression": "student_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "end_date IS NULL",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "teacher_student_assignments_teacher_id_users_id_fk": {
+          "name": "teacher_student_assignments_teacher_id_users_id_fk",
+          "tableFrom": "teacher_student_assignments",
+          "tableTo": "users",
+          "columnsFrom": [
+            "teacher_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "teacher_student_assignments_student_id_students_id_fk": {
+          "name": "teacher_student_assignments_student_id_students_id_fk",
+          "tableFrom": "teacher_student_assignments",
+          "tableTo": "students",
+          "columnsFrom": [
+            "student_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "teacher_student_assignments_created_by_users_id_fk": {
+          "name": "teacher_student_assignments_created_by_users_id_fk",
+          "tableFrom": "teacher_student_assignments",
+          "tableTo": "users",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gender": {
+          "name": "gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "can_view_all_genders": {
+          "name": "can_view_all_genders",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_username_unique": {
+          "name": "users_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "users_role_check": {
+          "name": "users_role_check",
+          "value": "\"users\".\"role\" IN ('admin', 'teacher')"
+        },
+        "users_gender_check": {
+          "name": "users_gender_check",
+          "value": "\"users\".\"gender\" IS NULL OR \"users\".\"gender\" IN ('male', 'female')"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

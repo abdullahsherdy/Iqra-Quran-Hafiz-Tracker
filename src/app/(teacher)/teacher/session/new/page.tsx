@@ -1,8 +1,7 @@
 import { requireRole } from "@/features/auth/session";
 import { getDb } from "@/db/client";
 import { studentsTable, surahsTable, usersTable } from "@/db/schema";
-import { and, asc, eq, inArray } from "drizzle-orm";
-import { getAssignedStudentIds } from "@/features/auth/student-access";
+import { and, asc, eq } from "drizzle-orm";
 import { SessionForm } from "@/features/sessions/components/session-form";
 
 export const metadata = { title: "تسجيل جلسة | اقرأ" };
@@ -15,8 +14,6 @@ export default async function TeacherNewSessionPage() {
     return <div className="text-destructive">خطأ في الاتصال</div>;
   }
 
-  const studentIds = await getAssignedStudentIds(db, user.id);
-
   const [teacherUser] = await db
     .select({
       gender: usersTable.gender,
@@ -26,13 +23,8 @@ export default async function TeacherNewSessionPage() {
     .where(eq(usersTable.id, user.id))
     .limit(1);
 
-  const conditions = [
-    inArray(
-      studentsTable.id,
-      studentIds.length > 0 ? studentIds : ["00000000-0000-0000-0000-000000000000"],
-    ),
-    eq(studentsTable.status, "active"),
-  ];
+  // Gender-scoped active students (no assignment check)
+  const conditions = [eq(studentsTable.status, "active")];
   if (teacherUser && !teacherUser.can_view_all_genders && teacherUser.gender) {
     conditions.push(eq(studentsTable.gender, teacherUser.gender));
   }

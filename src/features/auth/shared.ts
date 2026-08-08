@@ -45,6 +45,14 @@ export function usernameToEmail(username: string): string {
   return `${normalizeUsername(username)}@${getAuthEmailDomain()}`;
 }
 
+export function isAdmin(role: AppRole): boolean {
+  return role === "admin" || role === "super_admin";
+}
+
+export function isSuperAdmin(role: AppRole): boolean {
+  return role === "super_admin";
+}
+
 export function roleHomePath(role: AppRole): string {
-  return role === "admin" ? "/admin" : "/teacher";
+  return isAdmin(role) ? "/admin/reports" : "/teacher/reports";
 }

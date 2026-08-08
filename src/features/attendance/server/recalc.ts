@@ -1,10 +1,10 @@
 /**
  * DB-fetching shell: recompute a student's auto-derived attendance rows.
  *
- * Uses the pure `computeAttendanceCalendar` / `computeDayAttendance` from
- * `domain/attendance.ts` and persists results via Drizzle. Manual records
- * (`recorded_manually = true`) are preserved (C4). Supports incremental
- * updates via `affectedDate` (C3).
+ * Attendance is auto-derived from sessions only — a row is created for each
+ * day the student has a session. There is no absence tracking and no manual
+ * entry. Uses the pure `computeAttendanceCalendar` / `computeDayAttendance`
+ * from `domain/attendance.ts` and persists results via Drizzle.
  */
 
 import { and, eq } from "drizzle-orm";
@@ -20,16 +20,11 @@ import {
 import { todayDateString } from "@/lib/utils";
 
 /**
- * Recompute a student's auto-derived attendance rows.
+ * Recompute a student's auto-derived attendance rows (present days only).
  *
- * - Manual records (`recorded_manually = true`) are NEVER touched: they win
- *   over auto-derivation for their date (C4).
- * - With `affectedDate` (C3): only that date is reconciled — O(1) DB writes
- *   instead of deleting + reinserting the entire history.
- * - Without `affectedDate` (full recalc / backfill): all auto rows are
- *   rebuilt, preserving manual records.
- * - Graceful (E7): if the student has no `enrollment_date`, returns silently
- *   rather than throwing.
+ * - With `affectedDate`: only that date is reconciled — O(1) DB writes.
+ * - Without `affectedDate` (full recalc / backfill): all rows are rebuilt.
+ * - Graceful: if the student has no `enrollment_date`, returns silently.
  */
 export async function recalculateStudentAttendance(
   db: Db,
@@ -62,44 +57,29 @@ export async function recalculateStudentAttendance(
     .where(eq(sessionsTable.student_id, studentId));
   const sessionDates = sessions.map((s) => s.session_date);
 
-  const manualRows = await db
-    .select({ attendance_date: attendanceTable.attendance_date })
-    .from(attendanceTable)
-    .where(
-      and(
-        eq(attendanceTable.student_id, studentId),
-        eq(attendanceTable.recorded_manually, true),
-      ),
-    );
-  const manualDates = new Set(manualRows.map((r) => r.attendance_date));
-
   const today = todayDateString();
 
   if (opts?.affectedDate) {
     const dayStatus = computeDayAttendance(opts.affectedDate, sessionDates, ctx, today);
 
-    // Remove any existing AUTO record for this date (manual records are safe).
+    // Remove any existing record for this date.
     await db
       .delete(attendanceTable)
       .where(
         and(
           eq(attendanceTable.student_id, studentId),
           eq(attendanceTable.attendance_date, opts.affectedDate),
-          eq(attendanceTable.recorded_manually, false),
         ),
       );
 
-    // Insert/replace an auto record only if the day is in-scope and not manual.
-    if (dayStatus && !manualDates.has(opts.affectedDate)) {
+    // Insert a present record only if the day has a session and is in-scope.
+    if (dayStatus === "present") {
       await db
         .insert(attendanceTable)
         .values({
           student_id: studentId,
-          teacher_id: null,
           attendance_date: opts.affectedDate,
-          status: dayStatus,
-          notes: null,
-          recorded_manually: false,
+          status: "present",
         })
         .onConflictDoNothing({
           target: [attendanceTable.student_id, attendanceTable.attendance_date],
@@ -108,27 +88,17 @@ export async function recalculateStudentAttendance(
     return;
   }
 
-  // Full recalc: wipe auto rows, rebuild from calendar (skip manual dates).
+  // Full recalc: wipe all rows, rebuild from calendar (present days only).
   await db
     .delete(attendanceTable)
-    .where(
-      and(
-        eq(attendanceTable.student_id, studentId),
-        eq(attendanceTable.recorded_manually, false),
-      ),
-    );
+    .where(eq(attendanceTable.student_id, studentId));
 
   const calendar = computeAttendanceCalendar(sessionDates, ctx, today);
-  const toInsert = calendar
-    .filter((day) => !manualDates.has(day.date))
-    .map((day) => ({
-      student_id: studentId,
-      teacher_id: null,
-      attendance_date: day.date,
-      status: day.status,
-      notes: null,
-      recorded_manually: false,
-    }));
+  const toInsert = calendar.map((day) => ({
+    student_id: studentId,
+    attendance_date: day.date,
+    status: "present" as const,
+  }));
 
   if (toInsert.length > 0) {
     await db

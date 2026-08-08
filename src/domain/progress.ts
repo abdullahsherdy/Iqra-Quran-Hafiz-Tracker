@@ -68,6 +68,17 @@ export interface DetailedSessionRow extends SessionRow {
 export interface InitialMemRow {
   juz_number: number;
   status: string;
+  /** Pages memorized in this juz (Hafs Madani mushaf). null/undefined = full juz. */
+  pages?: number | null;
+}
+
+/** Page-level breakdown of a juz (from the juz_pages table). */
+export interface JuzPageRow {
+  juz_number: number;
+  page_number: number;
+  surah_id: number;
+  from_ayah: number;
+  to_ayah: number;
 }
 
 export interface IjazaRow {
@@ -136,14 +147,18 @@ export function computeJuzProgressPure(params: {
   sessions: SessionRow[];
   initialMem: InitialMemRow[];
   ijazat: IjazaRow[];
+  juzPages?: JuzPageRow[];
   referenceDate?: Date;
 }): JuzProgress[] {
-  const { boundaries, sessions, initialMem, ijazat, referenceDate = new Date() } = params;
+  const { boundaries, sessions, initialMem, ijazat, juzPages = [], referenceDate = new Date() } = params;
 
-  // 1. Map initial memorization status
-  const initMemMap = new Map<number, string>();
+  // 1. Map initial memorization status + pages
+  const initMemMap = new Map<number, { status: string; pages: number | null }>();
   for (const row of initialMem) {
-    initMemMap.set(row.juz_number, row.status);
+    initMemMap.set(row.juz_number, {
+      status: row.status,
+      pages: row.pages ?? null,
+    });
   }
 
   // 2. Map formal ijazat
@@ -159,8 +174,8 @@ export function computeJuzProgressPure(params: {
   }
 
   // Also initial memorization with_ijaza counts as ijaza
-  for (const [juzNum, status] of initMemMap.entries()) {
-    if (status === "with_ijaza") {
+  for (const [juzNum, info] of initMemMap.entries()) {
+    if (info.status === "with_ijaza") {
       ijazaJuzs.add(juzNum);
     }
   }
@@ -169,6 +184,22 @@ export function computeJuzProgressPure(params: {
 
   // Group boundaries by juz
   const boundariesByJuz = groupBy(boundaries, (r) => r.juz_number);
+
+  // Group juz_pages by juz → page_number → surah rows
+  const juzPagesByJuz = new Map<number, Map<number, JuzPageRow[]>>();
+  for (const page of juzPages) {
+    let pageMap = juzPagesByJuz.get(page.juz_number);
+    if (!pageMap) {
+      pageMap = new Map();
+      juzPagesByJuz.set(page.juz_number, pageMap);
+    }
+    let surahRows = pageMap.get(page.page_number);
+    if (!surahRows) {
+      surahRows = [];
+      pageMap.set(page.page_number, surahRows);
+    }
+    surahRows.push(page);
+  }
 
   for (let juz = 1; juz <= 30; juz++) {
     const segments = boundariesByJuz.get(juz) ?? [];
@@ -198,14 +229,20 @@ export function computeJuzProgressPure(params: {
       ranges.push([from, to]);
     };
 
-    // If juz is fully covered by initial memorization
-    const isInitiallyCovered = initMemMap.has(juz);
+    // Initial memorization info for this juz
+    const initMemInfo = initMemMap.get(juz);
+    // Full initial memorization (pages = null/undefined) → all segments covered
+    const isFullyInitMem = initMemInfo && initMemInfo.pages === null;
+    // Partial initial memorization (pages = N) → proportional coverage
+    const isPartialInitMem = initMemInfo && initMemInfo.pages !== null;
 
     for (const seg of segments) {
-      if (isInitiallyCovered) {
+      if (isFullyInitMem) {
+        // Full juz memorized before joining — all segments covered
         addCoveredRange(seg.surah_id, seg.from_ayah, seg.to_ayah);
       } else {
-        // Find intersecting sessions
+        // Find intersecting sessions (also applies when partial init mem —
+        // sessions can add coverage on top of the partial initial memorization)
         const surahSessions = sessions.filter((s) => s.surah_id === seg.surah_id);
         for (const sess of surahSessions) {
           const overlap = intersectRanges(sess.from_ayah, sess.to_ayah, seg.from_ayah, seg.to_ayah);
@@ -216,11 +253,44 @@ export function computeJuzProgressPure(params: {
       }
     }
 
-    // Now union covered ranges per surah
-    let totalCoveredAyahs = 0;
+    // Session-based covered ayahs
+    let sessionCoveredAyahs = 0;
     for (const [, ranges] of coveredRangesBySurah.entries()) {
       if (ranges.length === 0) continue;
-      totalCoveredAyahs += sumRangeLengths(unionRanges(ranges));
+      sessionCoveredAyahs += sumRangeLengths(unionRanges(ranges));
+    }
+
+    // For partial initial memorization, compute exact ayah-level coverage
+    // using the juz_pages table (first N pages of the juz).
+    // Overall coverage = max(session coverage, init-mem page coverage).
+    let totalCoveredAyahs = sessionCoveredAyahs;
+    if (isPartialInitMem && initMemInfo?.pages !== null && initMemInfo.pages !== undefined && juzTotalAyahs > 0) {
+      const pageMap = juzPagesByJuz.get(juz);
+      if (pageMap) {
+        // Collect ayah ranges from the first N pages
+        const initMemRangesBySurah = new Map<number, [number, number][]>();
+        for (let p = 1; p <= initMemInfo.pages; p++) {
+          const pageRows = pageMap.get(p);
+          if (!pageRows) continue;
+          for (const pr of pageRows) {
+            let ranges = initMemRangesBySurah.get(pr.surah_id);
+            if (!ranges) {
+              ranges = [];
+              initMemRangesBySurah.set(pr.surah_id, ranges);
+            }
+            ranges.push([pr.from_ayah, pr.to_ayah]);
+          }
+        }
+        let initMemCoveredAyahs = 0;
+        for (const [, ranges] of initMemRangesBySurah.entries()) {
+          initMemCoveredAyahs += sumRangeLengths(unionRanges(ranges));
+        }
+        totalCoveredAyahs = Math.max(totalCoveredAyahs, initMemCoveredAyahs);
+      } else {
+        // Fallback: no juz_pages data for this juz, use proportional estimate
+        const totalPages = 20; // most juz have 20 pages
+        totalCoveredAyahs = Math.max(totalCoveredAyahs, (initMemInfo.pages / totalPages) * juzTotalAyahs);
+      }
     }
 
     const coveragePercent = juzTotalAyahs > 0 ? (totalCoveredAyahs / juzTotalAyahs) * 100 : 0;
@@ -292,10 +362,11 @@ export function computeJuzProgressDetailedPure(params: {
   sessions: DetailedSessionRow[];
   initialMem: InitialMemRow[];
   ijazat: IjazaRow[];
+  juzPages?: JuzPageRow[];
   surahMap: Map<number, string>;
   referenceDate?: Date;
 }): JuzProgressDetailed[] {
-  const { boundaries, sessions, initialMem, ijazat, surahMap, referenceDate = new Date() } = params;
+  const { boundaries, sessions, initialMem, ijazat, juzPages = [], surahMap, referenceDate = new Date() } = params;
 
   // Reuse the summary computation (strip extra fields for the base function).
   const summary = computeJuzProgressPure({
@@ -310,20 +381,62 @@ export function computeJuzProgressDetailedPure(params: {
     })),
     initialMem,
     ijazat,
+    juzPages,
     referenceDate,
   });
 
-  const initMemMap = new Map<number, string>();
+  const initMemMap = new Map<number, { status: string; pages: number | null }>();
   for (const row of initialMem) {
-    initMemMap.set(row.juz_number, row.status);
+    initMemMap.set(row.juz_number, {
+      status: row.status,
+      pages: row.pages ?? null,
+    });
   }
 
   const boundariesByJuz = groupBy(boundaries, (r) => r.juz_number);
 
+  // Group juz_pages by juz → page_number → surah rows
+  const juzPagesByJuz = new Map<number, Map<number, JuzPageRow[]>>();
+  for (const page of juzPages) {
+    let pageMap = juzPagesByJuz.get(page.juz_number);
+    if (!pageMap) {
+      pageMap = new Map();
+      juzPagesByJuz.set(page.juz_number, pageMap);
+    }
+    let surahRows = pageMap.get(page.page_number);
+    if (!surahRows) {
+      surahRows = [];
+      pageMap.set(page.page_number, surahRows);
+    }
+    surahRows.push(page);
+  }
+
   return summary.map((progress) => {
     const juz = progress.juz;
     const segments = boundariesByJuz.get(juz) ?? [];
-    const isInitiallyCovered = initMemMap.has(juz);
+    const initMemInfo = initMemMap.get(juz);
+    const isFullyInitMem = initMemInfo && initMemInfo.pages === null;
+    const isPartialInitMem = initMemInfo && initMemInfo.pages !== null;
+
+    // For partial init mem, collect ayah ranges per surah from the first N pages
+    const partialInitMemRangesBySurah = new Map<number, [number, number][]>();
+    if (isPartialInitMem && initMemInfo?.pages !== null && initMemInfo.pages !== undefined) {
+      const pageMap = juzPagesByJuz.get(juz);
+      if (pageMap) {
+        for (let p = 1; p <= initMemInfo.pages; p++) {
+          const pageRows = pageMap.get(p);
+          if (!pageRows) continue;
+          for (const pr of pageRows) {
+            let ranges = partialInitMemRangesBySurah.get(pr.surah_id);
+            if (!ranges) {
+              ranges = [];
+              partialInitMemRangesBySurah.set(pr.surah_id, ranges);
+            }
+            ranges.push([pr.from_ayah, pr.to_ayah]);
+          }
+        }
+      }
+    }
 
     // Group segments by surah
     const segmentsBySurah = groupBy(segments, (s) => s.surah_id);
@@ -338,14 +451,25 @@ export function computeJuzProgressDetailedPure(params: {
 
         const coveredRanges: [number, number][] = [];
         for (const seg of segs) {
-          if (isInitiallyCovered) {
+          if (isFullyInitMem) {
             coveredRanges.push([seg.from_ayah, seg.to_ayah]);
           } else {
+            // Session coverage
             const surahSessions = sessions.filter((s) => s.surah_id === seg.surah_id);
             for (const sess of surahSessions) {
               const overlap = intersectRanges(sess.from_ayah, sess.to_ayah, seg.from_ayah, seg.to_ayah);
               if (overlap) {
                 coveredRanges.push(overlap);
+              }
+            }
+            // Partial init mem coverage (intersect page ranges with this segment)
+            if (isPartialInitMem) {
+              const pageRanges = partialInitMemRangesBySurah.get(surahId) ?? [];
+              for (const [pf, pt] of pageRanges) {
+                const overlap = intersectRanges(pf, pt, seg.from_ayah, seg.to_ayah);
+                if (overlap) {
+                  coveredRanges.push(overlap);
+                }
               }
             }
           }

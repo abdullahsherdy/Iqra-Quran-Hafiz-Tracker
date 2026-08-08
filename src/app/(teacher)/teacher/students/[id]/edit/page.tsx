@@ -2,11 +2,10 @@ import { requireRole } from "@/features/auth/session";
 import { getDb } from "@/db/client";
 import {
   studentsTable,
-  teacherStudentAssignmentsTable,
   usersTable,
   initialMemorizationTable,
 } from "@/db/schema";
-import { and, asc, eq, isNull } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -55,22 +54,7 @@ export default async function TeacherEditStudentPage({ params }: PageProps) {
 
   if (!student) return notFound();
 
-  // Enforce assignment scoping
-  const [assign] = await db
-    .select({ id: teacherStudentAssignmentsTable.id })
-    .from(teacherStudentAssignmentsTable)
-    .where(
-      and(
-        eq(teacherStudentAssignmentsTable.teacher_id, user.id),
-        eq(teacherStudentAssignmentsTable.student_id, id),
-        isNull(teacherStudentAssignmentsTable.end_date),
-      ),
-    )
-    .limit(1);
-
-  if (!assign) return notFound();
-
-  // Enforce gender scoping
+  // Enforce gender scoping (no assignment check)
   const [teacherUser] = await db
     .select({
       gender: usersTable.gender,
@@ -90,6 +74,7 @@ export default async function TeacherEditStudentPage({ params }: PageProps) {
       juz_number: initialMemorizationTable.juz_number,
       status: initialMemorizationTable.status,
       sheikh_name: initialMemorizationTable.sheikh_name,
+      pages: initialMemorizationTable.pages,
     })
     .from(initialMemorizationTable)
     .where(eq(initialMemorizationTable.student_id, id))
@@ -113,6 +98,7 @@ export default async function TeacherEditStudentPage({ params }: PageProps) {
           juz_number: r.juz_number,
           status: r.status as "memorized" | "with_ijaza",
           sheikh_name: r.sheikh_name ?? undefined,
+          pages: r.pages,
         }))}
         redirectBase={`/teacher/students/${id}`}
         mode="teacher"

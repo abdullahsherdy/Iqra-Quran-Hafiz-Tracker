@@ -1,11 +1,12 @@
 import { NextRequest } from "next/server";
 import { and, count, desc, asc, eq, gte, lte, gt, lt, ilike, or, isNull, inArray, type SQL, type AnyColumn } from "drizzle-orm";
-import { studentsTable, teacherStudentAssignmentsTable, initialMemorizationTable } from "@/db/schema";
-import { getAssignedStudentIds } from "@/features/auth/student-access";
+import { studentsTable, sessionsTable, initialMemorizationTable } from "@/db/schema";
 import { getLevelInfo, countsFromInitialMemorization, validateInitialMemorization, validateStudentPayload } from "@/domain/students";
 import { recalculateStudentSummary } from "@/features/students/server/recalc";
 import { sanitizeError } from "@/lib/api-error";
 import { getApiContext } from "@/features/auth/api-context";
+import { isAdmin } from "@/features/auth/shared";
+import { logAction } from "@/features/audit/audit-log";
 import { todayDateString, toDateString } from "@/lib/utils";
 
 // GET /api/students — role-scoped list with search, filters and pagination
@@ -35,15 +36,9 @@ export async function GET(request: NextRequest) {
   // Build dynamic conditions array
   const conditions: SQL[] = [];
 
-  // Role-scoping: teacher sees only assigned students
+  // Role-scoping: teacher sees all students matching their gender
+  // (or all students if can_view_all_genders is set). Assignments are no longer used.
   if (appUser.role === "teacher") {
-    const myStudentIds = await getAssignedStudentIds(db, appUser.id);
-    if (myStudentIds.length === 0) {
-      return Response.json({ data: [], count: 0, page, pageSize });
-    }
-    conditions.push(inArray(studentsTable.id, myStudentIds));
-
-    // Gender scoping
     if (!appUser.can_view_all_genders && appUser.gender) {
       conditions.push(eq(studentsTable.gender, appUser.gender));
     }
@@ -99,9 +94,13 @@ export async function GET(request: NextRequest) {
     conditions.push(gte(studentsTable.last_session_date, toDateString(cutoff)));
   }
 
-  // Admin-only teacher_id filter
-  if (appUser.role === "admin" && teacherId) {
-    const ids = await getAssignedStudentIds(db, teacherId);
+  // Admin-only teacher_id filter: students who have sessions with this teacher
+  if (isAdmin(appUser.role) && teacherId) {
+    const studentIdsWithTeacher = await db
+      .select({ student_id: sessionsTable.student_id })
+      .from(sessionsTable)
+      .where(eq(sessionsTable.teacher_id, teacherId));
+    const ids = [...new Set(studentIdsWithTeacher.map((r) => r.student_id))];
     if (ids.length === 0) return Response.json({ data: [], count: 0, page, pageSize });
     conditions.push(inArray(studentsTable.id, ids));
   }
@@ -184,7 +183,7 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "Gender not allowed" }, { status: 403 });
   }
 
-  const initRows: Array<{ juz_number: number; status: string; sheikh_name?: string }> =
+  const initRows: Array<{ juz_number: number; status: string; sheikh_name?: string; pages?: number | null }> =
     Array.isArray(initial_memorization) ? initial_memorization : [];
 
   const initValidationError = validateInitialMemorization(initRows);
@@ -195,43 +194,37 @@ export async function POST(request: NextRequest) {
   const { memorized_juz_count, ijaza_juz_count } = countsFromInitialMemorization(initRows);
 
   try {
-    const [student] = await db
-      .insert(studentsTable)
-      .values({
-        name,
-        gender,
-        birth_date: birth_date ?? null,
-        guardian_name,
-        guardian_phone,
-        enrollment_date: enrollment_date ?? todayDateString(),
-        notes: notes ?? null,
-        memorized_juz_count,
-        ijaza_juz_count,
-      })
-      .returning();
+    const [student] = await db.transaction(async (tx) => {
+      const [inserted] = await tx
+        .insert(studentsTable)
+        .values({
+          name,
+          gender,
+          birth_date: birth_date ?? null,
+          guardian_name,
+          guardian_phone,
+          enrollment_date: enrollment_date ?? todayDateString(),
+          notes: notes ?? null,
+          memorized_juz_count,
+          ijaza_juz_count,
+        })
+        .returning();
 
-    if (!student) return Response.json({ error: sanitizeError(new Error("student insert failed"), "student insert") }, { status: 500 });
+      if (!inserted) throw new Error("student insert failed");
 
-    // Persist initial_memorization rows
-    if (initRows.length > 0) {
-      const rowsToInsert = initRows.map((r) => ({
-        student_id: student.id,
-        juz_number: r.juz_number,
-        status: r.status,
-        sheikh_name: r.sheikh_name ?? null,
-      }));
-      await db.insert(initialMemorizationTable).values(rowsToInsert);
-    }
+      if (initRows.length > 0) {
+        const rowsToInsert = initRows.map((r) => ({
+          student_id: inserted.id,
+          juz_number: r.juz_number,
+          status: r.status,
+          sheikh_name: r.sheikh_name ?? null,
+          pages: r.pages ?? null,
+        }));
+        await tx.insert(initialMemorizationTable).values(rowsToInsert);
+      }
 
-    // Teacher self-add: auto-create active assignment
-    if (appUser.role === "teacher") {
-      await db.insert(teacherStudentAssignmentsTable).values({
-        teacher_id: appUser.id,
-        student_id: student.id,
-        start_date: enrollment_date ?? todayDateString(),
-        created_by: appUser.id,
-      });
-    }
+      return [inserted];
+    });
 
     await recalculateStudentSummary(db, student.id);
 
@@ -241,8 +234,31 @@ export async function POST(request: NextRequest) {
       .where(eq(studentsTable.id, student.id))
       .limit(1);
 
+    await logAction(db, {
+      userId: appUser.id,
+      username: appUser.username,
+      action: "create",
+      entityType: "student",
+      entityId: student.id,
+      method: "POST",
+      path: "/api/students",
+      statusCode: 201,
+      requestBody: { name, gender, guardian_name },
+      responseBody: { id: student.id, name: student.name },
+    });
     return Response.json(finalStudent ?? student, { status: 201 });
   } catch (error) {
+    await logAction(db, {
+      userId: appUser.id,
+      username: appUser.username,
+      action: "create",
+      entityType: "student",
+      method: "POST",
+      path: "/api/students",
+      statusCode: 500,
+      requestBody: { name, gender },
+      responseBody: { error: sanitizeError(error, "student insert") },
+    });
     return Response.json({ error: sanitizeError(error, "student insert") }, { status: 500 });
   }
 }

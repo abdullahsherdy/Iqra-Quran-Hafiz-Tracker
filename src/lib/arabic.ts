@@ -17,7 +17,25 @@ export function formatAyahPreview(
   return `سورة ${surahName} من الآية ${toArabicNumerals(fromAyah)} إلى الآية ${toArabicNumerals(toAyah)}`;
 }
 
-/** Format an ISO date string (YYYY-MM-DD) as an Arabic localized date. */
+/** Format an ISO date string (YYYY-MM-DD) as an Arabic localized date in Africa/Cairo timezone. */
 export function formatArabicDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("ar-EG");
+  const [y, m, d] = iso.split("-").map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d));
+  return new Intl.DateTimeFormat("ar-EG", {
+    timeZone: "Africa/Cairo",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  }).format(date);
+}
+
+/** Format an ISO date string as an Arabic localized date with Western (0-9) numerals. */
+export function formatWesternDate(iso: string): string {
+  return new Intl.DateTimeFormat("ar-EG", {
+    timeZone: "Africa/Cairo",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    numberingSystem: "latn",
+  }).format(new Date(iso));
 }

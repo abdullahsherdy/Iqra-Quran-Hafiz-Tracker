@@ -13,7 +13,9 @@ import {
   ijazatTable,
   initialMemorizationTable,
   juzBoundariesTable,
+  juzPagesTable,
   sessionsTable,
+  sessionItemsTable,
 } from "@/db/schema";
 import {
   computeJuzProgressPure,
@@ -22,6 +24,7 @@ import {
   type SessionRow,
   type InitialMemRow,
   type IjazaRow,
+  type JuzPageRow,
 } from "@/domain/progress";
 
 export async function computeJuzProgress(
@@ -29,7 +32,7 @@ export async function computeJuzProgress(
   studentId: string,
   referenceDate: Date = new Date()
 ): Promise<JuzProgress[]> {
-  const [boundaries, sessions, initialMem, ijazat] = await Promise.all([
+  const [boundaries, sessionItems, initialMem, ijazat, juzPages] = await Promise.all([
     db
       .select({
         juz_number: juzBoundariesTable.juz_number,
@@ -41,18 +44,20 @@ export async function computeJuzProgress(
     db
       .select({
         session_date: sessionsTable.session_date,
-        session_type: sessionsTable.session_type,
-        surah_id: sessionsTable.surah_id,
-        from_ayah: sessionsTable.from_ayah,
-        to_ayah: sessionsTable.to_ayah,
-        rating: sessionsTable.rating,
+        session_type: sessionItemsTable.session_type,
+        surah_id: sessionItemsTable.surah_id,
+        from_ayah: sessionItemsTable.from_ayah,
+        to_ayah: sessionItemsTable.to_ayah,
+        rating: sessionItemsTable.rating,
       })
-      .from(sessionsTable)
+      .from(sessionItemsTable)
+      .innerJoin(sessionsTable, eq(sessionItemsTable.session_id, sessionsTable.id))
       .where(eq(sessionsTable.student_id, studentId)),
     db
       .select({
         juz_number: initialMemorizationTable.juz_number,
         status: initialMemorizationTable.status,
+        pages: initialMemorizationTable.pages,
       })
       .from(initialMemorizationTable)
       .where(eq(initialMemorizationTable.student_id, studentId)),
@@ -63,13 +68,23 @@ export async function computeJuzProgress(
       })
       .from(ijazatTable)
       .where(eq(ijazatTable.student_id, studentId)),
+    db
+      .select({
+        juz_number: juzPagesTable.juz_number,
+        page_number: juzPagesTable.page_number,
+        surah_id: juzPagesTable.surah_id,
+        from_ayah: juzPagesTable.from_ayah,
+        to_ayah: juzPagesTable.to_ayah,
+      })
+      .from(juzPagesTable),
   ]);
 
   return computeJuzProgressPure({
     boundaries: boundaries as BoundaryRow[],
-    sessions: sessions as SessionRow[],
+    sessions: sessionItems as SessionRow[],
     initialMem: initialMem as InitialMemRow[],
     ijazat: ijazat as IjazaRow[],
+    juzPages: juzPages as JuzPageRow[],
     referenceDate
   });
 }

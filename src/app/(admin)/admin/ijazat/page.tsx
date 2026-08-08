@@ -2,7 +2,7 @@ import { requireRole } from "@/features/auth/session";
 import { getDb } from "@/db/client";
 import { ijazatTable, studentsTable } from "@/db/schema";
 import { asc, desc, eq } from "drizzle-orm";
-import { Award, Plus } from "lucide-react";
+import { Award, Plus, BookOpen } from "lucide-react";
 import { GrantIjazaForm } from "@/features/ijazat/components/grant-ijaza-form";
 import { AdminIjazatTable } from "@/features/ijazat/components/admin-ijazat-table";
 
@@ -62,7 +62,7 @@ export default async function AdminIjazatPage({ searchParams }: PageProps) {
     .orderBy(asc(studentsTable.name));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div>
@@ -76,33 +76,31 @@ export default async function AdminIjazatPage({ searchParams }: PageProps) {
         </div>
       </div>
 
-      {/* Two-column layout: list on right, form on left (RTL) */}
-      <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
-        {/* Ijazat list */}
-        <div className="space-y-4">
-          <h3 className="font-semibold text-base border-b border-border pb-2">
-            سجل الإجازات
-          </h3>
-          <AdminIjazatTable ijazat={allIjazat} />
-        </div>
+      {/* 1. Grant new ijaza form (full width, constrained on large screens) */}
+      <section className="mx-auto w-full max-w-2xl">
+        <h3 className="font-semibold text-base border-b border-border pb-2 mb-4 flex items-center gap-2">
+          <Plus className="size-4" />
+          منح إجازة جديدة
+        </h3>
+        <GrantIjazaForm
+          students={students}
+          preselectedStudentId={grantForId}
+          redirectTo={
+            grantForId
+              ? `/admin/students/${grantForId}`
+              : "/admin/ijazat"
+          }
+        />
+      </section>
 
-        {/* Grant new ijaza form */}
-        <div className="space-y-4">
-          <h3 className="font-semibold text-base border-b border-border pb-2 flex items-center gap-2">
-            <Plus className="size-4" />
-            منح إجازة جديدة
-          </h3>
-          <GrantIjazaForm
-            students={students}
-            preselectedStudentId={grantForId}
-            redirectTo={
-              grantForId
-                ? `/admin/students/${grantForId}`
-                : "/admin/ijazat"
-            }
-          />
-        </div>
-      </div>
+      {/* 2. Ijazat log (full record table) */}
+      <section className="space-y-4">
+        <h3 className="font-semibold text-base border-b border-border pb-2 flex items-center gap-2">
+          <BookOpen className="size-4" />
+          سجل الإجازات
+        </h3>
+        <AdminIjazatTable ijazat={allIjazat} />
+      </section>
     </div>
   );
 }

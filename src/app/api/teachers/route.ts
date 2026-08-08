@@ -2,17 +2,18 @@ import { NextRequest } from "next/server";
 import { asc, eq } from "drizzle-orm";
 
 import { createSupabaseAdminClient } from "@/infrastructure/auth/admin";
-import { usernameToEmail } from "@/features/auth/shared";
+import { isAdmin, usernameToEmail } from "@/features/auth/shared";
 import { sanitizeError } from "@/lib/api-error";
 import { usersTable } from "@/db/schema";
 import { getApiContext } from "@/features/auth/api-context";
+import { logAction } from "@/features/audit/audit-log";
 
 // GET /api/teachers — admin only
 export async function GET() {
   const ctx = await getApiContext();
   if (!ctx.ok) return ctx.response;
   const { db, appUser } = ctx;
-  if (appUser.role !== "admin") return Response.json({ error: "Forbidden" }, { status: 403 });
+  if (!isAdmin(appUser.role)) return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const data = await db
     .select({
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
   const ctx = await getApiContext();
   if (!ctx.ok) return ctx.response;
   const { db, appUser } = ctx;
-  if (appUser.role !== "admin") return Response.json({ error: "Forbidden" }, { status: 403 });
+  if (!isAdmin(appUser.role)) return Response.json({ error: "Forbidden" }, { status: 403 });
 
   const body = await request.json();
   const { name, username, password, phone, gender, can_view_all_genders } = body;
@@ -77,10 +78,33 @@ export async function POST(request: NextRequest) {
         is_active: true,
       })
       .returning();
+    await logAction(db, {
+      userId: appUser.id,
+      username: appUser.username,
+      action: "create",
+      entityType: "teacher",
+      entityId: newUser.id,
+      method: "POST",
+      path: "/api/teachers",
+      statusCode: 201,
+      requestBody: { name, username, phone, gender, can_view_all_genders },
+      responseBody: { id: newUser.id, name: newUser.name },
+    });
     return Response.json(newUser, { status: 201 });
   } catch (userError) {
     // Roll back auth user
     await admin.auth.admin.deleteUser(authData.user.id);
+    await logAction(db, {
+      userId: appUser.id,
+      username: appUser.username,
+      action: "create",
+      entityType: "teacher",
+      method: "POST",
+      path: "/api/teachers",
+      statusCode: 500,
+      requestBody: { name, username },
+      responseBody: { error: sanitizeError(userError, "user insert") },
+    });
     return Response.json({ error: sanitizeError(userError, "user insert") }, { status: 500 });
   }
 }

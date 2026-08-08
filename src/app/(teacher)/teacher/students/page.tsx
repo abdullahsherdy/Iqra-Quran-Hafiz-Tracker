@@ -13,7 +13,7 @@ export default async function TeacherStudentsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold">طلابي</h2>
-          <p className="text-sm text-muted-foreground">الطلاب المسندون إليّ حالياً</p>
+          <p className="text-sm text-muted-foreground">الطلاب المتاحون لي</p>
         </div>
         <Link href="/teacher/students/new" className="btn-primary">
           <PlusCircle className="size-4" />

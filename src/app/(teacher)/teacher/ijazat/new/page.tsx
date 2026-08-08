@@ -1,8 +1,7 @@
 import { requireRole } from "@/features/auth/session";
 import { getDb } from "@/db/client";
 import { studentsTable, usersTable } from "@/db/schema";
-import { and, asc, eq, inArray } from "drizzle-orm";
-import { getAssignedStudentIds } from "@/features/auth/student-access";
+import { and, asc, eq } from "drizzle-orm";
 import { GrantIjazaForm } from "@/features/ijazat/components/grant-ijaza-form";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -22,9 +21,6 @@ export default async function TeacherGrantIjazaPage({ searchParams }: PageProps)
     return <div className="text-destructive p-4">خطأ في الاتصال بالخادم</div>;
   }
 
-  // Load teacher's assigned active students only
-  const assignedIds = await getAssignedStudentIds(db, user.id);
-
   const [teacherUser] = await db
     .select({
       gender: usersTable.gender,
@@ -34,13 +30,8 @@ export default async function TeacherGrantIjazaPage({ searchParams }: PageProps)
     .where(eq(usersTable.id, user.id))
     .limit(1);
 
-  const conditions = [
-    inArray(
-      studentsTable.id,
-      assignedIds.length > 0 ? assignedIds : ["00000000-0000-0000-0000-000000000000"],
-    ),
-    eq(studentsTable.status, "active"),
-  ];
+  // Gender-scoped active students (no assignment check)
+  const conditions = [eq(studentsTable.status, "active")];
   if (teacherUser && !teacherUser.can_view_all_genders && teacherUser.gender) {
     conditions.push(eq(studentsTable.gender, teacherUser.gender));
   }
@@ -61,7 +52,7 @@ export default async function TeacherGrantIjazaPage({ searchParams }: PageProps)
         <div>
           <h2 className="text-xl font-bold">منح إجازة</h2>
           <p className="text-sm text-muted-foreground">
-            تسجيل إجازة لأحد طلابك المسندين إليك
+            تسجيل إجازة لأحد طلابك
           </p>
         </div>
       </div>
@@ -78,8 +69,7 @@ export default async function TeacherGrantIjazaPage({ searchParams }: PageProps)
         />
       ) : (
         <div className="card text-center py-12 text-sm text-muted-foreground">
-          <p>لا يوجد طلاب نشطون مسندون إليك حالياً.</p>
-          <p className="mt-1 text-xs">تواصل مع المدير لإسناد طلاب.</p>
+          <p>لا يوجد طلاب نشطون متاحون لك حالياً.</p>
         </div>
       )}
     </div>

@@ -5,7 +5,9 @@ import Link from "next/link";
 import { Search, SlidersHorizontal, ChevronRight, ChevronLeft, Users } from "lucide-react";
 import { GenderBadge, StudentStatusBadge, type StudentStatus } from "@/components/badges";
 import { LevelBadge } from "@/features/students/components/level-badge";
-import { apiGet } from "@/lib/api-client";
+import { apiGet, ApiError } from "@/lib/api-client";
+import { isAdmin } from "@/features/auth/shared";
+import { formatWesternDate } from "@/lib/arabic";
 
 interface Teacher {
   id: string;
@@ -49,12 +51,13 @@ const SORT_OPTIONS = [
 ];
 
 export function StudentsListClient({ teachers, role, basePath }: StudentsListClientProps) {
-  const base = basePath ?? (role === "admin" ? "/admin/students" : "/teacher/students");
+  const base = basePath ?? (isAdmin(role) ? "/admin/students" : "/teacher/students");
 
   const [students, setStudents] = useState<Student[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
   // Filter state
@@ -87,7 +90,7 @@ export function StudentsListClient({ teachers, role, basePath }: StudentsListCli
       if (level) params.set("level", level);
       if (statusFilter) params.set("status", statusFilter);
       if (hasIjaza) params.set("has_ijaza", hasIjaza);
-      if (teacherId && role === "admin") params.set("teacher_id", teacherId);
+      if (teacherId && isAdmin(role)) params.set("teacher_id", teacherId);
       if (minJuz) params.set("min_juz", minJuz);
       if (maxJuz) params.set("max_juz", maxJuz);
       if (ageMin) params.set("age_min", ageMin);
@@ -99,9 +102,10 @@ export function StudentsListClient({ teachers, role, basePath }: StudentsListCli
       const data = await apiGet<{ data: Student[]; count: number }>(`/api/students?${params}`);
       setStudents(data.data ?? []);
       setTotal(data.count ?? 0);
-    } catch {
+    } catch (err) {
       setStudents([]);
       setTotal(0);
+      setError(err instanceof ApiError ? err.message : "حدث خطأ أثناء تحميل الطلاب");
     } finally {
       setLoading(false);
     }
@@ -138,7 +142,7 @@ export function StudentsListClient({ teachers, role, basePath }: StudentsListCli
         </div>
         <div className="flex gap-2">
           <select
-            className="input-field max-w-[140px]"
+            className="input-field flex-1 sm:flex-none sm:max-w-[140px]"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
           >
@@ -148,7 +152,7 @@ export function StudentsListClient({ teachers, role, basePath }: StudentsListCli
           </select>
           <button
             type="button"
-            className="btn-secondary gap-1.5"
+            className="btn-secondary gap-1.5 shrink-0"
             onClick={() => setShowFilters((v) => !v)}
           >
             <SlidersHorizontal className="size-4" />
@@ -192,7 +196,7 @@ export function StudentsListClient({ teachers, role, basePath }: StudentsListCli
               <option value="false">بدون إجازة</option>
             </select>
           </div>
-          {role === "admin" && (
+          {isAdmin(role) && (
             <div>
               <label className="form-label">المحفظ</label>
               <select className="input-field" value={teacherId} onChange={(e) => setTeacherId(e.target.value)}>
@@ -276,6 +280,13 @@ export function StudentsListClient({ teachers, role, basePath }: StudentsListCli
         </div>
       )}
 
+      {/* Error */}
+      {error && !loading && (
+        <div className="card flex items-center justify-center py-8 text-destructive text-sm">
+          {error}
+        </div>
+      )}
+
       {/* Results */}
       {loading ? (
         <div className="card flex items-center justify-center py-16">
@@ -333,7 +344,7 @@ export function StudentsListClient({ teachers, role, basePath }: StudentsListCli
                     </td>
                     <td className="hidden px-4 py-3 text-muted-foreground md:table-cell">
                       {s.last_session_date
-                        ? new Date(s.last_session_date).toLocaleDateString("ar-EG")
+                        ? formatWesternDate(s.last_session_date)
                         : "—"}
                     </td>
                     <td className="hidden px-4 py-3 md:table-cell">

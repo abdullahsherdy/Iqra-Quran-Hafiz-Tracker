@@ -13,8 +13,8 @@ export type SessionType = "new_memorization" | "review";
 
 export type Gender = "male" | "female";
 
-export type AttendanceStatus = "present" | "absent" | "excused" | "holiday";
+export type AttendanceStatus = "present";
 
 export type StudentStatus = "active" | "paused" | "graduated" | "withdrawn";
 
-export type AppRole = "admin" | "teacher";
+export type AppRole = "admin" | "teacher" | "super_admin";

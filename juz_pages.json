@@ -1,0 +1,7583 @@
+[
+  {
+    "juz_number": 1,
+    "page_number": 1,
+    "mushaf_page": 1,
+    "surahs": [
+      {
+        "surah_id": 1,
+        "from_ayah": 1,
+        "to_ayah": 7
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 2,
+    "mushaf_page": 2,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 1,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 3,
+    "mushaf_page": 3,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 6,
+        "to_ayah": 16
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 4,
+    "mushaf_page": 4,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 17,
+        "to_ayah": 24
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 5,
+    "mushaf_page": 5,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 25,
+        "to_ayah": 29
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 6,
+    "mushaf_page": 6,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 30,
+        "to_ayah": 37
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 7,
+    "mushaf_page": 7,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 38,
+        "to_ayah": 48
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 8,
+    "mushaf_page": 8,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 49,
+        "to_ayah": 57
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 9,
+    "mushaf_page": 9,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 58,
+        "to_ayah": 61
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 10,
+    "mushaf_page": 10,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 62,
+        "to_ayah": 69
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 11,
+    "mushaf_page": 11,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 70,
+        "to_ayah": 76
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 12,
+    "mushaf_page": 12,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 77,
+        "to_ayah": 83
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 13,
+    "mushaf_page": 13,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 84,
+        "to_ayah": 88
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 14,
+    "mushaf_page": 14,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 89,
+        "to_ayah": 93
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 15,
+    "mushaf_page": 15,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 94,
+        "to_ayah": 101
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 16,
+    "mushaf_page": 16,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 102,
+        "to_ayah": 105
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 17,
+    "mushaf_page": 17,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 106,
+        "to_ayah": 112
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 18,
+    "mushaf_page": 18,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 113,
+        "to_ayah": 119
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 19,
+    "mushaf_page": 19,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 120,
+        "to_ayah": 126
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 20,
+    "mushaf_page": 20,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 127,
+        "to_ayah": 134
+      }
+    ]
+  },
+  {
+    "juz_number": 1,
+    "page_number": 21,
+    "mushaf_page": 21,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 135,
+        "to_ayah": 141
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 1,
+    "mushaf_page": 22,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 142,
+        "to_ayah": 145
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 2,
+    "mushaf_page": 23,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 146,
+        "to_ayah": 153
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 3,
+    "mushaf_page": 24,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 154,
+        "to_ayah": 163
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 4,
+    "mushaf_page": 25,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 164,
+        "to_ayah": 169
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 5,
+    "mushaf_page": 26,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 170,
+        "to_ayah": 176
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 6,
+    "mushaf_page": 27,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 177,
+        "to_ayah": 181
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 7,
+    "mushaf_page": 28,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 182,
+        "to_ayah": 186
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 8,
+    "mushaf_page": 29,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 187,
+        "to_ayah": 190
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 9,
+    "mushaf_page": 30,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 191,
+        "to_ayah": 196
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 10,
+    "mushaf_page": 31,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 197,
+        "to_ayah": 202
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 11,
+    "mushaf_page": 32,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 203,
+        "to_ayah": 210
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 12,
+    "mushaf_page": 33,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 211,
+        "to_ayah": 215
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 13,
+    "mushaf_page": 34,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 216,
+        "to_ayah": 219
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 14,
+    "mushaf_page": 35,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 220,
+        "to_ayah": 224
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 15,
+    "mushaf_page": 36,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 225,
+        "to_ayah": 230
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 16,
+    "mushaf_page": 37,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 231,
+        "to_ayah": 233
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 17,
+    "mushaf_page": 38,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 234,
+        "to_ayah": 237
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 18,
+    "mushaf_page": 39,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 238,
+        "to_ayah": 245
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 19,
+    "mushaf_page": 40,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 246,
+        "to_ayah": 248
+      }
+    ]
+  },
+  {
+    "juz_number": 2,
+    "page_number": 20,
+    "mushaf_page": 41,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 249,
+        "to_ayah": 252
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 1,
+    "mushaf_page": 42,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 253,
+        "to_ayah": 256
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 2,
+    "mushaf_page": 43,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 257,
+        "to_ayah": 259
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 3,
+    "mushaf_page": 44,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 260,
+        "to_ayah": 264
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 4,
+    "mushaf_page": 45,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 265,
+        "to_ayah": 269
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 5,
+    "mushaf_page": 46,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 270,
+        "to_ayah": 274
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 6,
+    "mushaf_page": 47,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 275,
+        "to_ayah": 281
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 7,
+    "mushaf_page": 48,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 282,
+        "to_ayah": 282
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 8,
+    "mushaf_page": 49,
+    "surahs": [
+      {
+        "surah_id": 2,
+        "from_ayah": 283,
+        "to_ayah": 286
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 9,
+    "mushaf_page": 50,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 1,
+        "to_ayah": 9
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 10,
+    "mushaf_page": 51,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 10,
+        "to_ayah": 15
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 11,
+    "mushaf_page": 52,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 16,
+        "to_ayah": 22
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 12,
+    "mushaf_page": 53,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 23,
+        "to_ayah": 29
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 13,
+    "mushaf_page": 54,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 30,
+        "to_ayah": 37
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 14,
+    "mushaf_page": 55,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 38,
+        "to_ayah": 45
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 15,
+    "mushaf_page": 56,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 46,
+        "to_ayah": 52
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 16,
+    "mushaf_page": 57,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 53,
+        "to_ayah": 61
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 17,
+    "mushaf_page": 58,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 62,
+        "to_ayah": 70
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 18,
+    "mushaf_page": 59,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 71,
+        "to_ayah": 77
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 19,
+    "mushaf_page": 60,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 78,
+        "to_ayah": 83
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 20,
+    "mushaf_page": 61,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 84,
+        "to_ayah": 91
+      }
+    ]
+  },
+  {
+    "juz_number": 3,
+    "page_number": 21,
+    "mushaf_page": 62,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 92,
+        "to_ayah": 92
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 1,
+    "mushaf_page": 62,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 93,
+        "to_ayah": 100
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 2,
+    "mushaf_page": 63,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 101,
+        "to_ayah": 108
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 3,
+    "mushaf_page": 64,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 109,
+        "to_ayah": 115
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 4,
+    "mushaf_page": 65,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 116,
+        "to_ayah": 121
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 5,
+    "mushaf_page": 66,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 122,
+        "to_ayah": 132
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 6,
+    "mushaf_page": 67,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 133,
+        "to_ayah": 140
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 7,
+    "mushaf_page": 68,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 141,
+        "to_ayah": 148
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 8,
+    "mushaf_page": 69,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 149,
+        "to_ayah": 153
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 9,
+    "mushaf_page": 70,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 154,
+        "to_ayah": 157
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 10,
+    "mushaf_page": 71,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 158,
+        "to_ayah": 165
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 11,
+    "mushaf_page": 72,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 166,
+        "to_ayah": 173
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 12,
+    "mushaf_page": 73,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 174,
+        "to_ayah": 180
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 13,
+    "mushaf_page": 74,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 181,
+        "to_ayah": 186
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 14,
+    "mushaf_page": 75,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 187,
+        "to_ayah": 194
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 15,
+    "mushaf_page": 76,
+    "surahs": [
+      {
+        "surah_id": 3,
+        "from_ayah": 195,
+        "to_ayah": 200
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 16,
+    "mushaf_page": 77,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 1,
+        "to_ayah": 6
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 17,
+    "mushaf_page": 78,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 7,
+        "to_ayah": 11
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 18,
+    "mushaf_page": 79,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 12,
+        "to_ayah": 14
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 19,
+    "mushaf_page": 80,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 15,
+        "to_ayah": 19
+      }
+    ]
+  },
+  {
+    "juz_number": 4,
+    "page_number": 20,
+    "mushaf_page": 81,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 20,
+        "to_ayah": 23
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 1,
+    "mushaf_page": 82,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 24,
+        "to_ayah": 26
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 2,
+    "mushaf_page": 83,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 27,
+        "to_ayah": 33
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 3,
+    "mushaf_page": 84,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 34,
+        "to_ayah": 37
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 4,
+    "mushaf_page": 85,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 38,
+        "to_ayah": 44
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 5,
+    "mushaf_page": 86,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 45,
+        "to_ayah": 51
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 6,
+    "mushaf_page": 87,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 52,
+        "to_ayah": 59
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 7,
+    "mushaf_page": 88,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 60,
+        "to_ayah": 65
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 8,
+    "mushaf_page": 89,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 66,
+        "to_ayah": 74
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 9,
+    "mushaf_page": 90,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 75,
+        "to_ayah": 79
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 10,
+    "mushaf_page": 91,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 80,
+        "to_ayah": 86
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 11,
+    "mushaf_page": 92,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 87,
+        "to_ayah": 91
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 12,
+    "mushaf_page": 93,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 92,
+        "to_ayah": 94
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 13,
+    "mushaf_page": 94,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 95,
+        "to_ayah": 101
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 14,
+    "mushaf_page": 95,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 102,
+        "to_ayah": 105
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 15,
+    "mushaf_page": 96,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 106,
+        "to_ayah": 113
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 16,
+    "mushaf_page": 97,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 114,
+        "to_ayah": 121
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 17,
+    "mushaf_page": 98,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 122,
+        "to_ayah": 127
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 18,
+    "mushaf_page": 99,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 128,
+        "to_ayah": 134
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 19,
+    "mushaf_page": 100,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 135,
+        "to_ayah": 140
+      }
+    ]
+  },
+  {
+    "juz_number": 5,
+    "page_number": 20,
+    "mushaf_page": 101,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 141,
+        "to_ayah": 147
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 1,
+    "mushaf_page": 102,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 148,
+        "to_ayah": 154
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 2,
+    "mushaf_page": 103,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 155,
+        "to_ayah": 162
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 3,
+    "mushaf_page": 104,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 163,
+        "to_ayah": 170
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 4,
+    "mushaf_page": 105,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 171,
+        "to_ayah": 175
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 5,
+    "mushaf_page": 106,
+    "surahs": [
+      {
+        "surah_id": 4,
+        "from_ayah": 176,
+        "to_ayah": 176
+      },
+      {
+        "surah_id": 5,
+        "from_ayah": 1,
+        "to_ayah": 2
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 6,
+    "mushaf_page": 107,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 3,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 7,
+    "mushaf_page": 108,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 6,
+        "to_ayah": 9
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 8,
+    "mushaf_page": 109,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 10,
+        "to_ayah": 13
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 9,
+    "mushaf_page": 110,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 14,
+        "to_ayah": 17
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 10,
+    "mushaf_page": 111,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 18,
+        "to_ayah": 23
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 11,
+    "mushaf_page": 112,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 24,
+        "to_ayah": 31
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 12,
+    "mushaf_page": 113,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 32,
+        "to_ayah": 36
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 13,
+    "mushaf_page": 114,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 37,
+        "to_ayah": 41
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 14,
+    "mushaf_page": 115,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 42,
+        "to_ayah": 45
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 15,
+    "mushaf_page": 116,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 46,
+        "to_ayah": 50
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 16,
+    "mushaf_page": 117,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 51,
+        "to_ayah": 57
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 17,
+    "mushaf_page": 118,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 58,
+        "to_ayah": 64
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 18,
+    "mushaf_page": 119,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 65,
+        "to_ayah": 70
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 19,
+    "mushaf_page": 120,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 71,
+        "to_ayah": 76
+      }
+    ]
+  },
+  {
+    "juz_number": 6,
+    "page_number": 20,
+    "mushaf_page": 121,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 77,
+        "to_ayah": 81
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 1,
+    "mushaf_page": 121,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 82,
+        "to_ayah": 82
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 2,
+    "mushaf_page": 122,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 83,
+        "to_ayah": 89
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 3,
+    "mushaf_page": 123,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 90,
+        "to_ayah": 95
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 4,
+    "mushaf_page": 124,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 96,
+        "to_ayah": 103
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 5,
+    "mushaf_page": 125,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 104,
+        "to_ayah": 108
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 6,
+    "mushaf_page": 126,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 109,
+        "to_ayah": 113
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 7,
+    "mushaf_page": 127,
+    "surahs": [
+      {
+        "surah_id": 5,
+        "from_ayah": 114,
+        "to_ayah": 120
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 8,
+    "mushaf_page": 128,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 1,
+        "to_ayah": 8
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 9,
+    "mushaf_page": 129,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 9,
+        "to_ayah": 18
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 10,
+    "mushaf_page": 130,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 19,
+        "to_ayah": 27
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 11,
+    "mushaf_page": 131,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 28,
+        "to_ayah": 35
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 12,
+    "mushaf_page": 132,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 36,
+        "to_ayah": 44
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 13,
+    "mushaf_page": 133,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 45,
+        "to_ayah": 52
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 14,
+    "mushaf_page": 134,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 53,
+        "to_ayah": 59
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 15,
+    "mushaf_page": 135,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 60,
+        "to_ayah": 68
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 16,
+    "mushaf_page": 136,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 69,
+        "to_ayah": 73
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 17,
+    "mushaf_page": 137,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 74,
+        "to_ayah": 81
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 18,
+    "mushaf_page": 138,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 82,
+        "to_ayah": 90
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 19,
+    "mushaf_page": 139,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 91,
+        "to_ayah": 94
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 20,
+    "mushaf_page": 140,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 95,
+        "to_ayah": 101
+      }
+    ]
+  },
+  {
+    "juz_number": 7,
+    "page_number": 21,
+    "mushaf_page": 141,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 102,
+        "to_ayah": 110
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 1,
+    "mushaf_page": 142,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 111,
+        "to_ayah": 118
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 2,
+    "mushaf_page": 143,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 119,
+        "to_ayah": 124
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 3,
+    "mushaf_page": 144,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 125,
+        "to_ayah": 131
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 4,
+    "mushaf_page": 145,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 132,
+        "to_ayah": 137
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 5,
+    "mushaf_page": 146,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 138,
+        "to_ayah": 142
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 6,
+    "mushaf_page": 147,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 143,
+        "to_ayah": 146
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 7,
+    "mushaf_page": 148,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 147,
+        "to_ayah": 151
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 8,
+    "mushaf_page": 149,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 152,
+        "to_ayah": 157
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 9,
+    "mushaf_page": 150,
+    "surahs": [
+      {
+        "surah_id": 6,
+        "from_ayah": 158,
+        "to_ayah": 165
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 10,
+    "mushaf_page": 151,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 1,
+        "to_ayah": 11
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 11,
+    "mushaf_page": 152,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 12,
+        "to_ayah": 22
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 12,
+    "mushaf_page": 153,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 23,
+        "to_ayah": 30
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 13,
+    "mushaf_page": 154,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 31,
+        "to_ayah": 37
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 14,
+    "mushaf_page": 155,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 38,
+        "to_ayah": 43
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 15,
+    "mushaf_page": 156,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 44,
+        "to_ayah": 51
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 16,
+    "mushaf_page": 157,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 52,
+        "to_ayah": 57
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 17,
+    "mushaf_page": 158,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 58,
+        "to_ayah": 67
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 18,
+    "mushaf_page": 159,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 68,
+        "to_ayah": 73
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 19,
+    "mushaf_page": 160,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 74,
+        "to_ayah": 81
+      }
+    ]
+  },
+  {
+    "juz_number": 8,
+    "page_number": 20,
+    "mushaf_page": 161,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 82,
+        "to_ayah": 87
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 1,
+    "mushaf_page": 162,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 88,
+        "to_ayah": 95
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 2,
+    "mushaf_page": 163,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 96,
+        "to_ayah": 104
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 3,
+    "mushaf_page": 164,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 105,
+        "to_ayah": 120
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 4,
+    "mushaf_page": 165,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 121,
+        "to_ayah": 130
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 5,
+    "mushaf_page": 166,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 131,
+        "to_ayah": 137
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 6,
+    "mushaf_page": 167,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 138,
+        "to_ayah": 143
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 7,
+    "mushaf_page": 168,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 144,
+        "to_ayah": 149
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 8,
+    "mushaf_page": 169,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 150,
+        "to_ayah": 155
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 9,
+    "mushaf_page": 170,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 156,
+        "to_ayah": 159
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 10,
+    "mushaf_page": 171,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 160,
+        "to_ayah": 163
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 11,
+    "mushaf_page": 172,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 164,
+        "to_ayah": 170
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 12,
+    "mushaf_page": 173,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 171,
+        "to_ayah": 178
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 13,
+    "mushaf_page": 174,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 179,
+        "to_ayah": 187
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 14,
+    "mushaf_page": 175,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 188,
+        "to_ayah": 195
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 15,
+    "mushaf_page": 176,
+    "surahs": [
+      {
+        "surah_id": 7,
+        "from_ayah": 196,
+        "to_ayah": 206
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 16,
+    "mushaf_page": 177,
+    "surahs": [
+      {
+        "surah_id": 8,
+        "from_ayah": 1,
+        "to_ayah": 8
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 17,
+    "mushaf_page": 178,
+    "surahs": [
+      {
+        "surah_id": 8,
+        "from_ayah": 9,
+        "to_ayah": 16
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 18,
+    "mushaf_page": 179,
+    "surahs": [
+      {
+        "surah_id": 8,
+        "from_ayah": 17,
+        "to_ayah": 25
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 19,
+    "mushaf_page": 180,
+    "surahs": [
+      {
+        "surah_id": 8,
+        "from_ayah": 26,
+        "to_ayah": 33
+      }
+    ]
+  },
+  {
+    "juz_number": 9,
+    "page_number": 20,
+    "mushaf_page": 181,
+    "surahs": [
+      {
+        "surah_id": 8,
+        "from_ayah": 34,
+        "to_ayah": 40
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 1,
+    "mushaf_page": 182,
+    "surahs": [
+      {
+        "surah_id": 8,
+        "from_ayah": 41,
+        "to_ayah": 45
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 2,
+    "mushaf_page": 183,
+    "surahs": [
+      {
+        "surah_id": 8,
+        "from_ayah": 46,
+        "to_ayah": 52
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 3,
+    "mushaf_page": 184,
+    "surahs": [
+      {
+        "surah_id": 8,
+        "from_ayah": 53,
+        "to_ayah": 61
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 4,
+    "mushaf_page": 185,
+    "surahs": [
+      {
+        "surah_id": 8,
+        "from_ayah": 62,
+        "to_ayah": 69
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 5,
+    "mushaf_page": 186,
+    "surahs": [
+      {
+        "surah_id": 8,
+        "from_ayah": 70,
+        "to_ayah": 75
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 6,
+    "mushaf_page": 187,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 1,
+        "to_ayah": 6
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 7,
+    "mushaf_page": 188,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 7,
+        "to_ayah": 13
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 8,
+    "mushaf_page": 189,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 14,
+        "to_ayah": 20
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 9,
+    "mushaf_page": 190,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 21,
+        "to_ayah": 26
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 10,
+    "mushaf_page": 191,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 27,
+        "to_ayah": 31
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 11,
+    "mushaf_page": 192,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 32,
+        "to_ayah": 36
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 12,
+    "mushaf_page": 193,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 37,
+        "to_ayah": 40
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 13,
+    "mushaf_page": 194,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 41,
+        "to_ayah": 47
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 14,
+    "mushaf_page": 195,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 48,
+        "to_ayah": 54
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 15,
+    "mushaf_page": 196,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 55,
+        "to_ayah": 61
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 16,
+    "mushaf_page": 197,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 62,
+        "to_ayah": 68
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 17,
+    "mushaf_page": 198,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 69,
+        "to_ayah": 72
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 18,
+    "mushaf_page": 199,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 73,
+        "to_ayah": 79
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 19,
+    "mushaf_page": 200,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 80,
+        "to_ayah": 86
+      }
+    ]
+  },
+  {
+    "juz_number": 10,
+    "page_number": 20,
+    "mushaf_page": 201,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 87,
+        "to_ayah": 92
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 1,
+    "mushaf_page": 201,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 93,
+        "to_ayah": 93
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 2,
+    "mushaf_page": 202,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 94,
+        "to_ayah": 99
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 3,
+    "mushaf_page": 203,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 100,
+        "to_ayah": 106
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 4,
+    "mushaf_page": 204,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 107,
+        "to_ayah": 111
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 5,
+    "mushaf_page": 205,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 112,
+        "to_ayah": 117
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 6,
+    "mushaf_page": 206,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 118,
+        "to_ayah": 122
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 7,
+    "mushaf_page": 207,
+    "surahs": [
+      {
+        "surah_id": 9,
+        "from_ayah": 123,
+        "to_ayah": 129
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 8,
+    "mushaf_page": 208,
+    "surahs": [
+      {
+        "surah_id": 10,
+        "from_ayah": 1,
+        "to_ayah": 6
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 9,
+    "mushaf_page": 209,
+    "surahs": [
+      {
+        "surah_id": 10,
+        "from_ayah": 7,
+        "to_ayah": 14
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 10,
+    "mushaf_page": 210,
+    "surahs": [
+      {
+        "surah_id": 10,
+        "from_ayah": 15,
+        "to_ayah": 20
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 11,
+    "mushaf_page": 211,
+    "surahs": [
+      {
+        "surah_id": 10,
+        "from_ayah": 21,
+        "to_ayah": 25
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 12,
+    "mushaf_page": 212,
+    "surahs": [
+      {
+        "surah_id": 10,
+        "from_ayah": 26,
+        "to_ayah": 33
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 13,
+    "mushaf_page": 213,
+    "surahs": [
+      {
+        "surah_id": 10,
+        "from_ayah": 34,
+        "to_ayah": 42
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 14,
+    "mushaf_page": 214,
+    "surahs": [
+      {
+        "surah_id": 10,
+        "from_ayah": 43,
+        "to_ayah": 53
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 15,
+    "mushaf_page": 215,
+    "surahs": [
+      {
+        "surah_id": 10,
+        "from_ayah": 54,
+        "to_ayah": 61
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 16,
+    "mushaf_page": 216,
+    "surahs": [
+      {
+        "surah_id": 10,
+        "from_ayah": 62,
+        "to_ayah": 70
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 17,
+    "mushaf_page": 217,
+    "surahs": [
+      {
+        "surah_id": 10,
+        "from_ayah": 71,
+        "to_ayah": 78
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 18,
+    "mushaf_page": 218,
+    "surahs": [
+      {
+        "surah_id": 10,
+        "from_ayah": 79,
+        "to_ayah": 88
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 19,
+    "mushaf_page": 219,
+    "surahs": [
+      {
+        "surah_id": 10,
+        "from_ayah": 89,
+        "to_ayah": 97
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 20,
+    "mushaf_page": 220,
+    "surahs": [
+      {
+        "surah_id": 10,
+        "from_ayah": 98,
+        "to_ayah": 106
+      }
+    ]
+  },
+  {
+    "juz_number": 11,
+    "page_number": 21,
+    "mushaf_page": 221,
+    "surahs": [
+      {
+        "surah_id": 10,
+        "from_ayah": 107,
+        "to_ayah": 109
+      },
+      {
+        "surah_id": 11,
+        "from_ayah": 1,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 1,
+    "mushaf_page": 222,
+    "surahs": [
+      {
+        "surah_id": 11,
+        "from_ayah": 6,
+        "to_ayah": 12
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 2,
+    "mushaf_page": 223,
+    "surahs": [
+      {
+        "surah_id": 11,
+        "from_ayah": 13,
+        "to_ayah": 19
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 3,
+    "mushaf_page": 224,
+    "surahs": [
+      {
+        "surah_id": 11,
+        "from_ayah": 20,
+        "to_ayah": 28
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 4,
+    "mushaf_page": 225,
+    "surahs": [
+      {
+        "surah_id": 11,
+        "from_ayah": 29,
+        "to_ayah": 37
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 5,
+    "mushaf_page": 226,
+    "surahs": [
+      {
+        "surah_id": 11,
+        "from_ayah": 38,
+        "to_ayah": 45
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 6,
+    "mushaf_page": 227,
+    "surahs": [
+      {
+        "surah_id": 11,
+        "from_ayah": 46,
+        "to_ayah": 53
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 7,
+    "mushaf_page": 228,
+    "surahs": [
+      {
+        "surah_id": 11,
+        "from_ayah": 54,
+        "to_ayah": 62
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 8,
+    "mushaf_page": 229,
+    "surahs": [
+      {
+        "surah_id": 11,
+        "from_ayah": 63,
+        "to_ayah": 71
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 9,
+    "mushaf_page": 230,
+    "surahs": [
+      {
+        "surah_id": 11,
+        "from_ayah": 72,
+        "to_ayah": 81
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 10,
+    "mushaf_page": 231,
+    "surahs": [
+      {
+        "surah_id": 11,
+        "from_ayah": 82,
+        "to_ayah": 88
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 11,
+    "mushaf_page": 232,
+    "surahs": [
+      {
+        "surah_id": 11,
+        "from_ayah": 89,
+        "to_ayah": 97
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 12,
+    "mushaf_page": 233,
+    "surahs": [
+      {
+        "surah_id": 11,
+        "from_ayah": 98,
+        "to_ayah": 108
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 13,
+    "mushaf_page": 234,
+    "surahs": [
+      {
+        "surah_id": 11,
+        "from_ayah": 109,
+        "to_ayah": 117
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 14,
+    "mushaf_page": 235,
+    "surahs": [
+      {
+        "surah_id": 11,
+        "from_ayah": 118,
+        "to_ayah": 123
+      },
+      {
+        "surah_id": 12,
+        "from_ayah": 1,
+        "to_ayah": 4
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 15,
+    "mushaf_page": 236,
+    "surahs": [
+      {
+        "surah_id": 12,
+        "from_ayah": 5,
+        "to_ayah": 14
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 16,
+    "mushaf_page": 237,
+    "surahs": [
+      {
+        "surah_id": 12,
+        "from_ayah": 15,
+        "to_ayah": 22
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 17,
+    "mushaf_page": 238,
+    "surahs": [
+      {
+        "surah_id": 12,
+        "from_ayah": 23,
+        "to_ayah": 30
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 18,
+    "mushaf_page": 239,
+    "surahs": [
+      {
+        "surah_id": 12,
+        "from_ayah": 31,
+        "to_ayah": 37
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 19,
+    "mushaf_page": 240,
+    "surahs": [
+      {
+        "surah_id": 12,
+        "from_ayah": 38,
+        "to_ayah": 43
+      }
+    ]
+  },
+  {
+    "juz_number": 12,
+    "page_number": 20,
+    "mushaf_page": 241,
+    "surahs": [
+      {
+        "surah_id": 12,
+        "from_ayah": 44,
+        "to_ayah": 52
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 1,
+    "mushaf_page": 242,
+    "surahs": [
+      {
+        "surah_id": 12,
+        "from_ayah": 53,
+        "to_ayah": 63
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 2,
+    "mushaf_page": 243,
+    "surahs": [
+      {
+        "surah_id": 12,
+        "from_ayah": 64,
+        "to_ayah": 69
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 3,
+    "mushaf_page": 244,
+    "surahs": [
+      {
+        "surah_id": 12,
+        "from_ayah": 70,
+        "to_ayah": 78
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 4,
+    "mushaf_page": 245,
+    "surahs": [
+      {
+        "surah_id": 12,
+        "from_ayah": 79,
+        "to_ayah": 86
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 5,
+    "mushaf_page": 246,
+    "surahs": [
+      {
+        "surah_id": 12,
+        "from_ayah": 87,
+        "to_ayah": 95
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 6,
+    "mushaf_page": 247,
+    "surahs": [
+      {
+        "surah_id": 12,
+        "from_ayah": 96,
+        "to_ayah": 103
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 7,
+    "mushaf_page": 248,
+    "surahs": [
+      {
+        "surah_id": 12,
+        "from_ayah": 104,
+        "to_ayah": 111
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 8,
+    "mushaf_page": 249,
+    "surahs": [
+      {
+        "surah_id": 13,
+        "from_ayah": 1,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 9,
+    "mushaf_page": 250,
+    "surahs": [
+      {
+        "surah_id": 13,
+        "from_ayah": 6,
+        "to_ayah": 13
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 10,
+    "mushaf_page": 251,
+    "surahs": [
+      {
+        "surah_id": 13,
+        "from_ayah": 14,
+        "to_ayah": 18
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 11,
+    "mushaf_page": 252,
+    "surahs": [
+      {
+        "surah_id": 13,
+        "from_ayah": 19,
+        "to_ayah": 28
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 12,
+    "mushaf_page": 253,
+    "surahs": [
+      {
+        "surah_id": 13,
+        "from_ayah": 29,
+        "to_ayah": 34
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 13,
+    "mushaf_page": 254,
+    "surahs": [
+      {
+        "surah_id": 13,
+        "from_ayah": 35,
+        "to_ayah": 42
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 14,
+    "mushaf_page": 255,
+    "surahs": [
+      {
+        "surah_id": 13,
+        "from_ayah": 43,
+        "to_ayah": 43
+      },
+      {
+        "surah_id": 14,
+        "from_ayah": 1,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 15,
+    "mushaf_page": 256,
+    "surahs": [
+      {
+        "surah_id": 14,
+        "from_ayah": 6,
+        "to_ayah": 10
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 16,
+    "mushaf_page": 257,
+    "surahs": [
+      {
+        "surah_id": 14,
+        "from_ayah": 11,
+        "to_ayah": 18
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 17,
+    "mushaf_page": 258,
+    "surahs": [
+      {
+        "surah_id": 14,
+        "from_ayah": 19,
+        "to_ayah": 24
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 18,
+    "mushaf_page": 259,
+    "surahs": [
+      {
+        "surah_id": 14,
+        "from_ayah": 25,
+        "to_ayah": 33
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 19,
+    "mushaf_page": 260,
+    "surahs": [
+      {
+        "surah_id": 14,
+        "from_ayah": 34,
+        "to_ayah": 42
+      }
+    ]
+  },
+  {
+    "juz_number": 13,
+    "page_number": 20,
+    "mushaf_page": 261,
+    "surahs": [
+      {
+        "surah_id": 14,
+        "from_ayah": 43,
+        "to_ayah": 52
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 1,
+    "mushaf_page": 262,
+    "surahs": [
+      {
+        "surah_id": 15,
+        "from_ayah": 1,
+        "to_ayah": 15
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 2,
+    "mushaf_page": 263,
+    "surahs": [
+      {
+        "surah_id": 15,
+        "from_ayah": 16,
+        "to_ayah": 31
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 3,
+    "mushaf_page": 264,
+    "surahs": [
+      {
+        "surah_id": 15,
+        "from_ayah": 32,
+        "to_ayah": 51
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 4,
+    "mushaf_page": 265,
+    "surahs": [
+      {
+        "surah_id": 15,
+        "from_ayah": 52,
+        "to_ayah": 70
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 5,
+    "mushaf_page": 266,
+    "surahs": [
+      {
+        "surah_id": 15,
+        "from_ayah": 71,
+        "to_ayah": 90
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 6,
+    "mushaf_page": 267,
+    "surahs": [
+      {
+        "surah_id": 15,
+        "from_ayah": 91,
+        "to_ayah": 99
+      },
+      {
+        "surah_id": 16,
+        "from_ayah": 1,
+        "to_ayah": 6
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 7,
+    "mushaf_page": 268,
+    "surahs": [
+      {
+        "surah_id": 16,
+        "from_ayah": 7,
+        "to_ayah": 14
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 8,
+    "mushaf_page": 269,
+    "surahs": [
+      {
+        "surah_id": 16,
+        "from_ayah": 15,
+        "to_ayah": 26
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 9,
+    "mushaf_page": 270,
+    "surahs": [
+      {
+        "surah_id": 16,
+        "from_ayah": 27,
+        "to_ayah": 34
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 10,
+    "mushaf_page": 271,
+    "surahs": [
+      {
+        "surah_id": 16,
+        "from_ayah": 35,
+        "to_ayah": 42
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 11,
+    "mushaf_page": 272,
+    "surahs": [
+      {
+        "surah_id": 16,
+        "from_ayah": 43,
+        "to_ayah": 54
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 12,
+    "mushaf_page": 273,
+    "surahs": [
+      {
+        "surah_id": 16,
+        "from_ayah": 55,
+        "to_ayah": 64
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 13,
+    "mushaf_page": 274,
+    "surahs": [
+      {
+        "surah_id": 16,
+        "from_ayah": 65,
+        "to_ayah": 72
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 14,
+    "mushaf_page": 275,
+    "surahs": [
+      {
+        "surah_id": 16,
+        "from_ayah": 73,
+        "to_ayah": 79
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 15,
+    "mushaf_page": 276,
+    "surahs": [
+      {
+        "surah_id": 16,
+        "from_ayah": 80,
+        "to_ayah": 87
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 16,
+    "mushaf_page": 277,
+    "surahs": [
+      {
+        "surah_id": 16,
+        "from_ayah": 88,
+        "to_ayah": 93
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 17,
+    "mushaf_page": 278,
+    "surahs": [
+      {
+        "surah_id": 16,
+        "from_ayah": 94,
+        "to_ayah": 102
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 18,
+    "mushaf_page": 279,
+    "surahs": [
+      {
+        "surah_id": 16,
+        "from_ayah": 103,
+        "to_ayah": 110
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 19,
+    "mushaf_page": 280,
+    "surahs": [
+      {
+        "surah_id": 16,
+        "from_ayah": 111,
+        "to_ayah": 118
+      }
+    ]
+  },
+  {
+    "juz_number": 14,
+    "page_number": 20,
+    "mushaf_page": 281,
+    "surahs": [
+      {
+        "surah_id": 16,
+        "from_ayah": 119,
+        "to_ayah": 128
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 1,
+    "mushaf_page": 282,
+    "surahs": [
+      {
+        "surah_id": 17,
+        "from_ayah": 1,
+        "to_ayah": 7
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 2,
+    "mushaf_page": 283,
+    "surahs": [
+      {
+        "surah_id": 17,
+        "from_ayah": 8,
+        "to_ayah": 17
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 3,
+    "mushaf_page": 284,
+    "surahs": [
+      {
+        "surah_id": 17,
+        "from_ayah": 18,
+        "to_ayah": 27
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 4,
+    "mushaf_page": 285,
+    "surahs": [
+      {
+        "surah_id": 17,
+        "from_ayah": 28,
+        "to_ayah": 38
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 5,
+    "mushaf_page": 286,
+    "surahs": [
+      {
+        "surah_id": 17,
+        "from_ayah": 39,
+        "to_ayah": 49
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 6,
+    "mushaf_page": 287,
+    "surahs": [
+      {
+        "surah_id": 17,
+        "from_ayah": 50,
+        "to_ayah": 58
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 7,
+    "mushaf_page": 288,
+    "surahs": [
+      {
+        "surah_id": 17,
+        "from_ayah": 59,
+        "to_ayah": 66
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 8,
+    "mushaf_page": 289,
+    "surahs": [
+      {
+        "surah_id": 17,
+        "from_ayah": 67,
+        "to_ayah": 75
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 9,
+    "mushaf_page": 290,
+    "surahs": [
+      {
+        "surah_id": 17,
+        "from_ayah": 76,
+        "to_ayah": 86
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 10,
+    "mushaf_page": 291,
+    "surahs": [
+      {
+        "surah_id": 17,
+        "from_ayah": 87,
+        "to_ayah": 96
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 11,
+    "mushaf_page": 292,
+    "surahs": [
+      {
+        "surah_id": 17,
+        "from_ayah": 97,
+        "to_ayah": 104
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 12,
+    "mushaf_page": 293,
+    "surahs": [
+      {
+        "surah_id": 17,
+        "from_ayah": 105,
+        "to_ayah": 111
+      },
+      {
+        "surah_id": 18,
+        "from_ayah": 1,
+        "to_ayah": 4
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 13,
+    "mushaf_page": 294,
+    "surahs": [
+      {
+        "surah_id": 18,
+        "from_ayah": 5,
+        "to_ayah": 15
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 14,
+    "mushaf_page": 295,
+    "surahs": [
+      {
+        "surah_id": 18,
+        "from_ayah": 16,
+        "to_ayah": 20
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 15,
+    "mushaf_page": 296,
+    "surahs": [
+      {
+        "surah_id": 18,
+        "from_ayah": 21,
+        "to_ayah": 27
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 16,
+    "mushaf_page": 297,
+    "surahs": [
+      {
+        "surah_id": 18,
+        "from_ayah": 28,
+        "to_ayah": 34
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 17,
+    "mushaf_page": 298,
+    "surahs": [
+      {
+        "surah_id": 18,
+        "from_ayah": 35,
+        "to_ayah": 45
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 18,
+    "mushaf_page": 299,
+    "surahs": [
+      {
+        "surah_id": 18,
+        "from_ayah": 46,
+        "to_ayah": 53
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 19,
+    "mushaf_page": 300,
+    "surahs": [
+      {
+        "surah_id": 18,
+        "from_ayah": 54,
+        "to_ayah": 61
+      }
+    ]
+  },
+  {
+    "juz_number": 15,
+    "page_number": 20,
+    "mushaf_page": 301,
+    "surahs": [
+      {
+        "surah_id": 18,
+        "from_ayah": 62,
+        "to_ayah": 74
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 1,
+    "mushaf_page": 302,
+    "surahs": [
+      {
+        "surah_id": 18,
+        "from_ayah": 75,
+        "to_ayah": 83
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 2,
+    "mushaf_page": 303,
+    "surahs": [
+      {
+        "surah_id": 18,
+        "from_ayah": 84,
+        "to_ayah": 97
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 3,
+    "mushaf_page": 304,
+    "surahs": [
+      {
+        "surah_id": 18,
+        "from_ayah": 98,
+        "to_ayah": 110
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 4,
+    "mushaf_page": 305,
+    "surahs": [
+      {
+        "surah_id": 19,
+        "from_ayah": 1,
+        "to_ayah": 11
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 5,
+    "mushaf_page": 306,
+    "surahs": [
+      {
+        "surah_id": 19,
+        "from_ayah": 12,
+        "to_ayah": 25
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 6,
+    "mushaf_page": 307,
+    "surahs": [
+      {
+        "surah_id": 19,
+        "from_ayah": 26,
+        "to_ayah": 38
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 7,
+    "mushaf_page": 308,
+    "surahs": [
+      {
+        "surah_id": 19,
+        "from_ayah": 39,
+        "to_ayah": 51
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 8,
+    "mushaf_page": 309,
+    "surahs": [
+      {
+        "surah_id": 19,
+        "from_ayah": 52,
+        "to_ayah": 64
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 9,
+    "mushaf_page": 310,
+    "surahs": [
+      {
+        "surah_id": 19,
+        "from_ayah": 65,
+        "to_ayah": 76
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 10,
+    "mushaf_page": 311,
+    "surahs": [
+      {
+        "surah_id": 19,
+        "from_ayah": 77,
+        "to_ayah": 95
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 11,
+    "mushaf_page": 312,
+    "surahs": [
+      {
+        "surah_id": 19,
+        "from_ayah": 96,
+        "to_ayah": 98
+      },
+      {
+        "surah_id": 20,
+        "from_ayah": 1,
+        "to_ayah": 12
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 12,
+    "mushaf_page": 313,
+    "surahs": [
+      {
+        "surah_id": 20,
+        "from_ayah": 13,
+        "to_ayah": 37
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 13,
+    "mushaf_page": 314,
+    "surahs": [
+      {
+        "surah_id": 20,
+        "from_ayah": 38,
+        "to_ayah": 51
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 14,
+    "mushaf_page": 315,
+    "surahs": [
+      {
+        "surah_id": 20,
+        "from_ayah": 52,
+        "to_ayah": 64
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 15,
+    "mushaf_page": 316,
+    "surahs": [
+      {
+        "surah_id": 20,
+        "from_ayah": 65,
+        "to_ayah": 76
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 16,
+    "mushaf_page": 317,
+    "surahs": [
+      {
+        "surah_id": 20,
+        "from_ayah": 77,
+        "to_ayah": 87
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 17,
+    "mushaf_page": 318,
+    "surahs": [
+      {
+        "surah_id": 20,
+        "from_ayah": 88,
+        "to_ayah": 98
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 18,
+    "mushaf_page": 319,
+    "surahs": [
+      {
+        "surah_id": 20,
+        "from_ayah": 99,
+        "to_ayah": 113
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 19,
+    "mushaf_page": 320,
+    "surahs": [
+      {
+        "surah_id": 20,
+        "from_ayah": 114,
+        "to_ayah": 125
+      }
+    ]
+  },
+  {
+    "juz_number": 16,
+    "page_number": 20,
+    "mushaf_page": 321,
+    "surahs": [
+      {
+        "surah_id": 20,
+        "from_ayah": 126,
+        "to_ayah": 135
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 1,
+    "mushaf_page": 322,
+    "surahs": [
+      {
+        "surah_id": 21,
+        "from_ayah": 1,
+        "to_ayah": 10
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 2,
+    "mushaf_page": 323,
+    "surahs": [
+      {
+        "surah_id": 21,
+        "from_ayah": 11,
+        "to_ayah": 24
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 3,
+    "mushaf_page": 324,
+    "surahs": [
+      {
+        "surah_id": 21,
+        "from_ayah": 25,
+        "to_ayah": 35
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 4,
+    "mushaf_page": 325,
+    "surahs": [
+      {
+        "surah_id": 21,
+        "from_ayah": 36,
+        "to_ayah": 44
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 5,
+    "mushaf_page": 326,
+    "surahs": [
+      {
+        "surah_id": 21,
+        "from_ayah": 45,
+        "to_ayah": 57
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 6,
+    "mushaf_page": 327,
+    "surahs": [
+      {
+        "surah_id": 21,
+        "from_ayah": 58,
+        "to_ayah": 72
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 7,
+    "mushaf_page": 328,
+    "surahs": [
+      {
+        "surah_id": 21,
+        "from_ayah": 73,
+        "to_ayah": 81
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 8,
+    "mushaf_page": 329,
+    "surahs": [
+      {
+        "surah_id": 21,
+        "from_ayah": 82,
+        "to_ayah": 90
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 9,
+    "mushaf_page": 330,
+    "surahs": [
+      {
+        "surah_id": 21,
+        "from_ayah": 91,
+        "to_ayah": 101
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 10,
+    "mushaf_page": 331,
+    "surahs": [
+      {
+        "surah_id": 21,
+        "from_ayah": 102,
+        "to_ayah": 112
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 11,
+    "mushaf_page": 332,
+    "surahs": [
+      {
+        "surah_id": 22,
+        "from_ayah": 1,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 12,
+    "mushaf_page": 333,
+    "surahs": [
+      {
+        "surah_id": 22,
+        "from_ayah": 6,
+        "to_ayah": 15
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 13,
+    "mushaf_page": 334,
+    "surahs": [
+      {
+        "surah_id": 22,
+        "from_ayah": 16,
+        "to_ayah": 23
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 14,
+    "mushaf_page": 335,
+    "surahs": [
+      {
+        "surah_id": 22,
+        "from_ayah": 24,
+        "to_ayah": 30
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 15,
+    "mushaf_page": 336,
+    "surahs": [
+      {
+        "surah_id": 22,
+        "from_ayah": 31,
+        "to_ayah": 38
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 16,
+    "mushaf_page": 337,
+    "surahs": [
+      {
+        "surah_id": 22,
+        "from_ayah": 39,
+        "to_ayah": 46
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 17,
+    "mushaf_page": 338,
+    "surahs": [
+      {
+        "surah_id": 22,
+        "from_ayah": 47,
+        "to_ayah": 55
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 18,
+    "mushaf_page": 339,
+    "surahs": [
+      {
+        "surah_id": 22,
+        "from_ayah": 56,
+        "to_ayah": 64
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 19,
+    "mushaf_page": 340,
+    "surahs": [
+      {
+        "surah_id": 22,
+        "from_ayah": 65,
+        "to_ayah": 72
+      }
+    ]
+  },
+  {
+    "juz_number": 17,
+    "page_number": 20,
+    "mushaf_page": 341,
+    "surahs": [
+      {
+        "surah_id": 22,
+        "from_ayah": 73,
+        "to_ayah": 78
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 1,
+    "mushaf_page": 342,
+    "surahs": [
+      {
+        "surah_id": 23,
+        "from_ayah": 1,
+        "to_ayah": 17
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 2,
+    "mushaf_page": 343,
+    "surahs": [
+      {
+        "surah_id": 23,
+        "from_ayah": 18,
+        "to_ayah": 27
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 3,
+    "mushaf_page": 344,
+    "surahs": [
+      {
+        "surah_id": 23,
+        "from_ayah": 28,
+        "to_ayah": 42
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 4,
+    "mushaf_page": 345,
+    "surahs": [
+      {
+        "surah_id": 23,
+        "from_ayah": 43,
+        "to_ayah": 59
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 5,
+    "mushaf_page": 346,
+    "surahs": [
+      {
+        "surah_id": 23,
+        "from_ayah": 60,
+        "to_ayah": 74
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 6,
+    "mushaf_page": 347,
+    "surahs": [
+      {
+        "surah_id": 23,
+        "from_ayah": 75,
+        "to_ayah": 89
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 7,
+    "mushaf_page": 348,
+    "surahs": [
+      {
+        "surah_id": 23,
+        "from_ayah": 90,
+        "to_ayah": 104
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 8,
+    "mushaf_page": 349,
+    "surahs": [
+      {
+        "surah_id": 23,
+        "from_ayah": 105,
+        "to_ayah": 118
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 9,
+    "mushaf_page": 350,
+    "surahs": [
+      {
+        "surah_id": 24,
+        "from_ayah": 1,
+        "to_ayah": 10
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 10,
+    "mushaf_page": 351,
+    "surahs": [
+      {
+        "surah_id": 24,
+        "from_ayah": 11,
+        "to_ayah": 20
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 11,
+    "mushaf_page": 352,
+    "surahs": [
+      {
+        "surah_id": 24,
+        "from_ayah": 21,
+        "to_ayah": 27
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 12,
+    "mushaf_page": 353,
+    "surahs": [
+      {
+        "surah_id": 24,
+        "from_ayah": 28,
+        "to_ayah": 31
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 13,
+    "mushaf_page": 354,
+    "surahs": [
+      {
+        "surah_id": 24,
+        "from_ayah": 32,
+        "to_ayah": 36
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 14,
+    "mushaf_page": 355,
+    "surahs": [
+      {
+        "surah_id": 24,
+        "from_ayah": 37,
+        "to_ayah": 43
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 15,
+    "mushaf_page": 356,
+    "surahs": [
+      {
+        "surah_id": 24,
+        "from_ayah": 44,
+        "to_ayah": 53
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 16,
+    "mushaf_page": 357,
+    "surahs": [
+      {
+        "surah_id": 24,
+        "from_ayah": 54,
+        "to_ayah": 58
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 17,
+    "mushaf_page": 358,
+    "surahs": [
+      {
+        "surah_id": 24,
+        "from_ayah": 59,
+        "to_ayah": 61
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 18,
+    "mushaf_page": 359,
+    "surahs": [
+      {
+        "surah_id": 24,
+        "from_ayah": 62,
+        "to_ayah": 64
+      },
+      {
+        "surah_id": 25,
+        "from_ayah": 1,
+        "to_ayah": 2
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 19,
+    "mushaf_page": 360,
+    "surahs": [
+      {
+        "surah_id": 25,
+        "from_ayah": 3,
+        "to_ayah": 11
+      }
+    ]
+  },
+  {
+    "juz_number": 18,
+    "page_number": 20,
+    "mushaf_page": 361,
+    "surahs": [
+      {
+        "surah_id": 25,
+        "from_ayah": 12,
+        "to_ayah": 20
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 1,
+    "mushaf_page": 362,
+    "surahs": [
+      {
+        "surah_id": 25,
+        "from_ayah": 21,
+        "to_ayah": 32
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 2,
+    "mushaf_page": 363,
+    "surahs": [
+      {
+        "surah_id": 25,
+        "from_ayah": 33,
+        "to_ayah": 43
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 3,
+    "mushaf_page": 364,
+    "surahs": [
+      {
+        "surah_id": 25,
+        "from_ayah": 44,
+        "to_ayah": 55
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 4,
+    "mushaf_page": 365,
+    "surahs": [
+      {
+        "surah_id": 25,
+        "from_ayah": 56,
+        "to_ayah": 67
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 5,
+    "mushaf_page": 366,
+    "surahs": [
+      {
+        "surah_id": 25,
+        "from_ayah": 68,
+        "to_ayah": 77
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 6,
+    "mushaf_page": 367,
+    "surahs": [
+      {
+        "surah_id": 26,
+        "from_ayah": 1,
+        "to_ayah": 19
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 7,
+    "mushaf_page": 368,
+    "surahs": [
+      {
+        "surah_id": 26,
+        "from_ayah": 20,
+        "to_ayah": 39
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 8,
+    "mushaf_page": 369,
+    "surahs": [
+      {
+        "surah_id": 26,
+        "from_ayah": 40,
+        "to_ayah": 60
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 9,
+    "mushaf_page": 370,
+    "surahs": [
+      {
+        "surah_id": 26,
+        "from_ayah": 61,
+        "to_ayah": 83
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 10,
+    "mushaf_page": 371,
+    "surahs": [
+      {
+        "surah_id": 26,
+        "from_ayah": 84,
+        "to_ayah": 111
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 11,
+    "mushaf_page": 372,
+    "surahs": [
+      {
+        "surah_id": 26,
+        "from_ayah": 112,
+        "to_ayah": 136
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 12,
+    "mushaf_page": 373,
+    "surahs": [
+      {
+        "surah_id": 26,
+        "from_ayah": 137,
+        "to_ayah": 159
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 13,
+    "mushaf_page": 374,
+    "surahs": [
+      {
+        "surah_id": 26,
+        "from_ayah": 160,
+        "to_ayah": 183
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 14,
+    "mushaf_page": 375,
+    "surahs": [
+      {
+        "surah_id": 26,
+        "from_ayah": 184,
+        "to_ayah": 206
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 15,
+    "mushaf_page": 376,
+    "surahs": [
+      {
+        "surah_id": 26,
+        "from_ayah": 207,
+        "to_ayah": 227
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 16,
+    "mushaf_page": 377,
+    "surahs": [
+      {
+        "surah_id": 27,
+        "from_ayah": 1,
+        "to_ayah": 13
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 17,
+    "mushaf_page": 378,
+    "surahs": [
+      {
+        "surah_id": 27,
+        "from_ayah": 14,
+        "to_ayah": 22
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 18,
+    "mushaf_page": 379,
+    "surahs": [
+      {
+        "surah_id": 27,
+        "from_ayah": 23,
+        "to_ayah": 35
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 19,
+    "mushaf_page": 380,
+    "surahs": [
+      {
+        "surah_id": 27,
+        "from_ayah": 36,
+        "to_ayah": 44
+      }
+    ]
+  },
+  {
+    "juz_number": 19,
+    "page_number": 20,
+    "mushaf_page": 381,
+    "surahs": [
+      {
+        "surah_id": 27,
+        "from_ayah": 45,
+        "to_ayah": 55
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 1,
+    "mushaf_page": 382,
+    "surahs": [
+      {
+        "surah_id": 27,
+        "from_ayah": 56,
+        "to_ayah": 63
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 2,
+    "mushaf_page": 383,
+    "surahs": [
+      {
+        "surah_id": 27,
+        "from_ayah": 64,
+        "to_ayah": 76
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 3,
+    "mushaf_page": 384,
+    "surahs": [
+      {
+        "surah_id": 27,
+        "from_ayah": 77,
+        "to_ayah": 88
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 4,
+    "mushaf_page": 385,
+    "surahs": [
+      {
+        "surah_id": 27,
+        "from_ayah": 89,
+        "to_ayah": 93
+      },
+      {
+        "surah_id": 28,
+        "from_ayah": 1,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 5,
+    "mushaf_page": 386,
+    "surahs": [
+      {
+        "surah_id": 28,
+        "from_ayah": 6,
+        "to_ayah": 13
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 6,
+    "mushaf_page": 387,
+    "surahs": [
+      {
+        "surah_id": 28,
+        "from_ayah": 14,
+        "to_ayah": 21
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 7,
+    "mushaf_page": 388,
+    "surahs": [
+      {
+        "surah_id": 28,
+        "from_ayah": 22,
+        "to_ayah": 28
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 8,
+    "mushaf_page": 389,
+    "surahs": [
+      {
+        "surah_id": 28,
+        "from_ayah": 29,
+        "to_ayah": 35
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 9,
+    "mushaf_page": 390,
+    "surahs": [
+      {
+        "surah_id": 28,
+        "from_ayah": 36,
+        "to_ayah": 43
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 10,
+    "mushaf_page": 391,
+    "surahs": [
+      {
+        "surah_id": 28,
+        "from_ayah": 44,
+        "to_ayah": 50
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 11,
+    "mushaf_page": 392,
+    "surahs": [
+      {
+        "surah_id": 28,
+        "from_ayah": 51,
+        "to_ayah": 59
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 12,
+    "mushaf_page": 393,
+    "surahs": [
+      {
+        "surah_id": 28,
+        "from_ayah": 60,
+        "to_ayah": 70
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 13,
+    "mushaf_page": 394,
+    "surahs": [
+      {
+        "surah_id": 28,
+        "from_ayah": 71,
+        "to_ayah": 77
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 14,
+    "mushaf_page": 395,
+    "surahs": [
+      {
+        "surah_id": 28,
+        "from_ayah": 78,
+        "to_ayah": 84
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 15,
+    "mushaf_page": 396,
+    "surahs": [
+      {
+        "surah_id": 28,
+        "from_ayah": 85,
+        "to_ayah": 88
+      },
+      {
+        "surah_id": 29,
+        "from_ayah": 1,
+        "to_ayah": 6
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 16,
+    "mushaf_page": 397,
+    "surahs": [
+      {
+        "surah_id": 29,
+        "from_ayah": 7,
+        "to_ayah": 14
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 17,
+    "mushaf_page": 398,
+    "surahs": [
+      {
+        "surah_id": 29,
+        "from_ayah": 15,
+        "to_ayah": 23
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 18,
+    "mushaf_page": 399,
+    "surahs": [
+      {
+        "surah_id": 29,
+        "from_ayah": 24,
+        "to_ayah": 30
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 19,
+    "mushaf_page": 400,
+    "surahs": [
+      {
+        "surah_id": 29,
+        "from_ayah": 31,
+        "to_ayah": 38
+      }
+    ]
+  },
+  {
+    "juz_number": 20,
+    "page_number": 20,
+    "mushaf_page": 401,
+    "surahs": [
+      {
+        "surah_id": 29,
+        "from_ayah": 39,
+        "to_ayah": 45
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 1,
+    "mushaf_page": 402,
+    "surahs": [
+      {
+        "surah_id": 29,
+        "from_ayah": 46,
+        "to_ayah": 52
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 2,
+    "mushaf_page": 403,
+    "surahs": [
+      {
+        "surah_id": 29,
+        "from_ayah": 53,
+        "to_ayah": 63
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 3,
+    "mushaf_page": 404,
+    "surahs": [
+      {
+        "surah_id": 29,
+        "from_ayah": 64,
+        "to_ayah": 69
+      },
+      {
+        "surah_id": 30,
+        "from_ayah": 1,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 4,
+    "mushaf_page": 405,
+    "surahs": [
+      {
+        "surah_id": 30,
+        "from_ayah": 6,
+        "to_ayah": 15
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 5,
+    "mushaf_page": 406,
+    "surahs": [
+      {
+        "surah_id": 30,
+        "from_ayah": 16,
+        "to_ayah": 24
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 6,
+    "mushaf_page": 407,
+    "surahs": [
+      {
+        "surah_id": 30,
+        "from_ayah": 25,
+        "to_ayah": 32
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 7,
+    "mushaf_page": 408,
+    "surahs": [
+      {
+        "surah_id": 30,
+        "from_ayah": 33,
+        "to_ayah": 41
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 8,
+    "mushaf_page": 409,
+    "surahs": [
+      {
+        "surah_id": 30,
+        "from_ayah": 42,
+        "to_ayah": 50
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 9,
+    "mushaf_page": 410,
+    "surahs": [
+      {
+        "surah_id": 30,
+        "from_ayah": 51,
+        "to_ayah": 60
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 10,
+    "mushaf_page": 411,
+    "surahs": [
+      {
+        "surah_id": 31,
+        "from_ayah": 1,
+        "to_ayah": 11
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 11,
+    "mushaf_page": 412,
+    "surahs": [
+      {
+        "surah_id": 31,
+        "from_ayah": 12,
+        "to_ayah": 19
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 12,
+    "mushaf_page": 413,
+    "surahs": [
+      {
+        "surah_id": 31,
+        "from_ayah": 20,
+        "to_ayah": 28
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 13,
+    "mushaf_page": 414,
+    "surahs": [
+      {
+        "surah_id": 31,
+        "from_ayah": 29,
+        "to_ayah": 34
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 14,
+    "mushaf_page": 415,
+    "surahs": [
+      {
+        "surah_id": 32,
+        "from_ayah": 1,
+        "to_ayah": 11
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 15,
+    "mushaf_page": 416,
+    "surahs": [
+      {
+        "surah_id": 32,
+        "from_ayah": 12,
+        "to_ayah": 20
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 16,
+    "mushaf_page": 417,
+    "surahs": [
+      {
+        "surah_id": 32,
+        "from_ayah": 21,
+        "to_ayah": 30
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 17,
+    "mushaf_page": 418,
+    "surahs": [
+      {
+        "surah_id": 33,
+        "from_ayah": 1,
+        "to_ayah": 6
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 18,
+    "mushaf_page": 419,
+    "surahs": [
+      {
+        "surah_id": 33,
+        "from_ayah": 7,
+        "to_ayah": 15
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 19,
+    "mushaf_page": 420,
+    "surahs": [
+      {
+        "surah_id": 33,
+        "from_ayah": 16,
+        "to_ayah": 22
+      }
+    ]
+  },
+  {
+    "juz_number": 21,
+    "page_number": 20,
+    "mushaf_page": 421,
+    "surahs": [
+      {
+        "surah_id": 33,
+        "from_ayah": 23,
+        "to_ayah": 30
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 1,
+    "mushaf_page": 422,
+    "surahs": [
+      {
+        "surah_id": 33,
+        "from_ayah": 31,
+        "to_ayah": 35
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 2,
+    "mushaf_page": 423,
+    "surahs": [
+      {
+        "surah_id": 33,
+        "from_ayah": 36,
+        "to_ayah": 43
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 3,
+    "mushaf_page": 424,
+    "surahs": [
+      {
+        "surah_id": 33,
+        "from_ayah": 44,
+        "to_ayah": 50
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 4,
+    "mushaf_page": 425,
+    "surahs": [
+      {
+        "surah_id": 33,
+        "from_ayah": 51,
+        "to_ayah": 54
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 5,
+    "mushaf_page": 426,
+    "surahs": [
+      {
+        "surah_id": 33,
+        "from_ayah": 55,
+        "to_ayah": 62
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 6,
+    "mushaf_page": 427,
+    "surahs": [
+      {
+        "surah_id": 33,
+        "from_ayah": 63,
+        "to_ayah": 73
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 7,
+    "mushaf_page": 428,
+    "surahs": [
+      {
+        "surah_id": 34,
+        "from_ayah": 1,
+        "to_ayah": 7
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 8,
+    "mushaf_page": 429,
+    "surahs": [
+      {
+        "surah_id": 34,
+        "from_ayah": 8,
+        "to_ayah": 14
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 9,
+    "mushaf_page": 430,
+    "surahs": [
+      {
+        "surah_id": 34,
+        "from_ayah": 15,
+        "to_ayah": 22
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 10,
+    "mushaf_page": 431,
+    "surahs": [
+      {
+        "surah_id": 34,
+        "from_ayah": 23,
+        "to_ayah": 31
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 11,
+    "mushaf_page": 432,
+    "surahs": [
+      {
+        "surah_id": 34,
+        "from_ayah": 32,
+        "to_ayah": 39
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 12,
+    "mushaf_page": 433,
+    "surahs": [
+      {
+        "surah_id": 34,
+        "from_ayah": 40,
+        "to_ayah": 48
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 13,
+    "mushaf_page": 434,
+    "surahs": [
+      {
+        "surah_id": 34,
+        "from_ayah": 49,
+        "to_ayah": 54
+      },
+      {
+        "surah_id": 35,
+        "from_ayah": 1,
+        "to_ayah": 3
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 14,
+    "mushaf_page": 435,
+    "surahs": [
+      {
+        "surah_id": 35,
+        "from_ayah": 4,
+        "to_ayah": 11
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 15,
+    "mushaf_page": 436,
+    "surahs": [
+      {
+        "surah_id": 35,
+        "from_ayah": 12,
+        "to_ayah": 18
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 16,
+    "mushaf_page": 437,
+    "surahs": [
+      {
+        "surah_id": 35,
+        "from_ayah": 19,
+        "to_ayah": 30
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 17,
+    "mushaf_page": 438,
+    "surahs": [
+      {
+        "surah_id": 35,
+        "from_ayah": 31,
+        "to_ayah": 38
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 18,
+    "mushaf_page": 439,
+    "surahs": [
+      {
+        "surah_id": 35,
+        "from_ayah": 39,
+        "to_ayah": 44
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 19,
+    "mushaf_page": 440,
+    "surahs": [
+      {
+        "surah_id": 35,
+        "from_ayah": 45,
+        "to_ayah": 45
+      },
+      {
+        "surah_id": 36,
+        "from_ayah": 1,
+        "to_ayah": 12
+      }
+    ]
+  },
+  {
+    "juz_number": 22,
+    "page_number": 20,
+    "mushaf_page": 441,
+    "surahs": [
+      {
+        "surah_id": 36,
+        "from_ayah": 13,
+        "to_ayah": 27
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 1,
+    "mushaf_page": 442,
+    "surahs": [
+      {
+        "surah_id": 36,
+        "from_ayah": 28,
+        "to_ayah": 40
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 2,
+    "mushaf_page": 443,
+    "surahs": [
+      {
+        "surah_id": 36,
+        "from_ayah": 41,
+        "to_ayah": 54
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 3,
+    "mushaf_page": 444,
+    "surahs": [
+      {
+        "surah_id": 36,
+        "from_ayah": 55,
+        "to_ayah": 70
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 4,
+    "mushaf_page": 445,
+    "surahs": [
+      {
+        "surah_id": 36,
+        "from_ayah": 71,
+        "to_ayah": 83
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 5,
+    "mushaf_page": 446,
+    "surahs": [
+      {
+        "surah_id": 37,
+        "from_ayah": 1,
+        "to_ayah": 24
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 6,
+    "mushaf_page": 447,
+    "surahs": [
+      {
+        "surah_id": 37,
+        "from_ayah": 25,
+        "to_ayah": 51
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 7,
+    "mushaf_page": 448,
+    "surahs": [
+      {
+        "surah_id": 37,
+        "from_ayah": 52,
+        "to_ayah": 76
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 8,
+    "mushaf_page": 449,
+    "surahs": [
+      {
+        "surah_id": 37,
+        "from_ayah": 77,
+        "to_ayah": 102
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 9,
+    "mushaf_page": 450,
+    "surahs": [
+      {
+        "surah_id": 37,
+        "from_ayah": 103,
+        "to_ayah": 126
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 10,
+    "mushaf_page": 451,
+    "surahs": [
+      {
+        "surah_id": 37,
+        "from_ayah": 127,
+        "to_ayah": 153
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 11,
+    "mushaf_page": 452,
+    "surahs": [
+      {
+        "surah_id": 37,
+        "from_ayah": 154,
+        "to_ayah": 182
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 12,
+    "mushaf_page": 453,
+    "surahs": [
+      {
+        "surah_id": 38,
+        "from_ayah": 1,
+        "to_ayah": 16
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 13,
+    "mushaf_page": 454,
+    "surahs": [
+      {
+        "surah_id": 38,
+        "from_ayah": 17,
+        "to_ayah": 26
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 14,
+    "mushaf_page": 455,
+    "surahs": [
+      {
+        "surah_id": 38,
+        "from_ayah": 27,
+        "to_ayah": 42
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 15,
+    "mushaf_page": 456,
+    "surahs": [
+      {
+        "surah_id": 38,
+        "from_ayah": 43,
+        "to_ayah": 61
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 16,
+    "mushaf_page": 457,
+    "surahs": [
+      {
+        "surah_id": 38,
+        "from_ayah": 62,
+        "to_ayah": 83
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 17,
+    "mushaf_page": 458,
+    "surahs": [
+      {
+        "surah_id": 38,
+        "from_ayah": 84,
+        "to_ayah": 88
+      },
+      {
+        "surah_id": 39,
+        "from_ayah": 1,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 18,
+    "mushaf_page": 459,
+    "surahs": [
+      {
+        "surah_id": 39,
+        "from_ayah": 6,
+        "to_ayah": 10
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 19,
+    "mushaf_page": 460,
+    "surahs": [
+      {
+        "surah_id": 39,
+        "from_ayah": 11,
+        "to_ayah": 21
+      }
+    ]
+  },
+  {
+    "juz_number": 23,
+    "page_number": 20,
+    "mushaf_page": 461,
+    "surahs": [
+      {
+        "surah_id": 39,
+        "from_ayah": 22,
+        "to_ayah": 31
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 1,
+    "mushaf_page": 462,
+    "surahs": [
+      {
+        "surah_id": 39,
+        "from_ayah": 32,
+        "to_ayah": 40
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 2,
+    "mushaf_page": 463,
+    "surahs": [
+      {
+        "surah_id": 39,
+        "from_ayah": 41,
+        "to_ayah": 47
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 3,
+    "mushaf_page": 464,
+    "surahs": [
+      {
+        "surah_id": 39,
+        "from_ayah": 48,
+        "to_ayah": 56
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 4,
+    "mushaf_page": 465,
+    "surahs": [
+      {
+        "surah_id": 39,
+        "from_ayah": 57,
+        "to_ayah": 67
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 5,
+    "mushaf_page": 466,
+    "surahs": [
+      {
+        "surah_id": 39,
+        "from_ayah": 68,
+        "to_ayah": 74
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 6,
+    "mushaf_page": 467,
+    "surahs": [
+      {
+        "surah_id": 39,
+        "from_ayah": 75,
+        "to_ayah": 75
+      },
+      {
+        "surah_id": 40,
+        "from_ayah": 1,
+        "to_ayah": 7
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 7,
+    "mushaf_page": 468,
+    "surahs": [
+      {
+        "surah_id": 40,
+        "from_ayah": 8,
+        "to_ayah": 16
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 8,
+    "mushaf_page": 469,
+    "surahs": [
+      {
+        "surah_id": 40,
+        "from_ayah": 17,
+        "to_ayah": 25
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 9,
+    "mushaf_page": 470,
+    "surahs": [
+      {
+        "surah_id": 40,
+        "from_ayah": 26,
+        "to_ayah": 33
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 10,
+    "mushaf_page": 471,
+    "surahs": [
+      {
+        "surah_id": 40,
+        "from_ayah": 34,
+        "to_ayah": 40
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 11,
+    "mushaf_page": 472,
+    "surahs": [
+      {
+        "surah_id": 40,
+        "from_ayah": 41,
+        "to_ayah": 49
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 12,
+    "mushaf_page": 473,
+    "surahs": [
+      {
+        "surah_id": 40,
+        "from_ayah": 50,
+        "to_ayah": 58
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 13,
+    "mushaf_page": 474,
+    "surahs": [
+      {
+        "surah_id": 40,
+        "from_ayah": 59,
+        "to_ayah": 66
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 14,
+    "mushaf_page": 475,
+    "surahs": [
+      {
+        "surah_id": 40,
+        "from_ayah": 67,
+        "to_ayah": 77
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 15,
+    "mushaf_page": 476,
+    "surahs": [
+      {
+        "surah_id": 40,
+        "from_ayah": 78,
+        "to_ayah": 85
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 16,
+    "mushaf_page": 477,
+    "surahs": [
+      {
+        "surah_id": 41,
+        "from_ayah": 1,
+        "to_ayah": 11
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 17,
+    "mushaf_page": 478,
+    "surahs": [
+      {
+        "surah_id": 41,
+        "from_ayah": 12,
+        "to_ayah": 20
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 18,
+    "mushaf_page": 479,
+    "surahs": [
+      {
+        "surah_id": 41,
+        "from_ayah": 21,
+        "to_ayah": 29
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 19,
+    "mushaf_page": 480,
+    "surahs": [
+      {
+        "surah_id": 41,
+        "from_ayah": 30,
+        "to_ayah": 38
+      }
+    ]
+  },
+  {
+    "juz_number": 24,
+    "page_number": 20,
+    "mushaf_page": 481,
+    "surahs": [
+      {
+        "surah_id": 41,
+        "from_ayah": 39,
+        "to_ayah": 46
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 1,
+    "mushaf_page": 482,
+    "surahs": [
+      {
+        "surah_id": 41,
+        "from_ayah": 47,
+        "to_ayah": 54
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 2,
+    "mushaf_page": 483,
+    "surahs": [
+      {
+        "surah_id": 42,
+        "from_ayah": 1,
+        "to_ayah": 10
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 3,
+    "mushaf_page": 484,
+    "surahs": [
+      {
+        "surah_id": 42,
+        "from_ayah": 11,
+        "to_ayah": 15
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 4,
+    "mushaf_page": 485,
+    "surahs": [
+      {
+        "surah_id": 42,
+        "from_ayah": 16,
+        "to_ayah": 22
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 5,
+    "mushaf_page": 486,
+    "surahs": [
+      {
+        "surah_id": 42,
+        "from_ayah": 23,
+        "to_ayah": 31
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 6,
+    "mushaf_page": 487,
+    "surahs": [
+      {
+        "surah_id": 42,
+        "from_ayah": 32,
+        "to_ayah": 44
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 7,
+    "mushaf_page": 488,
+    "surahs": [
+      {
+        "surah_id": 42,
+        "from_ayah": 45,
+        "to_ayah": 51
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 8,
+    "mushaf_page": 489,
+    "surahs": [
+      {
+        "surah_id": 42,
+        "from_ayah": 52,
+        "to_ayah": 53
+      },
+      {
+        "surah_id": 43,
+        "from_ayah": 1,
+        "to_ayah": 10
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 9,
+    "mushaf_page": 490,
+    "surahs": [
+      {
+        "surah_id": 43,
+        "from_ayah": 11,
+        "to_ayah": 22
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 10,
+    "mushaf_page": 491,
+    "surahs": [
+      {
+        "surah_id": 43,
+        "from_ayah": 23,
+        "to_ayah": 33
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 11,
+    "mushaf_page": 492,
+    "surahs": [
+      {
+        "surah_id": 43,
+        "from_ayah": 34,
+        "to_ayah": 47
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 12,
+    "mushaf_page": 493,
+    "surahs": [
+      {
+        "surah_id": 43,
+        "from_ayah": 48,
+        "to_ayah": 60
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 13,
+    "mushaf_page": 494,
+    "surahs": [
+      {
+        "surah_id": 43,
+        "from_ayah": 61,
+        "to_ayah": 73
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 14,
+    "mushaf_page": 495,
+    "surahs": [
+      {
+        "surah_id": 43,
+        "from_ayah": 74,
+        "to_ayah": 89
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 15,
+    "mushaf_page": 496,
+    "surahs": [
+      {
+        "surah_id": 44,
+        "from_ayah": 1,
+        "to_ayah": 18
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 16,
+    "mushaf_page": 497,
+    "surahs": [
+      {
+        "surah_id": 44,
+        "from_ayah": 19,
+        "to_ayah": 39
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 17,
+    "mushaf_page": 498,
+    "surahs": [
+      {
+        "surah_id": 44,
+        "from_ayah": 40,
+        "to_ayah": 59
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 18,
+    "mushaf_page": 499,
+    "surahs": [
+      {
+        "surah_id": 45,
+        "from_ayah": 1,
+        "to_ayah": 13
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 19,
+    "mushaf_page": 500,
+    "surahs": [
+      {
+        "surah_id": 45,
+        "from_ayah": 14,
+        "to_ayah": 22
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 20,
+    "mushaf_page": 501,
+    "surahs": [
+      {
+        "surah_id": 45,
+        "from_ayah": 23,
+        "to_ayah": 32
+      }
+    ]
+  },
+  {
+    "juz_number": 25,
+    "page_number": 21,
+    "mushaf_page": 502,
+    "surahs": [
+      {
+        "surah_id": 45,
+        "from_ayah": 33,
+        "to_ayah": 37
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 1,
+    "mushaf_page": 502,
+    "surahs": [
+      {
+        "surah_id": 46,
+        "from_ayah": 1,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 2,
+    "mushaf_page": 503,
+    "surahs": [
+      {
+        "surah_id": 46,
+        "from_ayah": 6,
+        "to_ayah": 14
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 3,
+    "mushaf_page": 504,
+    "surahs": [
+      {
+        "surah_id": 46,
+        "from_ayah": 15,
+        "to_ayah": 20
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 4,
+    "mushaf_page": 505,
+    "surahs": [
+      {
+        "surah_id": 46,
+        "from_ayah": 21,
+        "to_ayah": 28
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 5,
+    "mushaf_page": 506,
+    "surahs": [
+      {
+        "surah_id": 46,
+        "from_ayah": 29,
+        "to_ayah": 35
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 6,
+    "mushaf_page": 507,
+    "surahs": [
+      {
+        "surah_id": 47,
+        "from_ayah": 1,
+        "to_ayah": 11
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 7,
+    "mushaf_page": 508,
+    "surahs": [
+      {
+        "surah_id": 47,
+        "from_ayah": 12,
+        "to_ayah": 19
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 8,
+    "mushaf_page": 509,
+    "surahs": [
+      {
+        "surah_id": 47,
+        "from_ayah": 20,
+        "to_ayah": 29
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 9,
+    "mushaf_page": 510,
+    "surahs": [
+      {
+        "surah_id": 47,
+        "from_ayah": 30,
+        "to_ayah": 38
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 10,
+    "mushaf_page": 511,
+    "surahs": [
+      {
+        "surah_id": 48,
+        "from_ayah": 1,
+        "to_ayah": 9
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 11,
+    "mushaf_page": 512,
+    "surahs": [
+      {
+        "surah_id": 48,
+        "from_ayah": 10,
+        "to_ayah": 15
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 12,
+    "mushaf_page": 513,
+    "surahs": [
+      {
+        "surah_id": 48,
+        "from_ayah": 16,
+        "to_ayah": 23
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 13,
+    "mushaf_page": 514,
+    "surahs": [
+      {
+        "surah_id": 48,
+        "from_ayah": 24,
+        "to_ayah": 28
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 14,
+    "mushaf_page": 515,
+    "surahs": [
+      {
+        "surah_id": 48,
+        "from_ayah": 29,
+        "to_ayah": 29
+      },
+      {
+        "surah_id": 49,
+        "from_ayah": 1,
+        "to_ayah": 4
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 15,
+    "mushaf_page": 516,
+    "surahs": [
+      {
+        "surah_id": 49,
+        "from_ayah": 5,
+        "to_ayah": 11
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 16,
+    "mushaf_page": 517,
+    "surahs": [
+      {
+        "surah_id": 49,
+        "from_ayah": 12,
+        "to_ayah": 18
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 17,
+    "mushaf_page": 518,
+    "surahs": [
+      {
+        "surah_id": 50,
+        "from_ayah": 1,
+        "to_ayah": 15
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 18,
+    "mushaf_page": 519,
+    "surahs": [
+      {
+        "surah_id": 50,
+        "from_ayah": 16,
+        "to_ayah": 35
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 19,
+    "mushaf_page": 520,
+    "surahs": [
+      {
+        "surah_id": 50,
+        "from_ayah": 36,
+        "to_ayah": 45
+      },
+      {
+        "surah_id": 51,
+        "from_ayah": 1,
+        "to_ayah": 6
+      }
+    ]
+  },
+  {
+    "juz_number": 26,
+    "page_number": 20,
+    "mushaf_page": 521,
+    "surahs": [
+      {
+        "surah_id": 51,
+        "from_ayah": 7,
+        "to_ayah": 30
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 1,
+    "mushaf_page": 522,
+    "surahs": [
+      {
+        "surah_id": 51,
+        "from_ayah": 31,
+        "to_ayah": 51
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 2,
+    "mushaf_page": 523,
+    "surahs": [
+      {
+        "surah_id": 51,
+        "from_ayah": 52,
+        "to_ayah": 60
+      },
+      {
+        "surah_id": 52,
+        "from_ayah": 1,
+        "to_ayah": 14
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 3,
+    "mushaf_page": 524,
+    "surahs": [
+      {
+        "surah_id": 52,
+        "from_ayah": 15,
+        "to_ayah": 31
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 4,
+    "mushaf_page": 525,
+    "surahs": [
+      {
+        "surah_id": 52,
+        "from_ayah": 32,
+        "to_ayah": 49
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 5,
+    "mushaf_page": 526,
+    "surahs": [
+      {
+        "surah_id": 53,
+        "from_ayah": 1,
+        "to_ayah": 26
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 6,
+    "mushaf_page": 527,
+    "surahs": [
+      {
+        "surah_id": 53,
+        "from_ayah": 27,
+        "to_ayah": 44
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 7,
+    "mushaf_page": 528,
+    "surahs": [
+      {
+        "surah_id": 53,
+        "from_ayah": 45,
+        "to_ayah": 62
+      },
+      {
+        "surah_id": 54,
+        "from_ayah": 1,
+        "to_ayah": 6
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 8,
+    "mushaf_page": 529,
+    "surahs": [
+      {
+        "surah_id": 54,
+        "from_ayah": 7,
+        "to_ayah": 27
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 9,
+    "mushaf_page": 530,
+    "surahs": [
+      {
+        "surah_id": 54,
+        "from_ayah": 28,
+        "to_ayah": 49
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 10,
+    "mushaf_page": 531,
+    "surahs": [
+      {
+        "surah_id": 54,
+        "from_ayah": 50,
+        "to_ayah": 55
+      },
+      {
+        "surah_id": 55,
+        "from_ayah": 1,
+        "to_ayah": 16
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 11,
+    "mushaf_page": 532,
+    "surahs": [
+      {
+        "surah_id": 55,
+        "from_ayah": 17,
+        "to_ayah": 40
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 12,
+    "mushaf_page": 533,
+    "surahs": [
+      {
+        "surah_id": 55,
+        "from_ayah": 41,
+        "to_ayah": 67
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 13,
+    "mushaf_page": 534,
+    "surahs": [
+      {
+        "surah_id": 55,
+        "from_ayah": 68,
+        "to_ayah": 78
+      },
+      {
+        "surah_id": 56,
+        "from_ayah": 1,
+        "to_ayah": 16
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 14,
+    "mushaf_page": 535,
+    "surahs": [
+      {
+        "surah_id": 56,
+        "from_ayah": 17,
+        "to_ayah": 50
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 15,
+    "mushaf_page": 536,
+    "surahs": [
+      {
+        "surah_id": 56,
+        "from_ayah": 51,
+        "to_ayah": 76
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 16,
+    "mushaf_page": 537,
+    "surahs": [
+      {
+        "surah_id": 56,
+        "from_ayah": 77,
+        "to_ayah": 96
+      },
+      {
+        "surah_id": 57,
+        "from_ayah": 1,
+        "to_ayah": 3
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 17,
+    "mushaf_page": 538,
+    "surahs": [
+      {
+        "surah_id": 57,
+        "from_ayah": 4,
+        "to_ayah": 11
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 18,
+    "mushaf_page": 539,
+    "surahs": [
+      {
+        "surah_id": 57,
+        "from_ayah": 12,
+        "to_ayah": 18
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 19,
+    "mushaf_page": 540,
+    "surahs": [
+      {
+        "surah_id": 57,
+        "from_ayah": 19,
+        "to_ayah": 24
+      }
+    ]
+  },
+  {
+    "juz_number": 27,
+    "page_number": 20,
+    "mushaf_page": 541,
+    "surahs": [
+      {
+        "surah_id": 57,
+        "from_ayah": 25,
+        "to_ayah": 29
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 1,
+    "mushaf_page": 542,
+    "surahs": [
+      {
+        "surah_id": 58,
+        "from_ayah": 1,
+        "to_ayah": 6
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 2,
+    "mushaf_page": 543,
+    "surahs": [
+      {
+        "surah_id": 58,
+        "from_ayah": 7,
+        "to_ayah": 11
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 3,
+    "mushaf_page": 544,
+    "surahs": [
+      {
+        "surah_id": 58,
+        "from_ayah": 12,
+        "to_ayah": 21
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 4,
+    "mushaf_page": 545,
+    "surahs": [
+      {
+        "surah_id": 58,
+        "from_ayah": 22,
+        "to_ayah": 22
+      },
+      {
+        "surah_id": 59,
+        "from_ayah": 1,
+        "to_ayah": 3
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 5,
+    "mushaf_page": 546,
+    "surahs": [
+      {
+        "surah_id": 59,
+        "from_ayah": 4,
+        "to_ayah": 9
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 6,
+    "mushaf_page": 547,
+    "surahs": [
+      {
+        "surah_id": 59,
+        "from_ayah": 10,
+        "to_ayah": 16
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 7,
+    "mushaf_page": 548,
+    "surahs": [
+      {
+        "surah_id": 59,
+        "from_ayah": 17,
+        "to_ayah": 24
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 8,
+    "mushaf_page": 549,
+    "surahs": [
+      {
+        "surah_id": 60,
+        "from_ayah": 1,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 9,
+    "mushaf_page": 550,
+    "surahs": [
+      {
+        "surah_id": 60,
+        "from_ayah": 6,
+        "to_ayah": 11
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 10,
+    "mushaf_page": 551,
+    "surahs": [
+      {
+        "surah_id": 60,
+        "from_ayah": 12,
+        "to_ayah": 13
+      },
+      {
+        "surah_id": 61,
+        "from_ayah": 1,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 11,
+    "mushaf_page": 552,
+    "surahs": [
+      {
+        "surah_id": 61,
+        "from_ayah": 6,
+        "to_ayah": 14
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 12,
+    "mushaf_page": 553,
+    "surahs": [
+      {
+        "surah_id": 62,
+        "from_ayah": 1,
+        "to_ayah": 8
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 13,
+    "mushaf_page": 554,
+    "surahs": [
+      {
+        "surah_id": 62,
+        "from_ayah": 9,
+        "to_ayah": 11
+      },
+      {
+        "surah_id": 63,
+        "from_ayah": 1,
+        "to_ayah": 4
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 14,
+    "mushaf_page": 555,
+    "surahs": [
+      {
+        "surah_id": 63,
+        "from_ayah": 5,
+        "to_ayah": 11
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 15,
+    "mushaf_page": 556,
+    "surahs": [
+      {
+        "surah_id": 64,
+        "from_ayah": 1,
+        "to_ayah": 9
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 16,
+    "mushaf_page": 557,
+    "surahs": [
+      {
+        "surah_id": 64,
+        "from_ayah": 10,
+        "to_ayah": 18
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 17,
+    "mushaf_page": 558,
+    "surahs": [
+      {
+        "surah_id": 65,
+        "from_ayah": 1,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 18,
+    "mushaf_page": 559,
+    "surahs": [
+      {
+        "surah_id": 65,
+        "from_ayah": 6,
+        "to_ayah": 12
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 19,
+    "mushaf_page": 560,
+    "surahs": [
+      {
+        "surah_id": 66,
+        "from_ayah": 1,
+        "to_ayah": 7
+      }
+    ]
+  },
+  {
+    "juz_number": 28,
+    "page_number": 20,
+    "mushaf_page": 561,
+    "surahs": [
+      {
+        "surah_id": 66,
+        "from_ayah": 8,
+        "to_ayah": 12
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 1,
+    "mushaf_page": 562,
+    "surahs": [
+      {
+        "surah_id": 67,
+        "from_ayah": 1,
+        "to_ayah": 12
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 2,
+    "mushaf_page": 563,
+    "surahs": [
+      {
+        "surah_id": 67,
+        "from_ayah": 13,
+        "to_ayah": 26
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 3,
+    "mushaf_page": 564,
+    "surahs": [
+      {
+        "surah_id": 67,
+        "from_ayah": 27,
+        "to_ayah": 30
+      },
+      {
+        "surah_id": 68,
+        "from_ayah": 1,
+        "to_ayah": 15
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 4,
+    "mushaf_page": 565,
+    "surahs": [
+      {
+        "surah_id": 68,
+        "from_ayah": 16,
+        "to_ayah": 42
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 5,
+    "mushaf_page": 566,
+    "surahs": [
+      {
+        "surah_id": 68,
+        "from_ayah": 43,
+        "to_ayah": 52
+      },
+      {
+        "surah_id": 69,
+        "from_ayah": 1,
+        "to_ayah": 8
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 6,
+    "mushaf_page": 567,
+    "surahs": [
+      {
+        "surah_id": 69,
+        "from_ayah": 9,
+        "to_ayah": 34
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 7,
+    "mushaf_page": 568,
+    "surahs": [
+      {
+        "surah_id": 69,
+        "from_ayah": 35,
+        "to_ayah": 52
+      },
+      {
+        "surah_id": 70,
+        "from_ayah": 1,
+        "to_ayah": 10
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 8,
+    "mushaf_page": 569,
+    "surahs": [
+      {
+        "surah_id": 70,
+        "from_ayah": 11,
+        "to_ayah": 39
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 9,
+    "mushaf_page": 570,
+    "surahs": [
+      {
+        "surah_id": 70,
+        "from_ayah": 40,
+        "to_ayah": 44
+      },
+      {
+        "surah_id": 71,
+        "from_ayah": 1,
+        "to_ayah": 10
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 10,
+    "mushaf_page": 571,
+    "surahs": [
+      {
+        "surah_id": 71,
+        "from_ayah": 11,
+        "to_ayah": 28
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 11,
+    "mushaf_page": 572,
+    "surahs": [
+      {
+        "surah_id": 72,
+        "from_ayah": 1,
+        "to_ayah": 13
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 12,
+    "mushaf_page": 573,
+    "surahs": [
+      {
+        "surah_id": 72,
+        "from_ayah": 14,
+        "to_ayah": 28
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 13,
+    "mushaf_page": 574,
+    "surahs": [
+      {
+        "surah_id": 73,
+        "from_ayah": 1,
+        "to_ayah": 19
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 14,
+    "mushaf_page": 575,
+    "surahs": [
+      {
+        "surah_id": 73,
+        "from_ayah": 20,
+        "to_ayah": 20
+      },
+      {
+        "surah_id": 74,
+        "from_ayah": 1,
+        "to_ayah": 17
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 15,
+    "mushaf_page": 576,
+    "surahs": [
+      {
+        "surah_id": 74,
+        "from_ayah": 18,
+        "to_ayah": 47
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 16,
+    "mushaf_page": 577,
+    "surahs": [
+      {
+        "surah_id": 74,
+        "from_ayah": 48,
+        "to_ayah": 56
+      },
+      {
+        "surah_id": 75,
+        "from_ayah": 1,
+        "to_ayah": 19
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 17,
+    "mushaf_page": 578,
+    "surahs": [
+      {
+        "surah_id": 75,
+        "from_ayah": 20,
+        "to_ayah": 40
+      },
+      {
+        "surah_id": 76,
+        "from_ayah": 1,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 18,
+    "mushaf_page": 579,
+    "surahs": [
+      {
+        "surah_id": 76,
+        "from_ayah": 6,
+        "to_ayah": 25
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 19,
+    "mushaf_page": 580,
+    "surahs": [
+      {
+        "surah_id": 76,
+        "from_ayah": 26,
+        "to_ayah": 31
+      },
+      {
+        "surah_id": 77,
+        "from_ayah": 1,
+        "to_ayah": 19
+      }
+    ]
+  },
+  {
+    "juz_number": 29,
+    "page_number": 20,
+    "mushaf_page": 581,
+    "surahs": [
+      {
+        "surah_id": 77,
+        "from_ayah": 20,
+        "to_ayah": 50
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 1,
+    "mushaf_page": 582,
+    "surahs": [
+      {
+        "surah_id": 78,
+        "from_ayah": 1,
+        "to_ayah": 30
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 2,
+    "mushaf_page": 583,
+    "surahs": [
+      {
+        "surah_id": 78,
+        "from_ayah": 31,
+        "to_ayah": 40
+      },
+      {
+        "surah_id": 79,
+        "from_ayah": 1,
+        "to_ayah": 15
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 3,
+    "mushaf_page": 584,
+    "surahs": [
+      {
+        "surah_id": 79,
+        "from_ayah": 16,
+        "to_ayah": 46
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 4,
+    "mushaf_page": 585,
+    "surahs": [
+      {
+        "surah_id": 80,
+        "from_ayah": 1,
+        "to_ayah": 42
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 5,
+    "mushaf_page": 586,
+    "surahs": [
+      {
+        "surah_id": 81,
+        "from_ayah": 1,
+        "to_ayah": 29
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 6,
+    "mushaf_page": 587,
+    "surahs": [
+      {
+        "surah_id": 82,
+        "from_ayah": 1,
+        "to_ayah": 19
+      },
+      {
+        "surah_id": 83,
+        "from_ayah": 1,
+        "to_ayah": 6
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 7,
+    "mushaf_page": 588,
+    "surahs": [
+      {
+        "surah_id": 83,
+        "from_ayah": 7,
+        "to_ayah": 34
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 8,
+    "mushaf_page": 589,
+    "surahs": [
+      {
+        "surah_id": 83,
+        "from_ayah": 35,
+        "to_ayah": 36
+      },
+      {
+        "surah_id": 84,
+        "from_ayah": 1,
+        "to_ayah": 25
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 9,
+    "mushaf_page": 590,
+    "surahs": [
+      {
+        "surah_id": 85,
+        "from_ayah": 1,
+        "to_ayah": 22
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 10,
+    "mushaf_page": 591,
+    "surahs": [
+      {
+        "surah_id": 86,
+        "from_ayah": 1,
+        "to_ayah": 17
+      },
+      {
+        "surah_id": 87,
+        "from_ayah": 1,
+        "to_ayah": 15
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 11,
+    "mushaf_page": 592,
+    "surahs": [
+      {
+        "surah_id": 87,
+        "from_ayah": 16,
+        "to_ayah": 19
+      },
+      {
+        "surah_id": 88,
+        "from_ayah": 1,
+        "to_ayah": 26
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 12,
+    "mushaf_page": 593,
+    "surahs": [
+      {
+        "surah_id": 89,
+        "from_ayah": 1,
+        "to_ayah": 23
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 13,
+    "mushaf_page": 594,
+    "surahs": [
+      {
+        "surah_id": 89,
+        "from_ayah": 24,
+        "to_ayah": 30
+      },
+      {
+        "surah_id": 90,
+        "from_ayah": 1,
+        "to_ayah": 20
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 14,
+    "mushaf_page": 595,
+    "surahs": [
+      {
+        "surah_id": 91,
+        "from_ayah": 1,
+        "to_ayah": 15
+      },
+      {
+        "surah_id": 92,
+        "from_ayah": 1,
+        "to_ayah": 14
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 15,
+    "mushaf_page": 596,
+    "surahs": [
+      {
+        "surah_id": 92,
+        "from_ayah": 15,
+        "to_ayah": 21
+      },
+      {
+        "surah_id": 93,
+        "from_ayah": 1,
+        "to_ayah": 11
+      },
+      {
+        "surah_id": 94,
+        "from_ayah": 1,
+        "to_ayah": 8
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 16,
+    "mushaf_page": 597,
+    "surahs": [
+      {
+        "surah_id": 95,
+        "from_ayah": 1,
+        "to_ayah": 8
+      },
+      {
+        "surah_id": 96,
+        "from_ayah": 1,
+        "to_ayah": 19
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 17,
+    "mushaf_page": 598,
+    "surahs": [
+      {
+        "surah_id": 97,
+        "from_ayah": 1,
+        "to_ayah": 5
+      },
+      {
+        "surah_id": 98,
+        "from_ayah": 1,
+        "to_ayah": 7
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 18,
+    "mushaf_page": 599,
+    "surahs": [
+      {
+        "surah_id": 98,
+        "from_ayah": 8,
+        "to_ayah": 8
+      },
+      {
+        "surah_id": 99,
+        "from_ayah": 1,
+        "to_ayah": 8
+      },
+      {
+        "surah_id": 100,
+        "from_ayah": 1,
+        "to_ayah": 9
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 19,
+    "mushaf_page": 600,
+    "surahs": [
+      {
+        "surah_id": 100,
+        "from_ayah": 10,
+        "to_ayah": 11
+      },
+      {
+        "surah_id": 101,
+        "from_ayah": 1,
+        "to_ayah": 11
+      },
+      {
+        "surah_id": 102,
+        "from_ayah": 1,
+        "to_ayah": 8
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 20,
+    "mushaf_page": 601,
+    "surahs": [
+      {
+        "surah_id": 103,
+        "from_ayah": 1,
+        "to_ayah": 3
+      },
+      {
+        "surah_id": 104,
+        "from_ayah": 1,
+        "to_ayah": 9
+      },
+      {
+        "surah_id": 105,
+        "from_ayah": 1,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 21,
+    "mushaf_page": 602,
+    "surahs": [
+      {
+        "surah_id": 106,
+        "from_ayah": 1,
+        "to_ayah": 4
+      },
+      {
+        "surah_id": 107,
+        "from_ayah": 1,
+        "to_ayah": 7
+      },
+      {
+        "surah_id": 108,
+        "from_ayah": 1,
+        "to_ayah": 3
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 22,
+    "mushaf_page": 603,
+    "surahs": [
+      {
+        "surah_id": 109,
+        "from_ayah": 1,
+        "to_ayah": 6
+      },
+      {
+        "surah_id": 110,
+        "from_ayah": 1,
+        "to_ayah": 3
+      },
+      {
+        "surah_id": 111,
+        "from_ayah": 1,
+        "to_ayah": 5
+      }
+    ]
+  },
+  {
+    "juz_number": 30,
+    "page_number": 23,
+    "mushaf_page": 604,
+    "surahs": [
+      {
+        "surah_id": 112,
+        "from_ayah": 1,
+        "to_ayah": 4
+      },
+      {
+        "surah_id": 113,
+        "from_ayah": 1,
+        "to_ayah": 5
+      },
+      {
+        "surah_id": 114,
+        "from_ayah": 1,
+        "to_ayah": 6
+      }
+    ]
+  }
+]

@@ -1,22 +1,17 @@
 /**
- * Pure attendance calendar computation — no I/O, no Drizzle, no Supabase.
+ * Pure attendance computation — no I/O, no Drizzle, no Supabase.
  *
- * `computeAttendanceCalendar` and `computeDayAttendance` are the pure
- * functions exercised by unit tests. The DB-fetching shell
- * (`recalculateStudentAttendance`) lives in
- * `features/attendance/server/recalc.ts`.
+ * Attendance is auto-derived from sessions only: a student is "present" on
+ * days they have a session. There is no absence tracking, no manual entry,
+ * and no excused/holiday statuses. The attendance record is simply a list
+ * of dates the student attended (had at least one session).
  */
 
-import type { StudentStatus } from "./types";
-
-export type AttendanceStatus = "present" | "absent" | "excused" | "holiday";
-
-/** Auto-derived statuses only (manual statuses excused/holiday come from entry). */
-export type AutoAttendanceStatus = "present" | "absent";
+export type AttendanceStatus = "present";
 
 export interface AttendanceDay {
   date: string;
-  status: AutoAttendanceStatus;
+  status: AttendanceStatus;
 }
 
 /**
@@ -42,41 +37,12 @@ function toISO(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-function addDay(d: Date, n: number): Date {
-  const next = new Date(d);
-  next.setDate(next.getDate() + n);
-  return next;
-}
-
-/** True if the date is excluded from the auto calendar (Friday / out of range / paused / post-withdrawal). */
-function isExcludedDate(
-  date: string,
-  ctx: StudentStatusContext,
-  today: string,
-): boolean {
-  if (date < ctx.enrollmentDate) return true;
-  if (date > today) return true;
-  if (parseISO(date).getDay() === 5) return true; // Friday
-
-  const terminal = ctx.status === "withdrawn" || ctx.status === "graduated";
-  if (terminal && ctx.statusSince && date >= ctx.statusSince) return true;
-
-  if (ctx.status === "paused" && ctx.statusSince && date >= ctx.statusSince) {
-    return true;
-  }
-  return false;
-}
-
 /**
- * Pure: compute the auto-derived attendance calendar (present/absent only).
- * Respects student status (C2):
- *  - withdrawn/graduated: stop the calendar at `statusSince` (fallback
- *    `lastSessionDate`), so no absences accumulate after leaving.
- *  - paused: skip every day in [statusSince, today] — the pause period
- *    generates no absences.
- *  - Fridays are always excluded.
- * Manual statuses (excused/holiday) are NOT produced here; those come from
- * manual entry and are preserved by `recalculateStudentAttendance`.
+ * Pure: compute the auto-derived attendance calendar (present days only).
+ * Only days with at least one session are included. Respects student status:
+ *  - withdrawn/graduated: stop at `statusSince` (fallback `lastSessionDate`).
+ *  - paused: skip the paused period [statusSince, today].
+ *  - Fridays are always excluded (non-attendance days).
  */
 export function computeAttendanceCalendar(
   sessionDates: string[],
@@ -89,50 +55,55 @@ export function computeAttendanceCalendar(
   let end = today;
   const terminal = ctx.status === "withdrawn" || ctx.status === "graduated";
   if (terminal) {
-    // Stop the day BEFORE statusSince — the withdrawal/graduation date itself
-    // is not an attendance day (the student has already left).
     const stop = ctx.statusSince ?? ctx.lastSessionDate;
     if (stop) {
       const stopDate = parseISO(stop);
-      const dayBefore = toISO(addDay(stopDate, -1));
+      const dayBefore = toISO(new Date(stopDate.setDate(stopDate.getDate() - 1)));
       if (dayBefore < end) end = dayBefore;
     }
   }
 
-  for (let d = parseISO(ctx.enrollmentDate); toISO(d) <= end; d = addDay(d, 1)) {
+  for (let d = parseISO(ctx.enrollmentDate); toISO(d) <= end; d = new Date(d.setDate(d.getDate() + 1))) {
     const dateStr = toISO(d);
     if (parseISO(dateStr).getDay() === 5) continue; // Friday
     if (ctx.status === "paused" && ctx.statusSince && dateStr >= ctx.statusSince) {
       continue;
     }
-    const status: AutoAttendanceStatus = sessionSet.has(dateStr) ? "present" : "absent";
-    result.push({ date: dateStr, status });
+    if (sessionSet.has(dateStr)) {
+      result.push({ date: dateStr, status: "present" });
+    }
   }
 
   return result;
 }
 
 /**
- * Pure: compute the auto-derived status for a single date, or `null` if the
- * date is excluded (Friday, before enrollment, after today, after withdrawal/
- * graduation, or within a paused period). Used for incremental updates (C3)
- * so only the affected date is touched instead of the whole history.
+ * Pure: compute the auto-derived status for a single date.
+ * Returns "present" if a session exists on that date and the date is in-scope,
+ * otherwise `null` (no attendance record).
  */
 export function computeDayAttendance(
   date: string,
   sessionDates: string[],
   ctx: StudentStatusContext,
   today: string = new Date().toISOString().split("T")[0],
-): AutoAttendanceStatus | null {
-  if (isExcludedDate(date, ctx, today)) return null;
+): AttendanceStatus | null {
+  if (date < ctx.enrollmentDate) return null;
+  if (date > today) return null;
+  if (parseISO(date).getDay() === 5) return null; // Friday
+
+  const terminal = ctx.status === "withdrawn" || ctx.status === "graduated";
+  if (terminal && ctx.statusSince && date >= ctx.statusSince) return null;
+
+  if (ctx.status === "paused" && ctx.statusSince && date >= ctx.statusSince) {
+    return null;
+  }
+
   const sessionSet = new Set(sessionDates);
-  return sessionSet.has(date) ? "present" : "absent";
+  return sessionSet.has(date) ? "present" : null;
 }
 
 export interface RecalcOptions {
-  /** When set, only this date is upserted/deleted (incremental, C3). */
+  /** When set, only this date is upserted/deleted (incremental). */
   affectedDate?: string;
 }
-
-// Re-export for convenience
-export type { StudentStatus };
