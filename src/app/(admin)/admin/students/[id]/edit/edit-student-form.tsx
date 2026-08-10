@@ -7,7 +7,8 @@ import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import {
   InitialMemorizationGrid,
   type JuzEntry,
-} from "@/components/initial-memorization-grid";
+} from "@/features/students/components/initial-memorization-grid";
+import { apiPut, ApiError } from "@/lib/api-client";
 
 interface StudentData {
   id: string;
@@ -28,7 +29,7 @@ interface EditStudentFormProps {
   mode: "admin" | "teacher";
 }
 
-export function EditStudentForm({ student, initialMem, redirectBase, mode }: EditStudentFormProps) {
+export function EditStudentForm({ student, initialMem, redirectBase }: EditStudentFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -53,27 +54,15 @@ export function EditStudentForm({ student, initialMem, redirectBase, mode }: Edi
     e.preventDefault();
     setError(null);
 
-    if (mode === "teacher") {
-      startTransition(async () => {
-        try {
-          const res = await fetch(`/api/students/${student.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ notes: form.notes || null }),
-          });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error ?? "حدث خطأ");
-          router.push(redirectBase);
-          router.refresh();
-        } catch (err) {
-          setError(err instanceof Error ? err.message : "حدث خطأ");
-        }
-      });
+    if (!form.name || !form.gender || !form.guardian_name || !form.guardian_phone) {
+      setError("يرجى ملء جميع الحقول المطلوبة");
       return;
     }
 
-    if (!form.name || !form.gender || !form.guardian_name || !form.guardian_phone) {
-      setError("يرجى ملء جميع الحقول المطلوبة");
+    // Egyptian phone validation: 11 digits starting with 010/011/012/015
+    const phone = form.guardian_phone.trim();
+    if (!/^01[0125]\d{8}$/.test(phone)) {
+      setError("رقم الهاتف يجب أن يكون 11 رقماً يبدأ بـ 010 أو 011 أو 012 أو 015");
       return;
     }
 
@@ -87,68 +76,24 @@ export function EditStudentForm({ student, initialMem, redirectBase, mode }: Edi
 
     startTransition(async () => {
       try {
-        const res = await fetch(`/api/students/${student.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: form.name,
-            gender: form.gender,
-            birth_date: form.birth_date || null,
-            guardian_name: form.guardian_name,
-            guardian_phone: form.guardian_phone,
-            enrollment_date: form.enrollment_date,
-            notes: form.notes || null,
-            status: form.status,
-            initial_memorization: initMem,
-          }),
+        await apiPut(`/api/students/${student.id}`, {
+          name: form.name,
+          gender: form.gender,
+          birth_date: form.birth_date || null,
+          guardian_name: form.guardian_name,
+          guardian_phone: form.guardian_phone,
+          enrollment_date: form.enrollment_date,
+          notes: form.notes || null,
+          status: form.status,
+          initial_memorization: initMem,
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "حدث خطأ");
         router.push(redirectBase);
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "حدث خطأ");
+        setError(err instanceof ApiError ? err.message : "حدث خطأ");
       }
     });
   };
-
-  if (mode === "teacher") {
-    return (
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="card space-y-3">
-          <h3 className="font-semibold text-base border-b border-border pb-2">ملاحظات الطالب</h3>
-          <p className="text-sm text-muted-foreground">
-            يمكنك تعديل الملاحظات فقط. لبقية البيانات تواصل مع المشرف.
-          </p>
-          <div>
-            <label className="form-label">الطالب</label>
-            <p className="text-sm font-medium">{student.name}</p>
-          </div>
-          <div>
-            <label className="form-label">ملاحظات</label>
-            <textarea
-              className="input-field min-h-[120px] resize-none"
-              value={form.notes}
-              onChange={(e) => set("notes", e.target.value)}
-              placeholder="أي ملاحظات عن الطالب…"
-            />
-          </div>
-        </div>
-
-        {error && <p className="field-error text-base">{error}</p>}
-
-        <div className="flex justify-end gap-3">
-          <Link href={redirectBase} className="btn-secondary">
-            إلغاء
-          </Link>
-          <button type="submit" className="btn-primary" disabled={isPending}>
-            {isPending ? <Loader2 className="size-4 animate-spin" /> : null}
-            حفظ الملاحظات
-          </button>
-        </div>
-      </form>
-    );
-  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -229,7 +174,7 @@ export function EditStudentForm({ student, initialMem, redirectBase, mode }: Edi
             dir="ltr"
             value={form.guardian_phone}
             onChange={(e) => set("guardian_phone", e.target.value)}
-            placeholder="05xxxxxxxx"
+            placeholder="01XXXXXXXXX"
           />
         </div>
 

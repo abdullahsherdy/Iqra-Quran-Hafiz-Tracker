@@ -1,7 +1,8 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { getAssignedStudentIds } from "@/lib/auth/student-access";
-import { GrantIjazaForm } from "@/components/grant-ijaza-form";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
+import { studentsTable, usersTable } from "@/db/schema";
+import { and, asc, eq } from "drizzle-orm";
+import { GrantIjazaForm } from "@/features/ijazat/components/grant-ijaza-form";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
@@ -15,35 +16,31 @@ export default async function TeacherGrantIjazaPage({ searchParams }: PageProps)
   const user = await requireRole("teacher");
   const { student_id: preselectedId } = await searchParams;
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) {
+  const db = getDb();
+  if (!db) {
     return <div className="text-destructive p-4">خطأ في الاتصال بالخادم</div>;
   }
 
-  // Load teacher's assigned active students only
-  const assignedIds = await getAssignedStudentIds(admin, user.id);
+  const [teacherUser] = await db
+    .select({
+      gender: usersTable.gender,
+      can_view_all_genders: usersTable.can_view_all_genders,
+    })
+    .from(usersTable)
+    .where(eq(usersTable.id, user.id))
+    .limit(1);
 
-  const { data: teacherUser } = await admin
-    .from("users")
-    .select("gender, can_view_all_genders")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  let studentsQuery = admin
-    .from("students")
-    .select("id, name")
-    .in(
-      "id",
-      assignedIds.length > 0 ? assignedIds : ["00000000-0000-0000-0000-000000000000"]
-    )
-    .eq("is_active", true)
-    .order("name");
-
-  if (teacherUser && !teacherUser.can_view_all_genders) {
-    studentsQuery = studentsQuery.eq("gender", teacherUser.gender);
+  // Gender-scoped active students (no assignment check)
+  const conditions = [eq(studentsTable.status, "active")];
+  if (teacherUser && !teacherUser.can_view_all_genders && teacherUser.gender) {
+    conditions.push(eq(studentsTable.gender, teacherUser.gender));
   }
 
-  const { data: students } = await studentsQuery;
+  const students = await db
+    .select({ id: studentsTable.id, name: studentsTable.name })
+    .from(studentsTable)
+    .where(and(...conditions))
+    .orderBy(asc(studentsTable.name));
 
   return (
     <div className="space-y-6 mx-auto max-w-2xl">
@@ -55,12 +52,12 @@ export default async function TeacherGrantIjazaPage({ searchParams }: PageProps)
         <div>
           <h2 className="text-xl font-bold">منح إجازة</h2>
           <p className="text-sm text-muted-foreground">
-            تسجيل إجازة لأحد طلابك المسندين إليك
+            تسجيل إجازة لأحد طلابك
           </p>
         </div>
       </div>
 
-      {students && students.length > 0 ? (
+      {students.length > 0 ? (
         <GrantIjazaForm
           students={students}
           preselectedStudentId={preselectedId}
@@ -72,8 +69,7 @@ export default async function TeacherGrantIjazaPage({ searchParams }: PageProps)
         />
       ) : (
         <div className="card text-center py-12 text-sm text-muted-foreground">
-          <p>لا يوجد طلاب نشطون مسندون إليك حالياً.</p>
-          <p className="mt-1 text-xs">تواصل مع المدير لإسناد طلاب.</p>
+          <p>لا يوجد طلاب نشطون متاحون لك حالياً.</p>
         </div>
       )}
     </div>

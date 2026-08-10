@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app-shell";
-import { requireRole } from "@/lib/auth/session";
+import { requireRole } from "@/features/auth/session";
 
 export default async function TeacherLayout({
   children,

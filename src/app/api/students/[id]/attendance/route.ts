@@ -1,28 +1,23 @@
 import { NextRequest } from "next/server";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { createSupabaseServerComponentClient } from "@/lib/supabase/server";
-import { canAccessStudent, getApiAppUser } from "@/lib/auth/student-access";
+import { and, eq, gte, lte, desc } from "drizzle-orm";
+import { attendanceTable } from "@/db/schema";
+import { canAccessStudent } from "@/features/auth/student-access";
+import { sanitizeError } from "@/lib/api-error";
+import { getApiContext } from "@/features/auth/api-context";
+import { todayDateString } from "@/lib/utils";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
-// GET /api/students/[id]/attendance — attendance history + stats
+// GET /api/students/[id]/attendance — attendance history (present days only) + stats
 export async function GET(request: NextRequest, { params }: RouteContext) {
   const { id: studentId } = await params;
-  const supabase = await createSupabaseServerComponentClient();
-  if (!supabase) return Response.json({ error: "Config missing" }, { status: 500 });
+  const ctx = await getApiContext();
+  if (!ctx.ok) return ctx.response;
+  const { db, appUser } = ctx;
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
-
-  const admin = createSupabaseAdminClient();
-  if (!admin) return Response.json({ error: "Config missing" }, { status: 500 });
-
-  const appUser = await getApiAppUser(admin, user.id);
-  if (!appUser || !appUser.is_active) return Response.json({ error: "Forbidden" }, { status: 403 });
-
-  if (!(await canAccessStudent(admin, appUser, studentId))) {
+  if (!(await canAccessStudent(db, appUser, studentId))) {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -30,37 +25,39 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   const dateFrom = searchParams.get("date_from") ?? "";
   const dateTo = searchParams.get("date_to") ?? "";
 
-  let query = admin
-    .from("attendance")
-    .select("id, attendance_date, status, notes, teacher_id, users!attendance_teacher_id_fkey(id, name)")
-    .eq("student_id", studentId)
-    .order("attendance_date", { ascending: false });
+  const conditions = [eq(attendanceTable.student_id, studentId)];
+  if (dateFrom) conditions.push(gte(attendanceTable.attendance_date, dateFrom));
+  if (dateTo) conditions.push(lte(attendanceTable.attendance_date, dateTo));
 
-  if (dateFrom) query = query.gte("attendance_date", dateFrom);
-  if (dateTo) query = query.lte("attendance_date", dateTo);
+  try {
+    const data = await db
+      .select({
+        id: attendanceTable.id,
+        attendance_date: attendanceTable.attendance_date,
+        status: attendanceTable.status,
+      })
+      .from(attendanceTable)
+      .where(and(...conditions))
+      .orderBy(desc(attendanceTable.attendance_date));
 
-  const { data, error } = await query;
-  if (error) return Response.json({ error: error.message }, { status: 500 });
-
-  const records = (data ?? []).map((r) => {
-    const teacher = r.users as unknown as { id: string; name: string } | null;
-    return {
+    const records = data.map((r) => ({
       id: r.id,
       attendance_date: r.attendance_date,
       status: r.status,
-      notes: r.notes,
-      teacher_id: r.teacher_id,
-      teacher_name: teacher?.name ?? "",
-    };
-  });
+    }));
 
-  const total = records.length;
-  const present = records.filter((r) => r.status === "present").length;
-  const absent = records.filter((r) => r.status === "absent").length;
-  const attendanceRate = total > 0 ? Math.round((present / total) * 100) : null;
+    // Stats: total attendance + attendance in current month
+    const total = records.length;
 
-  return Response.json({
-    records,
-    stats: { total, present, absent, attendanceRate },
-  });
+    const today = todayDateString();
+    const monthStart = today.substring(0, 7) + "-01";
+    const thisMonth = records.filter((r) => r.attendance_date >= monthStart && r.attendance_date <= today).length;
+
+    return Response.json({
+      records,
+      stats: { total, thisMonth },
+    });
+  } catch (error) {
+    return Response.json({ error: sanitizeError(error, "attendance fetch") }, { status: 500 });
+  }
 }

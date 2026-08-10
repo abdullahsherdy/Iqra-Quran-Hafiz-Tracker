@@ -1,28 +1,31 @@
 import {
-  LayoutDashboard,
   Users,
   GraduationCap,
-  ClipboardList,
   BookOpen,
   BarChart3,
   Award,
+  UserCog,
+  ScrollText,
   type LucideIcon,
 } from "lucide-react";
+import { isAdmin, isSuperAdmin } from "@/features/auth/shared";
+import type { AppRole } from "@/domain/types";
 
-export type Role = "admin" | "teacher";
+export type Role = AppRole;
 
 export interface NavItem {
   label: string;
   href: string;
   icon: LucideIcon;
   adminOnly?: boolean;
+  superAdminOnly?: boolean;
 }
 
 export const navItems: NavItem[] = [
   {
-    label: "لوحة التحكم",
-    href: "/admin",
-    icon: LayoutDashboard,
+    label: "التقارير",
+    href: "/admin/reports",
+    icon: BarChart3,
   },
   {
     label: "الطلاب",
@@ -36,30 +39,39 @@ export const navItems: NavItem[] = [
     adminOnly: true,
   },
   {
-    label: "إسناد الطلاب",
-    href: "/admin/assignments",
-    icon: ClipboardList,
-    adminOnly: true,
-  },
-  {
     label: "الإجازات",
     href: "/admin/ijazat",
     icon: BookOpen,
   },
   {
-    label: "التقارير",
-    href: "/admin/reports",
-    icon: BarChart3,
+    label: "المشرفون",
+    href: "/admin/admins",
+    icon: UserCog,
+    superAdminOnly: true,
+  },
+  {
+    label: "سجل العمليات",
+    href: "/admin/audit-logs",
+    icon: ScrollText,
+    superAdminOnly: true,
   },
 ];
 
 export function navItemsForRole(role: Role): NavItem[] {
-  return navItems.filter((item) => !item.adminOnly || role === "admin");
+  return navItems.filter((item) => {
+    if (item.superAdminOnly) return isSuperAdmin(role);
+    if (item.adminOnly) return isAdmin(role);
+    return true;
+  });
 }
 
 export function teacherNavItems(): NavItem[] {
   return [
-    { label: "لوحة التحكم", href: "/teacher", icon: LayoutDashboard },
+    {
+      label: "التقارير",
+      href: "/teacher/reports",
+      icon: BarChart3,
+    },
     { label: "الطلاب", href: "/teacher/students", icon: Users },
     {
       label: "تسجيل جلسة",
@@ -71,14 +83,9 @@ export function teacherNavItems(): NavItem[] {
       href: "/teacher/ijazat/new",
       icon: Award,
     },
-    {
-      label: "التقارير",
-      href: "/teacher/reports",
-      icon: BarChart3,
-    },
   ];
 }
 
 export function getNavItems(role: Role): NavItem[] {
-  return role === "admin" ? navItemsForRole(role) : teacherNavItems();
+  return isAdmin(role) ? navItemsForRole(role) : teacherNavItems();
 }

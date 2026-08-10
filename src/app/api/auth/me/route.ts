@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 
-import { getCurrentAppUser } from "@/lib/auth/session";
-import type { AuthMeResponse } from "@/lib/auth/shared";
+import { getCurrentAppUser } from "@/features/auth/session";
+import type { AuthMeResponse } from "@/features/auth/shared";
 
 export async function GET() {
   const user = await getCurrentAppUser();
 
-  if (!user || !user.isActive) {
+  if (!user || !user.is_active) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 

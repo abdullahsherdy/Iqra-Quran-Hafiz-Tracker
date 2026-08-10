@@ -1,9 +1,11 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
+import { usersTable, sessionsTable, studentsTable } from "@/db/schema";
+import { and, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { GenderBadge } from "@/components/badges";
-import { LevelBadge } from "@/components/level-badge";
+import { LevelBadge } from "@/features/students/components/level-badge";
 import { ArrowRight } from "lucide-react";
 import { TeacherProfileActions } from "./teacher-profile-actions";
 
@@ -13,39 +15,60 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
-  const admin = createSupabaseAdminClient();
-  if (!admin) return { title: "المحفظ" };
-  const { data } = await admin.from("users").select("name").eq("id", id).maybeSingle();
-  return { title: `${data?.name ?? "المحفظ"} | اقرأ` };
+  const db = getDb();
+  if (!db) return { title: "المحفظ" };
+  const [row] = await db.select({ name: usersTable.name }).from(usersTable).where(eq(usersTable.id, id)).limit(1);
+  return { title: `${row?.name ?? "المحفظ"} | اقرأ` };
 }
 
 export default async function TeacherProfilePage({ params }: PageProps) {
   await requireRole("admin");
   const { id } = await params;
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) return notFound();
+  const db = getDb();
+  if (!db) return notFound();
 
-  const { data: teacher } = await admin
-    .from("users")
-    .select("id, name, username, phone, gender, can_view_all_genders, is_active, created_at")
-    .eq("id", id)
-    .eq("role", "teacher")
-    .maybeSingle();
+  const [teacher] = await db
+    .select({
+      id: usersTable.id,
+      name: usersTable.name,
+      username: usersTable.username,
+      phone: usersTable.phone,
+      gender: usersTable.gender,
+      can_view_all_genders: usersTable.can_view_all_genders,
+      is_active: usersTable.is_active,
+      created_at: usersTable.created_at,
+    })
+    .from(usersTable)
+    .where(and(eq(usersTable.id, id), eq(usersTable.role, "teacher")))
+    .limit(1);
 
   if (!teacher) return notFound();
 
-  const { data: assignments } = await admin
-    .from("teacher_student_assignments")
-    .select("id, start_date, student_id, students(id, name, gender, memorized_juz_count, status)")
-    .eq("teacher_id", id)
-    .is("end_date", null)
-    .order("start_date");
+  // Students this teacher has recorded sessions with (distinct)
+  const sessionStudents = await db
+    .select({
+      student_id: studentsTable.id,
+      student_name: studentsTable.name,
+      student_gender: studentsTable.gender,
+      student_memorized_juz_count: studentsTable.memorized_juz_count,
+      student_status: studentsTable.status,
+    })
+    .from(sessionsTable)
+    .leftJoin(studentsTable, eq(sessionsTable.student_id, studentsTable.id))
+    .where(eq(sessionsTable.teacher_id, id))
+    .groupBy(studentsTable.id, studentsTable.name, studentsTable.gender, studentsTable.memorized_juz_count, studentsTable.status);
 
-  const students = (assignments ?? []).map((a) => {
-    const s = a.students as unknown as { id: string; name: string; gender: string; memorized_juz_count: number; status: string } | null;
-    return s ? { ...s, assignment_id: a.id, start_date: a.start_date } : null;
-  }).filter(Boolean);
+  const students = sessionStudents
+    .filter((s) => s.student_id !== null)
+    .map((s) => ({
+      id: s.student_id!,
+      name: s.student_name!,
+      gender: s.student_gender!,
+      memorized_juz_count: s.student_memorized_juz_count ?? 0,
+      status: s.student_status,
+      start_date: "",
+    }));
 
   return (
     <div className="space-y-6">
@@ -57,89 +80,75 @@ export default async function TeacherProfilePage({ params }: PageProps) {
         <h2 className="text-xl font-bold">{teacher.name}</h2>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        {/* Info card */}
-        <div className="card space-y-4">
-          <h3 className="font-semibold">بيانات المحفظ</h3>
-          <dl className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <dt className="text-muted-foreground">الاسم</dt>
-              <dd className="font-medium">{teacher.name}</dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-muted-foreground">اسم المستخدم</dt>
-              <dd dir="ltr">{teacher.username}</dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-muted-foreground">الجنس</dt>
-              <dd>
-                {teacher.gender ? (
-                  <GenderBadge value={teacher.gender as "male" | "female"} />
-                ) : "—"}
-              </dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-muted-foreground">الهاتف</dt>
-              <dd dir="ltr">{teacher.phone ?? "—"}</dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-muted-foreground">تاريخ الإنشاء</dt>
-              <dd>{new Date(teacher.created_at).toLocaleDateString("ar-EG")}</dd>
-            </div>
-          </dl>
-        </div>
+      <TeacherProfileActions
+        teacherId={teacher.id}
+        teacherName={teacher.name}
+        teacherUsername={teacher.username}
+        teacherPhone={teacher.phone}
+        teacherGender={teacher.gender}
+        teacherCreatedAt={teacher.created_at ? teacher.created_at.toISOString() : null}
+        isActive={teacher.is_active ?? true}
+        canViewAllGenders={teacher.can_view_all_genders ?? false}
+      />
 
-        {/* Controls */}
-        <div className="card space-y-4">
-          <h3 className="font-semibold">الإعدادات</h3>
-          <TeacherProfileActions
-            teacherId={teacher.id}
-            isActive={teacher.is_active}
-            canViewAllGenders={teacher.can_view_all_genders}
-          />
-        </div>
-      </div>
-
-      {/* Current students */}
+      {/* Students with recorded sessions */}
       <div className="card p-0">
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <h3 className="font-semibold">الطلاب الحاليون ({students.length})</h3>
+          <h3 className="font-semibold">الطلاب ({students.length})</h3>
         </div>
         {students.length === 0 ? (
           <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-            لا يوجد طلاب مسندون لهذا المحفظ حالياً
+            لا يوجد طلاب سجل هذا المحفظ جلسات لهم
           </p>
         ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border bg-secondary text-right">
-                <th className="px-4 py-2.5 font-medium">الطالب</th>
-                <th className="px-4 py-2.5 font-medium">الجنس</th>
-                <th className="px-4 py-2.5 font-medium">المستوى</th>
-                <th className="px-4 py-2.5 font-medium">تاريخ الإسناد</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {students.map((s) => s && (
-                <tr key={s.id} className="hover:bg-secondary/50">
-                  <td className="px-4 py-2.5">
-                    <Link href={`/admin/students/${s.id}`} className="font-medium text-primary hover:underline">
-                      {s.name}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-2.5">
-                    <GenderBadge value={s.gender as "male" | "female"} />
-                  </td>
-                  <td className="px-4 py-2.5">
-                    <LevelBadge memorizedJuzCount={s.memorized_juz_count} />
-                  </td>
-                  <td className="px-4 py-2.5 text-muted-foreground">
-                    {new Date(s.start_date).toLocaleDateString("ar-EG")}
-                  </td>
+          <>
+            {/* Desktop/tablet: table view */}
+            <table className="hidden sm:table w-full text-sm">
+              <thead>
+                <tr className="border-b border-border bg-secondary text-right">
+                  <th className="px-4 py-2.5 font-medium">الطالب</th>
+                  <th className="px-4 py-2.5 font-medium">الجنس</th>
+                  <th className="px-4 py-2.5 font-medium">المستوى</th>
                 </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {students.map((s) => s && (
+                  <tr key={s.id} className="hover:bg-secondary/50">
+                    <td className="px-4 py-2.5">
+                      <Link href={`/admin/students/${s.id}`} className="font-medium text-primary hover:underline">
+                        {s.name}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-2.5">
+                      <GenderBadge value={s.gender as "male" | "female"} />
+                    </td>
+                    <td className="px-4 py-2.5">
+                      <LevelBadge memorizedJuzCount={s.memorized_juz_count} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Mobile: card view */}
+            <div className="sm:hidden divide-y divide-border">
+              {students.map((s) => s && (
+                <Link
+                  key={s.id}
+                  href={`/admin/students/${s.id}`}
+                  className="flex items-center justify-between gap-2 px-4 py-3 hover:bg-secondary/50 transition-colors"
+                >
+                  <div className="min-w-0">
+                    <span className="font-medium text-primary block truncate">{s.name}</span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <GenderBadge value={s.gender as "male" | "female"} />
+                      <LevelBadge memorizedJuzCount={s.memorized_juz_count} />
+                    </div>
+                  </div>
+                </Link>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </>
         )}
       </div>
     </div>

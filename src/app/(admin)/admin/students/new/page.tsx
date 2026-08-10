@@ -1,7 +1,7 @@
-import { requireRole } from "@/lib/auth/session";
+import { requireRole } from "@/features/auth/session";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { NewStudentForm } from "@/components/new-student-form";
+import { NewStudentForm } from "@/features/students/components/new-student-form";
 
 export const metadata = { title: "إضافة طالب | اقرأ" };
 

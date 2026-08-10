@@ -1,12 +1,20 @@
-import { requireRole } from "@/lib/auth/session";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { requireRole } from "@/features/auth/session";
+import { getDb } from "@/db/client";
+import {
+  studentsTable,
+  sessionsTable,
+  usersTable,
+  initialMemorizationTable,
+} from "@/db/schema";
+import { asc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Pencil, Award } from "lucide-react";
 import { GenderBadge, StudentStatusBadge, type StudentStatus } from "@/components/badges";
-import { LevelBadge } from "@/components/level-badge";
-import { StudentProfileTabs } from "@/components/student-profile-tabs";
-import { StudentDeleteButton } from "@/components/student-delete-button";
+import { formatWesternDate } from "@/lib/arabic";
+import { LevelBadge } from "@/features/students/components/level-badge";
+import { StudentProfileTabs } from "@/features/students/components/student-profile-tabs";
+import { StudentDeleteButton } from "@/features/students/components/student-delete-button";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -20,68 +28,70 @@ export default async function AdminStudentProfilePage({ params }: PageProps) {
   await requireRole("admin");
   const { id } = await params;
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) return notFound();
+  const db = getDb();
+  if (!db) return notFound();
 
-  const { data: student } = await admin
-    .from("students")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
+  const [student] = await db
+    .select()
+    .from(studentsTable)
+    .where(eq(studentsTable.id, id))
+    .limit(1);
 
   if (!student) return notFound();
 
-  const { data: activeAssignments } = await admin
-    .from("teacher_student_assignments")
-    .select("id, teacher_id, start_date, users!teacher_student_assignments_teacher_id_fkey(id, name)")
-    .eq("student_id", id)
-    .is("end_date", null);
+  const [sessionTeachers, initialMem] = await Promise.all([
+    db
+      .select({
+        teacher_id: sessionsTable.teacher_id,
+        teacher_name: usersTable.name,
+      })
+      .from(sessionsTable)
+      .leftJoin(usersTable, eq(sessionsTable.teacher_id, usersTable.id))
+      .where(eq(sessionsTable.student_id, id))
+      .groupBy(sessionsTable.teacher_id, usersTable.name),
+    db
+      .select({
+        juz_number: initialMemorizationTable.juz_number,
+        status: initialMemorizationTable.status,
+        sheikh_name: initialMemorizationTable.sheikh_name,
+        pages: initialMemorizationTable.pages,
+      })
+      .from(initialMemorizationTable)
+      .where(eq(initialMemorizationTable.student_id, id))
+      .orderBy(asc(initialMemorizationTable.juz_number)),
+  ]);
 
-  const { data: initialMem } = await admin
-    .from("initial_memorization")
-    .select("juz_number, status, sheikh_name")
-    .eq("student_id", id)
-    .order("juz_number");
+  const activeAssignments = sessionTeachers
+    .filter((r) => r.teacher_name)
+    .map((r, i) => ({
+      id: `session-${r.teacher_id}-${i}`,
+      teacher_id: r.teacher_id,
+      start_date: "",
+      teacher_name: r.teacher_name!,
+    }));
 
-  const { data: assignmentHistory } = await admin
-    .from("teacher_student_assignments")
-    .select("id, teacher_id, start_date, end_date, users!teacher_student_assignments_teacher_id_fkey(id, name)")
-    .eq("student_id", id)
-    .order("start_date", { ascending: false });
-
-  const initMemValue = (initialMem ?? []).map((r) => ({
+  const initMemValue = initialMem.map((r) => ({
     juz_number: r.juz_number,
     status: r.status as "memorized" | "with_ijaza",
     sheikh_name: r.sheikh_name ?? undefined,
+    pages: r.pages,
   }));
 
-  const historyValue = (assignmentHistory ?? []).map((a) => {
-    const u = a.users as unknown as { id: string; name: string } | null;
-    return {
-      id: a.id,
-      teacher_id: a.teacher_id,
-      teacher_name: u?.name ?? "",
-      start_date: a.start_date,
-      end_date: a.end_date,
-      is_active: a.end_date === null,
-    };
-  });
-
   const age = student.birth_date
-    ? Math.floor((Date.now() - new Date(student.birth_date).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+    ? Math.floor((new Date().getTime() - new Date(student.birth_date).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
     : null;
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <Link href="/admin/students" className="btn-secondary px-2 py-1.5 text-xs">
+          <Link href="/admin/students" className="btn-secondary px-2 py-1.5 text-xs shrink-0">
             <ArrowRight className="size-4" />
           </Link>
-          <div>
-            <h2 className="text-xl font-bold flex items-center gap-2">
-              {student.name}
+          <div className="min-w-0">
+            <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2">
+              <span className="truncate">{student.name}</span>
               <GenderBadge value={student.gender as "male" | "female"} />
             </h2>
             <p className="text-sm text-muted-foreground">
@@ -90,14 +100,14 @@ export default async function AdminStudentProfilePage({ params }: PageProps) {
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Link href={`/admin/ijazat?grant_for=${id}`} className="btn-primary gap-1.5 text-sm">
+        <div className="flex items-center gap-2 shrink-0">
+          <Link href={`/admin/ijazat?grant_for=${id}`} className="btn-primary gap-1.5 text-sm px-3 py-2">
             <Award className="size-4" />
-            منح إجازة
+            <span>منح إجازة</span>
           </Link>
-          <Link href={`/admin/students/${id}/edit`} className="btn-secondary gap-1.5">
+          <Link href={`/admin/students/${id}/edit`} className="btn-secondary gap-1.5 px-3 py-2">
             <Pencil className="size-4" />
-            تعديل
+            <span>تعديل</span>
           </Link>
         </div>
       </div>
@@ -119,12 +129,12 @@ export default async function AdminStudentProfilePage({ params }: PageProps) {
             {student.birth_date && (
               <div className="flex justify-between">
                 <dt className="text-muted-foreground">تاريخ الميلاد</dt>
-                <dd>{new Date(student.birth_date).toLocaleDateString("ar-EG")}</dd>
+                <dd>{formatWesternDate(student.birth_date)}</dd>
               </div>
             )}
             <div className="flex justify-between">
               <dt className="text-muted-foreground">تاريخ الانضمام</dt>
-              <dd>{new Date(student.enrollment_date).toLocaleDateString("ar-EG")}</dd>
+              <dd>{formatWesternDate(student.enrollment_date)}</dd>
             </div>
             {student.notes && (
               <div className="pt-1">
@@ -157,7 +167,7 @@ export default async function AdminStudentProfilePage({ params }: PageProps) {
             {student.last_session_date && (
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">آخر جلسة</span>
-                <span>{new Date(student.last_session_date).toLocaleDateString("ar-EG")}</span>
+                <span>{formatWesternDate(student.last_session_date)}</span>
               </div>
             )}
             {/* Progress bar */}
@@ -177,42 +187,35 @@ export default async function AdminStudentProfilePage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Current teachers */}
+      {/* Teachers who recorded sessions with this student */}
       <div className="card space-y-3">
         <h3 className="font-semibold border-b border-border pb-3 mb-1">
-          المحفظون الحاليون ({activeAssignments?.length ?? 0})
+          المحفظون ({activeAssignments.length})
         </h3>
-        {!activeAssignments?.length ? (
-          <p className="text-sm text-muted-foreground">لا يوجد محفظون مسندون حالياً</p>
+        {!activeAssignments.length ? (
+          <p className="text-sm text-muted-foreground">لا يوجد محفظون سجلوا جلسات لهذا الطالب</p>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {activeAssignments.map((a) => {
-              const u = a.users as unknown as { id: string; name: string } | null;
-              return u ? (
+              return a.teacher_name ? (
                 <Link
                   key={a.id}
-                  href={`/admin/teachers/${u.id}`}
+                  href={`/admin/teachers/${a.teacher_id}`}
                   className="flex items-center gap-2.5 rounded-lg border border-border bg-secondary/40 px-3.5 py-3 hover:bg-secondary/80 transition-colors shadow-xs"
                 >
                   <div className="size-2 rounded-full bg-primary shrink-0" />
-                  <span className="font-semibold text-sm text-foreground">{u.name}</span>
+                  <span className="font-semibold text-sm text-foreground">{a.teacher_name}</span>
                 </Link>
               ) : null;
             })}
           </div>
         )}
-        <div className="pt-1">
-          <Link href="/admin/assignments" className="text-xs text-primary hover:underline">
-            إدارة الإسناد ←
-          </Link>
-        </div>
       </div>
 
       <StudentProfileTabs
         studentId={id}
+        studentName={student.name}
         initMemValue={initMemValue}
-        assignmentHistory={historyValue}
-        showAssignmentsTab
         isAdmin
       />
 
