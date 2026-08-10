@@ -75,8 +75,15 @@ export async function updateSupabaseSession(request: NextRequest): Promise<NextR
     .maybeSingle();
 
   if (!appUser || !(appUser as AppUserRow).is_active) {
-    const loginUrl = new URL("/login", request.url);
-    return NextResponse.redirect(loginUrl);
+    // Authenticated in Supabase but no readable/active app-user row.
+    // Never redirect /login -> /login: that produces an infinite redirect
+    // loop (Firefox: "the page isn't redirecting properly"). Let the login
+    // page render so the user can sign in as someone else; only bounce them
+    // off protected paths.
+    if (isLoginPath) {
+      return response;
+    }
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   const role = (appUser as AppUserRow).role;
