@@ -101,7 +101,12 @@ export async function PUT(request: NextRequest, { params }: RouteContext) {
     const admin = createSupabaseAdminClient();
     if (!admin) return Response.json({ error: "Config missing" }, { status: 500 });
 
-    const email = usernameToEmail(existing.username);
+    // Email-registered accounts store the full email as `username`; legacy
+    // accounts store a bare username mapped to a synthetic email. Use an
+    // email-style username as-is instead of double-wrapping it.
+    const email = existing.username.includes("@")
+      ? existing.username
+      : usernameToEmail(existing.username);
     const { error: pwdError } = await admin.auth.admin.updateUserById(id, {
       email,
       password: body.password,

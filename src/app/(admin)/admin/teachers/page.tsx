@@ -4,7 +4,9 @@ import { usersTable, sessionsTable } from "@/db/schema";
 import { asc, eq, inArray } from "drizzle-orm";
 import Link from "next/link";
 import { GenderBadge } from "@/components/badges";
-import { PlusCircle, Users } from "lucide-react";
+import { PlusCircle, Users, BellRing } from "lucide-react";
+import { formatWesternDate } from "@/lib/arabic";
+import { TeacherApproveButton } from "./teacher-approve-button";
 
 export const metadata = { title: "المحفظون | اقرأ" };
 
@@ -61,6 +63,47 @@ export default async function AdminTeachersPage() {
           إضافة محفظ
         </Link>
       </div>
+
+      {/* Pending approval callout — self-registered teachers awaiting activation */}
+      {inactive.length > 0 && (
+        <div className="rounded-xl border border-[#f59e0b]/40 bg-[#fffbeb] p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <BellRing className="size-5 text-[#b45309]" />
+            <h3 className="font-bold text-[#92400e]">
+              بانتظار الموافقة ({inactive.length})
+            </h3>
+          </div>
+          <p className="text-xs text-[#92400e]/80">
+            حسابات محفّظين مسجّلة وغير مُفعّلة بعد. راجع البيانات ثم فعّل الحساب للسماح بتسجيل الدخول.
+          </p>
+          <div className="space-y-2">
+            {inactive.map((t) => (
+              <div
+                key={t.id}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card p-3"
+              >
+                <div className="min-w-0 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/admin/teachers/${t.id}`}
+                      className="font-semibold text-primary hover:underline"
+                    >
+                      {t.name}
+                    </Link>
+                    {t.gender && <GenderBadge value={t.gender as "male" | "female"} />}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+                    <span dir="ltr">{t.username}</span>
+                    {t.phone && <span dir="ltr">{t.phone}</span>}
+                    {t.created_at && <span>سُجّل: {formatWesternDate(t.created_at.toISOString())}</span>}
+                  </div>
+                </div>
+                <TeacherApproveButton teacherId={t.id} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {teachers.length === 0 ? (
         <div className="card flex flex-col items-center gap-4 py-16 text-center">

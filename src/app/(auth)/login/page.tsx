@@ -1,15 +1,33 @@
 import { BookOpenText } from "lucide-react";
 import { redirect } from "next/navigation";
 
-import { LoginForm } from "@/components/login-form";
+import { LoginForm, type LoginNotice } from "@/components/login-form";
 import { getCurrentAppUser } from "@/features/auth/session";
 import { roleHomePath } from "@/features/auth/shared";
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ verified?: string }>;
+}) {
   const user = await getCurrentAppUser();
 
   if (user?.is_active) {
     redirect(roleHomePath(user.role));
+  }
+
+  const { verified } = await searchParams;
+  let notice: LoginNotice | null = null;
+  if (verified === "1") {
+    notice = {
+      kind: "success",
+      text: "تم تأكيد بريدك الإلكتروني بنجاح. يمكنك الآن تسجيل الدخول.",
+    };
+  } else if (verified === "0") {
+    notice = {
+      kind: "error",
+      text: "تعذّر تأكيد البريد الإلكتروني. قد يكون الرابط منتهي الصلاحية — حاول تسجيل الدخول أو أعد المحاولة.",
+    };
   }
 
   const appName = process.env.NEXT_PUBLIC_APP_NAME ?? "اقرأ";
@@ -33,7 +51,7 @@ export default async function LoginPage() {
       {/* Divider */}
       <div className="mb-6 h-px w-full bg-border/60" />
 
-      <LoginForm />
+      <LoginForm notice={notice} />
     </div>
   );
 }
