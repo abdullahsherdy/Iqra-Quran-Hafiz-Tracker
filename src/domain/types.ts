@@ -17,4 +17,4 @@ export type AttendanceStatus = "present";
 
 export type StudentStatus = "active" | "paused" | "graduated" | "withdrawn";
 
-export type AppRole = "admin" | "teacher" | "super_admin";
+export type AppRole = "admin" | "teacher" | "super_admin" | "student";

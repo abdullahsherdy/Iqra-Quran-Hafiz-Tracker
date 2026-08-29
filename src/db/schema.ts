@@ -39,7 +39,7 @@ export const usersTable = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     name: varchar("name", { length: 100 }).notNull(),
-    username: varchar("username", { length: 50 }).unique().notNull(),
+    username: varchar("username", { length: 255 }).unique().notNull(),
     role: text("role").notNull(),
     phone: varchar("phone", { length: 20 }),
     gender: text("gender"),
@@ -47,13 +47,20 @@ export const usersTable = pgTable(
     is_active: boolean("is_active").default(true),
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
   },
-  (t) => [check("users_role_check", sql`${t.role} IN ('admin', 'teacher', 'super_admin')`), check("users_gender_check", sql`${t.gender} IS NULL OR ${t.gender} IN ('male', 'female')`)],
+  (t) => [check("users_role_check", sql`${t.role} IN ('admin', 'teacher', 'super_admin', 'student')`), check("users_gender_check", sql`${t.gender} IS NULL OR ${t.gender} IN ('male', 'female')`)],
 );
 
 export const studentsTable = pgTable(
   "students",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+    // Optional link to the auth/`users` account for a self-registered student.
+    // NULL for staff-created students (no login). Set only when a student
+    // self-registers. ON DELETE SET NULL keeps the data record if the account
+    // is removed. See `src/features/auth/api-context.ts` (getStudentContext).
+    user_id: uuid("user_id")
+      .unique()
+      .references(() => usersTable.id, { onDelete: "set null" }),
     name: varchar("name", { length: 100 }).notNull(),
     gender: text("gender").notNull(),
     birth_date: date("birth_date"),

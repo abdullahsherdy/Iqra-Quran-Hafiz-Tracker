@@ -52,8 +52,13 @@ export async function updateSupabaseSession(request: NextRequest): Promise<NextR
   });
 
   const pathname = request.nextUrl.pathname;
-  const isProtectedPath = pathname.startsWith("/admin") || pathname.startsWith("/teacher");
-  const isLoginPath = pathname === "/login";
+  const isProtectedPath =
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/teacher") ||
+    pathname.startsWith("/student");
+  // Public auth entry pages — never require auth; redirect already-signed-in
+  // active users to their role home.
+  const isAuthEntryPath = pathname === "/login" || pathname === "/register";
 
   const {
     data: { user },
@@ -75,12 +80,12 @@ export async function updateSupabaseSession(request: NextRequest): Promise<NextR
     .maybeSingle();
 
   if (!appUser || !(appUser as AppUserRow).is_active) {
-    // Authenticated in Supabase but no readable/active app-user row.
-    // Never redirect /login -> /login: that produces an infinite redirect
-    // loop (Firefox: "the page isn't redirecting properly"). Let the login
-    // page render so the user can sign in as someone else; only bounce them
-    // off protected paths.
-    if (isLoginPath) {
+    // Authenticated in Supabase but no readable/active app-user row (e.g. a
+    // teacher pending admin approval, or a stale session). Never redirect an
+    // auth entry page to /login: /login -> /login is an infinite redirect
+    // loop. Let the page render so they can sign in as someone else; only
+    // bounce them off protected paths.
+    if (isAuthEntryPath) {
       return response;
     }
     return NextResponse.redirect(new URL("/login", request.url));
@@ -88,7 +93,7 @@ export async function updateSupabaseSession(request: NextRequest): Promise<NextR
 
   const role = (appUser as AppUserRow).role;
 
-  if (isLoginPath) {
+  if (isAuthEntryPath) {
     return NextResponse.redirect(new URL(roleHomePath(role), request.url));
   }
 
@@ -97,6 +102,10 @@ export async function updateSupabaseSession(request: NextRequest): Promise<NextR
   }
 
   if (pathname.startsWith("/teacher") && role !== "teacher") {
+    return NextResponse.redirect(new URL(roleHomePath(role), request.url));
+  }
+
+  if (pathname.startsWith("/student") && role !== "student") {
     return NextResponse.redirect(new URL(roleHomePath(role), request.url));
   }
 

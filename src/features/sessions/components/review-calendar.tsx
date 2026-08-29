@@ -27,6 +27,12 @@ interface ReviewResponse {
 
 interface ReviewCalendarProps {
   studentId: string;
+  /**
+   * API base path for the review fetch. Defaults to the staff route
+   * (`/api/students/{id}`); the read-only student portal passes `/api/student`
+   * (self-scoped, id resolved from the session).
+   */
+  basePath?: string;
 }
 
 const RULE_LABELS: Record<string, { label: string; icon: typeof Calendar; color: string }> = {
@@ -35,7 +41,8 @@ const RULE_LABELS: Record<string, { label: string; icon: typeof Calendar; color:
   "30-day": { label: "المراجعة التراكمية (شهر)", icon: BookOpen, color: "text-[#16a34a] border-[#16a34a]/30 bg-[#dcfce7]/50" },
 };
 
-export function ReviewCalendar({ studentId }: ReviewCalendarProps) {
+export function ReviewCalendar({ studentId, basePath }: ReviewCalendarProps) {
+  const reviewBase = basePath ?? `/api/students/${studentId}`;
   const [targetDate, setTargetDate] = useState(todayDateString());
   const [data, setData] = useState<ReviewResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,7 +53,7 @@ export function ReviewCalendar({ studentId }: ReviewCalendarProps) {
     setError(null);
     try {
       const result = await apiGet<ReviewResponse>(
-        `/api/students/${studentId}/review?date=${targetDate}`
+        `${reviewBase}/review?date=${targetDate}`
       );
       setData(result);
     } catch (err) {
@@ -55,7 +62,7 @@ export function ReviewCalendar({ studentId }: ReviewCalendarProps) {
     } finally {
       setLoading(false);
     }
-  }, [studentId, targetDate]);
+  }, [reviewBase, targetDate]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect

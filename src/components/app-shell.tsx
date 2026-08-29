@@ -28,14 +28,13 @@ export function AppShell({ role, username, children }: AppShellProps) {
       ? pathname === href
       : pathname === href || pathname.startsWith(href + "/");
 
-  const handleLogoutClick = (e: React.FormEvent) => {
-    e.preventDefault();
-    setShowLogoutConfirm(true);
-  };
-
   const confirmLogout = () => {
     setShowLogoutConfirm(false);
-    logoutFormRef.current?.submit();
+    // Use requestSubmit() — NOT the native submit() — so React intercepts the
+    // submission and runs the `signOutAction` function action. Calling native
+    // submit() bypasses React's handling and throws in React 19
+    // ("A React form was unexpectedly submitted").
+    logoutFormRef.current?.requestSubmit();
   };
 
   return (
@@ -109,9 +108,13 @@ export function AppShell({ role, username, children }: AppShellProps) {
               <span>{username ?? "—"}</span>
             </div>
           )}
-          <form ref={logoutFormRef} action={signOutAction} onSubmit={handleLogoutClick}>
+          {/* The form only hosts the server action; it is submitted
+              programmatically from confirmLogout after the modal is confirmed.
+              The visible button opens the modal (same behavior as mobile). */}
+          <form ref={logoutFormRef} action={signOutAction}>
             <button
-              type="submit"
+              type="button"
+              onClick={() => setShowLogoutConfirm(true)}
               className={cn(
                 "flex w-full items-center rounded-lg transition-colors text-destructive hover:bg-destructive/10 cursor-pointer",
                 isCollapsed ? "justify-center p-2.5" : "gap-3 px-3 py-2.5 text-[15px] font-semibold"

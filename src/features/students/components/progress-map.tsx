@@ -11,9 +11,17 @@ type JuzProgressDetail = JuzProgressDetailed;
 
 interface ProgressMapProps {
   studentId: string;
+  /**
+   * API base path for the progress fetch. Defaults to the staff route
+   * (`/api/students/{id}`); the read-only student portal passes `/api/student`
+   * (self-scoped, id resolved from the session) so the same component serves
+   * both without exposing a foreign student id.
+   */
+  basePath?: string;
 }
 
-export function ProgressMap({ studentId }: ProgressMapProps) {
+export function ProgressMap({ studentId, basePath }: ProgressMapProps) {
+  const endpoint = `${basePath ?? `/api/students/${studentId}`}/progress`;
   const [progressData, setProgressData] = useState<JuzProgressDetail[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +31,7 @@ export function ProgressMap({ studentId }: ProgressMapProps) {
     async function fetchProgress() {
       setLoading(true);
       try {
-        const data = await apiGet<JuzProgressDetail[]>(`/api/students/${studentId}/progress`);
+        const data = await apiGet<JuzProgressDetail[]>(endpoint);
         setProgressData(data);
       } catch (err) {
         setError(err instanceof ApiError ? err.message : "حدث خطأ ما");
@@ -33,7 +41,7 @@ export function ProgressMap({ studentId }: ProgressMapProps) {
     }
 
     fetchProgress();
-  }, [studentId]);
+  }, [endpoint]);
 
   if (loading) {
     return (

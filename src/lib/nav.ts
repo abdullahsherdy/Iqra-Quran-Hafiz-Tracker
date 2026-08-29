@@ -8,7 +8,7 @@ import {
   ScrollText,
   type LucideIcon,
 } from "lucide-react";
-import { isAdmin, isSuperAdmin } from "@/features/auth/shared";
+import { isAdmin, isSuperAdmin, isStudent } from "@/features/auth/shared";
 import type { AppRole } from "@/domain/types";
 
 export type Role = AppRole;
@@ -86,6 +86,12 @@ export function teacherNavItems(): NavItem[] {
   ];
 }
 
+/** Read-only student portal — a single dashboard of the student's own data. */
+export function studentNavItems(): NavItem[] {
+  return [{ label: "لوحتي", href: "/student", icon: BookOpen }];
+}
+
 export function getNavItems(role: Role): NavItem[] {
+  if (isStudent(role)) return studentNavItems();
   return isAdmin(role) ? navItemsForRole(role) : teacherNavItems();
 }

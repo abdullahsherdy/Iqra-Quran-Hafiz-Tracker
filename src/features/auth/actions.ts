@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 import {
   roleHomePath,
-  usernameToEmail,
+  resolveLoginEmail,
   type LoginActionState,
 } from "./shared";
 import { getAppUserByAuthId } from "./session";
@@ -15,12 +15,16 @@ export async function loginAction(
   _previousState: LoginActionState,
   formData: FormData
 ): Promise<LoginActionState> {
-  const username = String(formData.get("username") ?? "").trim();
+  // The field is now "identifier" (email OR legacy username). Fall back to the
+  // old "username" field name so nothing breaks if an older form posts it.
+  const identifier = String(
+    formData.get("identifier") ?? formData.get("username") ?? ""
+  ).trim();
   const password = String(formData.get("password") ?? "");
 
-  if (!username || !password) {
+  if (!identifier || !password) {
     return {
-      errorMessage: "من فضلك أدخل اسم المستخدم وكلمة المرور.",
+      errorMessage: "من فضلك أدخل البريد الإلكتروني (أو اسم المستخدم) وكلمة المرور.",
     };
   }
 
@@ -33,13 +37,23 @@ export async function loginAction(
   }
 
   const { data, error } = await supabase.auth.signInWithPassword({
-    email: usernameToEmail(username),
+    email: resolveLoginEmail(identifier),
     password,
   });
 
   if (error || !data.user) {
+    // A newly-registered user who hasn't clicked the verification link yet
+    // fails here with an "email not confirmed" error — guide them rather than
+    // showing the generic invalid-credentials message.
+    const detail = error?.message?.toLowerCase() ?? "";
+    if (detail.includes("confirm")) {
+      return {
+        errorMessage:
+          "يرجى تأكيد بريدك الإلكتروني أولاً عبر الرابط المُرسَل إليك، ثم حاول تسجيل الدخول.",
+      };
+    }
     return {
-      errorMessage: "اسم المستخدم أو كلمة المرور غير صحيحين.",
+      errorMessage: "البريد الإلكتروني أو كلمة المرور غير صحيحين.",
     };
   }
 
@@ -62,7 +76,8 @@ export async function loginAction(
   if (!appUser.is_active) {
     await supabase.auth.signOut();
     return {
-      errorMessage: "هذا الحساب غير نشط حالياً.",
+      errorMessage:
+        "هذا الحساب غير مُفعّل بعد. إن كنت قد سجّلت للتو كمحفّظ، فحسابك بانتظار موافقة المشرف على التفعيل.",
     };
   }
 

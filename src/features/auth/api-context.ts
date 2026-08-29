@@ -1,7 +1,10 @@
 import "server-only";
 
+import { eq } from "drizzle-orm";
+
 import { createSupabaseServerComponentClient } from "@/infrastructure/auth/server";
 import { getDb, type Db } from "@/db/client";
+import { studentsTable } from "@/db/schema";
 import { getApiAppUser } from "./student-access";
 import type { AppUser } from "./shared";
 
@@ -26,7 +29,11 @@ export type ApiContext =
   | { ok: true; db: Db; appUser: AppUser }
   | { ok: false; response: Response };
 
-export async function getApiContext(): Promise<ApiContext> {
+/**
+ * Resolve the authenticated caller into `{ db, appUser }` (no role gate).
+ * Shared by `getApiContext` (staff) and `getStudentContext` (student portal).
+ */
+async function resolveAuthedAppUser(): Promise<ApiContext> {
   const supabase = await createSupabaseServerComponentClient();
   if (!supabase) {
     return { ok: false, response: Response.json({ error: "Config missing" }, { status: 500 }) };
@@ -48,4 +55,57 @@ export async function getApiContext(): Promise<ApiContext> {
   }
 
   return { ok: true, db, appUser };
+}
+
+/**
+ * Staff-only API context (admin / teacher). A `student`-role caller is
+ * rejected with 403 here so that EVERY existing data route (which uses this
+ * helper) is closed to students in one place — students would otherwise fall
+ * through role scoping and read all data. Student-portal endpoints use
+ * `getStudentContext()` instead.
+ */
+export async function getApiContext(): Promise<ApiContext> {
+  const ctx = await resolveAuthedAppUser();
+  if (!ctx.ok) return ctx;
+
+  if (ctx.appUser.role === "student") {
+    return { ok: false, response: Response.json({ error: "Forbidden" }, { status: 403 }) };
+  }
+
+  return ctx;
+}
+
+export type StudentContext =
+  | { ok: true; db: Db; appUser: AppUser; studentId: string }
+  | { ok: false; response: Response };
+
+/**
+ * Student-portal API context. Requires the caller to be a `student` and
+ * resolves their OWN student record id via `students.user_id`. Endpoints that
+ * serve the read-only student portal use this so a student can only ever reach
+ * their own data.
+ *
+ *   - 403 if the caller is not a student
+ *   - 404 if no student record is linked to the account
+ */
+export async function getStudentContext(): Promise<StudentContext> {
+  const ctx = await resolveAuthedAppUser();
+  if (!ctx.ok) return ctx;
+
+  const { db, appUser } = ctx;
+  if (appUser.role !== "student") {
+    return { ok: false, response: Response.json({ error: "Forbidden" }, { status: 403 }) };
+  }
+
+  const [student] = await db
+    .select({ id: studentsTable.id })
+    .from(studentsTable)
+    .where(eq(studentsTable.user_id, appUser.id))
+    .limit(1);
+
+  if (!student) {
+    return { ok: false, response: Response.json({ error: "No linked student record" }, { status: 404 }) };
+  }
+
+  return { ok: true, db, appUser, studentId: student.id };
 }
